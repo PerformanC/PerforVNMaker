@@ -1,16 +1,16 @@
 import helper from './helper.js'
 
 function make(backgroundImage) {
-  console.log('Starting VN, writing menu.. (Android)')
+  console.log('Starting VN, coding menu.. (Android)')
 
-  helper.writeLine('val frameLayout_menu = FrameLayout(this)' + '\n' +
-                   SPACE + 'frameLayout_menu.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
+  helper.writeLine('val frameLayout = FrameLayout(this)' + '\n' +
+                   SPACE + 'frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
-                   SPACE + 'val imageView_menu = ImageView(this)' + '\n' +
-                   SPACE + 'imageView_menu.setImageResource(R.drawable.' + backgroundImage + ')' + '\n' +
-                   SPACE + 'imageView_menu.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+                   SPACE + 'val imageView = ImageView(this)' + '\n' +
+                   SPACE + 'imageView.setImageResource(R.drawable.' + backgroundImage + ')' + '\n' +
+                   SPACE + 'imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                   SPACE + 'frameLayout_menu.addView(imageView_menu)' + '\n\n' +
+                   SPACE + 'frameLayout.addView(imageView)' + '\n\n' +
 
                    SPACE + 'val button = Button(this)' + '\n' +
                    SPACE + 'button.text = "Start"' + '\n' +
@@ -32,11 +32,11 @@ function make(backgroundImage) {
                    SPACE + '  ' + visualNovel.scenes[0].name + '()' + '\n' +
                    SPACE + '}' + '\n\n' +
 
-                   SPACE + 'frameLayout_menu.addView(button)' + '\n\n' +
+                   SPACE + 'frameLayout.addView(button)' + '\n\n' +
 
-                   SPACE + 'setContentView(frameLayout_menu)')
+                   SPACE + 'setContentView(frameLayout)')
 
-  console.log('Menu was coded. (Android)')
+  console.log('Menu coded. (Android)')
 }
 
 export default {

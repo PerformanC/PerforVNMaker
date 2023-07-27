@@ -5,7 +5,7 @@ global.SPACE = '          '
 global.firstWrite = false
 
 function init(name, applicationId) {
-  console.log('Starting VN, writing main page.. (Android)')
+  console.log('Starting VN, coding main code.. (Android)')
 
   visualNovel.code = 'package ' + applicationId + '\n\n' +
 
@@ -44,22 +44,22 @@ function init(name, applicationId) {
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
   '}' + '\n'
 
-  console.log('Theme was coded. (Android)')
+  console.log('Main coded. (Android)')
 }
 
 function finalize() {
-  console.log('Finalizing VN, writing main page.. (Android)')
+  console.log('Finalizing VN, finishing up code.. (Android)')
 
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_CODE__', '')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', '')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
 
+  console.log('Code finished up, writing to file.. (Android)')
+
   fs.writeFile('vn.kt', visualNovel.code, function (err) {
     if (err) return console.log(err);
-    console.log('Main page written successfully. (Android)');
+    console.log('VN Kotlin is now available in vn.kt. (Android)');
   })
-
-  console.log('VN was coded. (Android)')
 }
 
 export default {
