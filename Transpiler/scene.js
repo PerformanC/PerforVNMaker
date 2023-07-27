@@ -29,21 +29,19 @@ function addScenario(scene, path) {
 }
 
 function finalize(scene) {
-  console.log('Ending scene, coding scene ' + scene.name + '  page.. (Android)')
+  console.log('Ending scene, coding scene ' + scene.name + '.. (Android)')
 
   if (visualNovel.scenes.length != 0) {
     const lastScene = visualNovel.scenes[visualNovel.scenes.length - 1]
 
     const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                 '      scene2()' + '\n' +
+                 '      ' + scene.name + '()' + '\n' +
                  '    }'
 
     visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
   }
 
-  visualNovel.scenes.push(scene)
-
-  let sceneCode = '  public fun ' + scene.name + '() {' + '\n' +
+  let sceneCode = '  private fun ' + scene.name + '() {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
@@ -55,9 +53,7 @@ function finalize(scene) {
                  '    imageView_scenario.setImageResource(R.drawable.' + scene.background + ')' + '\n' +
                  '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                 '    frameLayout.addView(imageView_scenario)' + '\n\n'
-
-                 '    setContentView(frameLayout)'
+                 '    frameLayout.addView(imageView_scenario)' + '\n'
   } else if (scene.characters.length == 1 && scene.background == '') {
     // Only one character
 
@@ -67,9 +63,7 @@ function finalize(scene) {
                      '    imageView_' + scene.characters[0].name + '.setImageResource(R.drawable.' + scene.characters[0].path + ')' + '\n' +
                      '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n\n' +
-
-                     '    setContentView(frameLayout)'
+                     '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n'
 
         break
       }
@@ -96,13 +90,41 @@ function finalize(scene) {
         }
       }
     }
+  }
 
+  if (visualNovel.scenes.length != 0) {
+    sceneCode += '\n' + '    val button = Button(this)' + '\n' +
+    '    button.text = "Back"' + '\n' +
+    '    button.textSize = 10f' + '\n' +
+    '    button.setTextColor(Color.WHITE)' + '\n' + 
+    '    button.background = null' + '\n\n' +
+
+    '    val layoutParams = FrameLayout.LayoutParams(' + '\n' +
+    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+    '      LayoutParams.WRAP_CONTENT' + '\n' +
+    '    )' + '\n\n' +
+
+    '    layoutParams.gravity = android.view.Gravity.TOP or android.view.Gravity.START' + '\n' +
+    '    layoutParams.setMargins(50, 0, 0, 50)' + '\n\n' +
+
+    '    button.layoutParams = layoutParams' + '\n\n' +
+
+    '    button.setOnClickListener {' + '\n' +
+    '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '()' + '\n' +
+    '    }' + '\n\n' +
+
+    '    frameLayout.addView(button)' + '\n\n' +
+
+    '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__'
+  } else {
     sceneCode += '\n' + '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__'
   }
 
   sceneCode += '\n' + '  }'
 
   helper.writeScene(sceneCode)
+
+  visualNovel.scenes.push(scene)
 
   console.log('Scene ' + scene.name + ' coded. (Android)')
 }

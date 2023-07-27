@@ -13,13 +13,19 @@ function make(backgroundImage) {
                    SPACE + 'frameLayout_menu.addView(imageView_menu)' + '\n\n' +
 
                    SPACE + 'val button = Button(this)' + '\n' +
-                   SPACE + 'button.text = "Start"' + '\n\n' +
+                   SPACE + 'button.text = "Start"' + '\n' +
+                   SPACE + 'button.textSize = 10f' + '\n' +
+                   SPACE + 'button.setTextColor(Color.WHITE)' + '\n' +
+                   SPACE + 'button.background = null' + '\n\n' +
 
                    SPACE + 'val layoutParams = FrameLayout.LayoutParams(' + '\n' +
                    SPACE + '  LayoutParams.WRAP_CONTENT,' + '\n' +
                    SPACE + '  LayoutParams.WRAP_CONTENT' + '\n' +
-                   SPACE + ')' + '\n' +
-                   SPACE + 'layoutParams.gravity = android.view.Gravity.CENTER_HORIZONTAL or android.view.Gravity.BOTTOM' + '\n' +
+                   SPACE + ')' + '\n\n' +
+
+                   SPACE + 'layoutParams.gravity = android.view.Gravity.BOTTOM or android.view.Gravity.CENTER_HORIZONTAL' + '\n' +
+                   SPACE + 'layoutParams.setMargins(0, 0, 0, 50)' + '\n\n' +
+
                    SPACE + 'button.layoutParams = layoutParams' + '\n\n' +
 
                    SPACE + 'button.setOnClickListener {' + '\n' +

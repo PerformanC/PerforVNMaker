@@ -17,6 +17,8 @@ function init(name, applicationId) {
   'import android.view.View' + '\n' +
   'import android.view.ViewGroup.LayoutParams' + '\n' +
   'import android.view.WindowManager' + '\n' +
+  'import android.graphics.Color' + '\n' +
+  'import android.graphics.PorterDuff' + '\n' +
   'import androidx.activity.ComponentActivity' + '\n' +
   'import androidx.activity.compose.setContent' + '\n' +
   'import ' + applicationId + '.ui.theme.' + name + 'Theme' + '\n\n' +
