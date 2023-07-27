@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 global.visualNovel = { code: '', scenes: [] }
-global.SPACE = '            '
+global.SPACE = '          '
 global.firstWrite = false
 
 function init(name, applicationId) {
@@ -13,29 +13,30 @@ function init(name, applicationId) {
   'import android.widget.ImageView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
   'import android.widget.Button' + '\n' +
-  'import android.widget.Toast' + '\n' +
+  'import android.os.Build' + '\n' +
+  'import android.view.View' + '\n' +
   'import android.view.ViewGroup.LayoutParams' + '\n' +
+  'import android.view.WindowManager' + '\n' +
   'import androidx.activity.ComponentActivity' + '\n' +
   'import androidx.activity.compose.setContent' + '\n' +
-  'import androidx.compose.foundation.layout.fillMaxSize' + '\n' +
-  'import androidx.compose.material3.MaterialTheme' + '\n' +
-  'import androidx.compose.material3.Surface' + '\n' +
-  'import androidx.compose.material3.Text' + '\n' +
-  'import androidx.compose.runtime.Composable' + '\n' +
-  'import androidx.compose.ui.Modifier' + '\n' +
-  'import androidx.compose.ui.tooling.preview.Preview' + '\n' +
   'import ' + applicationId + '.ui.theme.' + name + 'Theme' + '\n\n' +
 
   'class MainActivity : ComponentActivity() {' + '\n' +
   '  override fun onCreate(savedInstanceState: Bundle?) {' + '\n' +
   '    super.onCreate(savedInstanceState)' + '\n' +
+  '      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
+  '        window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' + '\n\n' +
+  '      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {' + '\n' +
+  '        window.setDecorFitsSystemWindows(false)' + '\n' +
+  '      } else {' + '\n' +
+  '        @Suppress("DEPRECATION")' + '\n' +
+  '        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or' + '\n' +
+  '          View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or' + '\n' +
+  '          View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION' + '\n' +
+  '      }' + '\n\n' +
+
   '      setContent {' + '\n' +
-  '        ' + name + 'Theme {' + '\n' +
-  '          Surface(' + '\n' +
-  '            modifier = Modifier.fillMaxSize(),' + '\n' +
-  '            color = MaterialTheme.colorScheme.background' + '\n' +
-  '          ) {__PERFORVNM_CODE__' + '\n' +
-  '          }' + '\n' +
+  '        ' + name + 'Theme {__PERFORVNM_CODE__' + '\n' +
   '        }' + '\n' +
   '      }' + '\n' +
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
@@ -49,6 +50,7 @@ function finalize() {
 
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_CODE__', '')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', '')
+  visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
 
   fs.writeFile('vn.kt', visualNovel.code, function (err) {
     if (err) return console.log(err);

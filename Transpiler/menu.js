@@ -3,7 +3,8 @@ import helper from './helper.js'
 function make(backgroundImage) {
   console.log('Starting VN, writing menu.. (Android)')
 
-  helper.writeLine('val frameLayout_menu = FrameLayout(this)' + '\n\n' +
+  helper.writeLine('val frameLayout_menu = FrameLayout(this)' + '\n' +
+                   SPACE + 'frameLayout_menu.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                    SPACE + 'val imageView_menu = ImageView(this)' + '\n' +
                    SPACE + 'imageView_menu.setImageResource(R.drawable.' + backgroundImage + ')' + '\n' +
