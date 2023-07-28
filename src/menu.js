@@ -78,7 +78,7 @@ function make(options) {
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                    '    buttonStart.setOnClickListener {' + '\n' +
-                   '      ' + visualNovel.scenes[0].name + '()' + '\n' +
+                   '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                    '    }' + '\n\n' +
 
                    '    frameLayout.addView(buttonStart)' + '\n\n' +
@@ -110,7 +110,7 @@ function make(options) {
 
   helper.writeScene(menuCode)
 
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_MENU__', 'menu()')
+  visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'menu()')
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
@@ -170,7 +170,7 @@ function make(options) {
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                     '    buttonStart.setOnClickListener {' + '\n' +
-                    '      ' + visualNovel.scenes[0].name + '()' + '\n' +
+                    '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                     '    }' + '\n\n' +
 
                     '    frameLayout.addView(buttonStart)' + '\n\n' +

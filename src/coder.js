@@ -86,6 +86,7 @@ function finalize() {
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_MENU__', '// No menu created.')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_CLASSES__', '')
+  visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
 
   console.log('Code finished up, writing to file.. (Android)')
 

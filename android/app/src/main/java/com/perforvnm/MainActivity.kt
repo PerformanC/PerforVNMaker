@@ -37,137 +37,6 @@ class MainActivity : ComponentActivity() {
       }
   }
 
-  private fun scene1() {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_Pedro)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      scene2()
-    }
-  }
-
-  private fun scene2() {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
-    layoutParams_Pedro.setMargins(200, 0, 0, 0)
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.text = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    textViewSpeech.textSize = 12f
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, 0, 0, 80)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.textSize = 20f
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(400, 0, 0, 200)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    val button = Button(this)
-    button.text = "Back"
-    button.textSize = 10f
-    button.setTextColor(0xFFFFFFFF.toInt())
-    button.background = null
-
-    val layoutParamsBack = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(50, 0, 0, 50)
-
-    button.layoutParams = layoutParamsBack
-
-    button.setOnClickListener {
-      scene1()
-    }
-
-    frameLayout.addView(button)
-
-    setContentView(frameLayout)
-  }
-
   private fun menu() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
@@ -394,6 +263,137 @@ class MainActivity : ComponentActivity() {
     textView4.layoutParams = layoutParamsText4
 
     frameLayout.addView(textView4)
+
+    setContentView(frameLayout)
+  }
+
+  private fun scene1() {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView_scenario = ImageView(this)
+    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_scenario)
+
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_Pedro)
+
+    setContentView(frameLayout)
+
+    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      scene2()
+    }
+  }
+
+  private fun scene2() {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView_scenario = ImageView(this)
+    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_scenario)
+
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    val layoutParams_Pedro = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+    layoutParams_Pedro.setMargins(200, 0, 0, 0)
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
+    frameLayout.addView(imageView_Pedro)
+
+    val rectangleViewSpeech = RectangleView(this)
+
+    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
+    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
+    rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewSpeech)
+
+    val textViewSpeech = TextView(this)
+    textViewSpeech.text = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
+    textViewSpeech.textSize = 12f
+    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsSpeech = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, 0, 0, 80)
+
+    textViewSpeech.layoutParams = layoutParamsSpeech
+
+    frameLayout.addView(textViewSpeech)
+
+    val rectangleViewAuthor = RectangleView(this)
+
+    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
+    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
+
+    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.6f)
+    rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewAuthor)
+
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.textSize = 20f
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(400, 0, 0, 200)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+    frameLayout.addView(textViewAuthor)
+
+    val button = Button(this)
+    button.text = "Back"
+    button.textSize = 10f
+    button.setTextColor(0xFFFFFFFF.toInt())
+    button.background = null
+
+    val layoutParamsBack = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(50, 0, 0, 50)
+
+    button.layoutParams = layoutParamsBack
+
+    button.setOnClickListener {
+      scene1()
+    }
+
+    frameLayout.addView(button)
 
     setContentView(frameLayout)
   }

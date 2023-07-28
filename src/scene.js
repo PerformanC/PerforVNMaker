@@ -195,6 +195,8 @@ function finalize(scene, options) {
                  '    }'
 
     visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
+  } else {
+    visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, scene.name + '()')
   }
 
   let sceneCode = '  private fun ' + scene.name + '() {' + '\n' +

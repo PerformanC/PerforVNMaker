@@ -9,6 +9,16 @@ coder.init({
   version: '1.0.0'
 })
 
+menu.make({
+  backgroundImage: 'menu',
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  footer: {
+    color: '808080',
+    textColor: 'FFFFFFF'
+  }
+}) /* Generates the menu */
+
 let firstScene = scene.init({ name: 'scene1' }) /* Initializes a scene */
 firstScene = scene.addCharacter(firstScene, {
   name: 'Pedro',
@@ -50,15 +60,5 @@ secondScene = scene.addSpeech(secondScene, {
   }
 }) /* Adds a speech to the scene */
 scene.finalize(secondScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
-
-menu.make({
-  backgroundImage: 'menu',
-  textColor: 'FFFFFF',
-  backTextColor: 'FFFFFF',
-  footer: {
-    color: '808080',
-    textColor: 'FFFFFFF'
-  }
-}) /* Generates the menu */
 
 coder.finalize() /* Finishes up the code */
