@@ -93,13 +93,13 @@ class MainActivity : ComponentActivity() {
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
     rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF808080.toInt())
+    rectangleViewSpeech.setColor(0xFF000000.toInt())
 
     frameLayout.addView(rectangleViewSpeech)
 
     val textViewSpeech = TextView(this)
-    textViewSpeech.text = "Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM."
-    textViewSpeech.textSize = 13f
+    textViewSpeech.text = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
+    textViewSpeech.textSize = 12f
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsSpeech = FrameLayout.LayoutParams(
@@ -121,8 +121,8 @@ class MainActivity : ComponentActivity() {
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.8f)
-    rectangleViewAuthor.setColor(0xFF5A5A5A.toInt())
+    rectangleViewAuthor.setAlpha(0.6f)
+    rectangleViewAuthor.setColor(0xFF000000.toInt())
 
     frameLayout.addView(rectangleViewAuthor)
 
@@ -362,7 +362,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.0.2-alpha"
+    textView3.text = "1.1.2-alpha"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 

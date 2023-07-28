@@ -34,12 +34,19 @@ secondScene = scene.addSpeech(secondScene, {
   author: {
     name: 'Pedro',
     textColor: 'FFFFFF',
-    rectangleColor: '5A5A5A'
+    rectangle: {
+      color: '000000',
+      opacity: 0.6
+    }
   },
   text: {
-    content: 'Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.',
+    content: '"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM."',
     color: 'FFFFFF',
-    rectangleColor: '808080'
+    fontSize: 12,
+    rectangle: {
+      color: '000000',
+      opacity: 0.8
+    }
   }
 }) /* Adds a speech to the scene */
 scene.finalize(secondScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' })

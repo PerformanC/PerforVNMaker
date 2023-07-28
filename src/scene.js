@@ -119,8 +119,14 @@ function addSpeech(scene, options) {
     process.exit(1)
   }
 
-  if (!options?.author?.rectangleColor) {
+  if (!options?.author?.rectangle?.color) {
     console.error(`ERROR: Speech author rectangle color not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (!options?.author?.rectangle?.opacity) {
+    console.error(`ERROR: Speech author rectangle opacity not provided.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
@@ -137,15 +143,29 @@ function addSpeech(scene, options) {
     process.exit(1)
   }
 
-  if (!options.text.rectangleColor) {
+  if (!options.text.fontSize) {
+    console.error(`ERROR: Speech text font size not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (!options.text.rectangle?.color) {
     console.error(`ERROR: Speech text rectangle color not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (!options.text.rectangle?.opacity) {
+    console.error(`ERROR: Speech text rectangle opacity not provided.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
 
   console.log(`Adding speech for scene "${scene.name}".. (Android)`)
 
-  scene.speech = { author: { name: options.author.name, textColor: options.author.textColor, rectangleColor: options.author.rectangleColor }, text: { content: options.text.content.replace(/\n/g, '\\n'), color: options.text.color, rectangleColor: options.text.rectangleColor } }
+  scene.speech = options
+  scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
+  //{ author: { name: options.author.name, text: { color: options.author.text.color, fontSize: options.author.text.fontSize }, rectangle: { color: options.author.rectangle.color, opacity: options.author.rectangle.opacity } }, text: { content: JSON.stringify(options.text.content).slice(1, -1), color: options.text.color, rectangle: { color: options.text.rectangle.color, opacity: options.text.rectangle.opacity } } }
 
   console.log(`Speech added for scene "${scene.name}". (Android)`)
 
@@ -307,14 +327,14 @@ function finalize(scene, options) {
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
-                 '    rectangleViewSpeech.setAlpha(0.8f)' + '\n' +
-                  '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangleColor + '.toInt())' + '\n\n' +
+                 '    rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
+                  '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n\n' +
 
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
                  '    val textViewSpeech = TextView(this)' + '\n' +
                  '    textViewSpeech.text = "' + scene.speech.text.content + '"' + '\n' +
-                 '    textViewSpeech.textSize = 13f' + '\n' +
+                 '    textViewSpeech.textSize = ' + scene.speech.text.fontSize + 'f' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsSpeech = FrameLayout.LayoutParams(' + '\n' +
@@ -336,8 +356,8 @@ function finalize(scene, options) {
                  '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)' + '\n\n' +
 
                  '    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor' + '\n' +
-                 '    rectangleViewAuthor.setAlpha(0.8f)' + '\n' +
-                 '    rectangleViewAuthor.setColor(0xFF' + scene.speech.author.rectangleColor + '.toInt())' + '\n\n' +
+                 '    rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' +
+                 '    rectangleViewAuthor.setColor(0xFF' + scene.speech.author.rectangle.color + '.toInt())' + '\n\n' +
 
                  '    frameLayout.addView(rectangleViewAuthor)' + '\n\n' +
 
