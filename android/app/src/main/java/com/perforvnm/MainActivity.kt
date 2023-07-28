@@ -42,16 +42,16 @@ class MainActivity : ComponentActivity() {
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.scenario)
+    imageView_scenario.setImageResource(R.drawable.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
 
-    val imageView_venix = ImageView(this)
-    imageView_venix.setImageResource(R.drawable.venix_looking)
-    imageView_venix.scaleType = ImageView.ScaleType.FIT_CENTER
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
-    frameLayout.addView(imageView_venix)
+    frameLayout.addView(imageView_Pedro)
 
     setContentView(frameLayout)
 
@@ -65,16 +65,83 @@ class MainActivity : ComponentActivity() {
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.scenario)
+    imageView_scenario.setImageResource(R.drawable.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
 
-    val imageView_venix = ImageView(this)
-    imageView_venix.setImageResource(R.drawable.venix_sad)
-    imageView_venix.scaleType = ImageView.ScaleType.FIT_CENTER
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
-    frameLayout.addView(imageView_venix)
+    val layoutParams_Pedro = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+    layoutParams_Pedro.setMargins(200, 0, 0, 0)
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
+    frameLayout.addView(imageView_Pedro)
+
+    val rectangleViewSpeech = RectangleView(this)
+
+    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
+    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
+    rectangleViewSpeech.setColor(0xFF808080.toInt())
+
+    frameLayout.addView(rectangleViewSpeech)
+
+    val textViewSpeech = TextView(this)
+    textViewSpeech.text = "Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM."
+    textViewSpeech.textSize = 13f
+    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsSpeech = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, 0, 0, 80)
+
+    textViewSpeech.layoutParams = layoutParamsSpeech
+
+    frameLayout.addView(textViewSpeech)
+
+    val rectangleViewAuthor = RectangleView(this)
+
+    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
+    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
+
+    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.8f)
+    rectangleViewAuthor.setColor(0xFF5A5A5A.toInt())
+
+    frameLayout.addView(rectangleViewAuthor)
+
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.textSize = 20f
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(400, 0, 0, 200)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+    frameLayout.addView(textViewAuthor)
 
     val button = Button(this)
     button.text = "Back"
@@ -82,15 +149,15 @@ class MainActivity : ComponentActivity() {
     button.setTextColor(0xFFFFFFFF.toInt())
     button.background = null
 
-    val layoutParams = FrameLayout.LayoutParams(
+    val layoutParamsBack = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParams.gravity = Gravity.TOP or Gravity.START
-    layoutParams.setMargins(50, 0, 0, 50)
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(50, 0, 0, 50)
 
-    button.layoutParams = layoutParams
+    button.layoutParams = layoutParamsBack
 
     button.setOnClickListener {
       scene1()
@@ -113,18 +180,18 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParams = FrameLayout.LayoutParams(1920, 150)
+    val layoutParams = FrameLayout.LayoutParams(1920, 100)
     layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParams
-    rectangleView.setAlpha(0.5f)
+    rectangleView.setAlpha(0.8f)
 
     frameLayout.addView(rectangleView)
 
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = 20f
-    buttonStart.setTextColor(0xFFFFFFFF.toInt())
+    buttonStart.textSize = 15f
+    buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
     val layoutParamsStart = FrameLayout.LayoutParams(
@@ -133,7 +200,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(300, 0, 0, 20)
+    layoutParamsStart.setMargins(300, 0, 50, -10)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -145,8 +212,8 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = 20f
-    buttonAbout.setTextColor(0xFFFFFFFF.toInt())
+    buttonAbout.textSize = 15f
+    buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
     val layoutParamsAbout = FrameLayout.LayoutParams(
@@ -155,7 +222,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(550, 0, 0, 20)
+    layoutParamsAbout.setMargins(550, 0, 0, -10)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -182,18 +249,18 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 150)
+    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
-    rectangleView.setAlpha(0.5f)
+    rectangleView.setAlpha(0.8f)
 
     frameLayout.addView(rectangleView)
 
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = 20f
-    buttonStart.setTextColor(0xFFFFFFFF.toInt())
+    buttonStart.textSize = 15f
+    buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
     val layoutParamsStart = FrameLayout.LayoutParams(
@@ -202,7 +269,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(300, 0, 0, 20)
+    layoutParamsStart.setMargins(300, 0, 0, -10)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -214,8 +281,8 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = 20f
-    buttonAbout.setTextColor(0xFFFFFFFF.toInt())
+    buttonAbout.textSize = 15f
+    buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
     val layoutParamsAbout = FrameLayout.LayoutParams(
@@ -224,7 +291,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(550, 0, 0, 20)
+    layoutParamsAbout.setMargins(550, 0, 0, -10)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -274,7 +341,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView)
 
     val textView2 = TextView(this)
-    textView2.text = "PeforVNM"
+    textView2.text = "PerforVNM"
     textView2.textSize = 15f
     textView2.setTextColor(0xFF0000EE.toInt())
 
@@ -314,7 +381,7 @@ class MainActivity : ComponentActivity() {
     val textView4 = TextView(this)
     textView4.text = "This program is licensed under the PerformanC License, and its (PerforVNM) content is totally\n open source."
     textView4.textSize = 15f
-    textView4.setTextColor(0xFFFFFF.toInt())
+    textView4.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsText4 = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,
@@ -336,6 +403,10 @@ class RectangleView(context: Context) : View(context) {
   private val paint = Paint().apply {
     color = 0xFF808080.toInt()
     style = Paint.Style.FILL
+  }
+
+  fun setColor(color: Int) {
+    paint.color = color
   }
 
   override fun onDraw(canvas: Canvas?) {

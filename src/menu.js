@@ -1,28 +1,42 @@
+import fs from 'fs'
+
 import helper from './helper.js'
 
 function make(options) {
-  if (options?.backgroundImage == null) {
+  if (!options?.backgroundImage) {
     console.error('ERROR: Menu background image not provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
-  if (options.footer?.color == null) {
-    console.error('ERROR: Menu footer color not provided.')
+  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.backgroundImage))) {
+    console.error('ERROR: Menu background image not found.')
 
-    exit(1)
+    process.exit(1)
   }
 
-  if (options.footer.textColor == null) {
+  if (!options.textColor) {
     console.error('ERROR: Menu text color not provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
-  if (options.backTextColor == null) {
+  if (!options.backTextColor) {
     console.error('ERROR: Menu "back" text color not provided.')
 
-    exit(1)
+    process.exit(1)
+  }
+
+  if (!options.footer?.color) {
+    console.error('ERROR: Menu footer color not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.footer.textColor) {
+    console.error('ERROR: Menu text color not provided.')
+
+    process.exit(1)
   }
 
   console.log('Starting VN, coding menu.. (Android)')
@@ -39,17 +53,17 @@ function make(options) {
 
                    '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                   '    val layoutParams = FrameLayout.LayoutParams(1920, 150)' + '\n' +
+                   '    val layoutParams = FrameLayout.LayoutParams(1920, 100)' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
  
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
-                   '    rectangleView.setAlpha(0.5f)' + '\n\n' +
+                   '    rectangleView.setAlpha(0.8f)' + '\n\n' +
 
                    '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                    '    val buttonStart = Button(this)' + '\n' +
                    '    buttonStart.text = "Start"' + '\n' +
-                   '    buttonStart.textSize = 20f' + '\n' +
+                   '    buttonStart.textSize = 15f' + '\n' +
                    '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonStart.background = null' + '\n\n' +
 
@@ -59,7 +73,7 @@ function make(options) {
                    '    )' + '\n\n' +
 
                    '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsStart.setMargins(300, 0, 0, 20)' + '\n\n' +
+                   '    layoutParamsStart.setMargins(300, 0, 50, -10)' + '\n\n' +
 
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
@@ -71,7 +85,7 @@ function make(options) {
 
                    '    val buttonAbout = Button(this)' + '\n' +
                    '    buttonAbout.text = "About"' + '\n' +
-                   '    buttonAbout.textSize = 20f' + '\n' +
+                   '    buttonAbout.textSize = 15f' + '\n' +
                    '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonAbout.background = null' + '\n\n' +
 
@@ -81,7 +95,7 @@ function make(options) {
                    '    )' + '\n\n' +
 
                    '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsAbout.setMargins(550, 0, 0, 20)' + '\n\n' +
+                   '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
 
                    '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
@@ -102,6 +116,10 @@ function make(options) {
                             '  private val paint = Paint().apply {' + '\n' +
                             '    color = 0xFF' + options.footer.color + '.toInt()' + '\n' +
                             '    style = Paint.Style.FILL' + '\n' +
+                            '  }' + '\n\n' +
+
+                            '  fun setColor(color: Int) {' + '\n' +
+                            '    paint.color = color' + '\n' +
                             '  }' + '\n\n' +
 
                             '  override fun onDraw(canvas: Canvas?) {' + '\n' +
@@ -127,17 +145,17 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 150)' + '\n' +
+                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
-                    '    rectangleView.setAlpha(0.5f)' + '\n\n' +
+                    '    rectangleView.setAlpha(0.8f)' + '\n\n' +
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
-                    '    buttonStart.textSize = 20f' + '\n' +
+                    '    buttonStart.textSize = 15f' + '\n' +
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
@@ -147,7 +165,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsStart.setMargins(300, 0, 0, 20)' + '\n\n' +
+                    '    layoutParamsStart.setMargins(300, 0, 0, -10)' + '\n\n' +
 
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
@@ -159,7 +177,7 @@ function make(options) {
 
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
-                    '    buttonAbout.textSize = 20f' + '\n' +
+                    '    buttonAbout.textSize = 15f' + '\n' +
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
@@ -169,7 +187,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsAbout.setMargins(550, 0, 0, 20)' + '\n\n' +
+                    '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
 
                     '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
@@ -204,7 +222,7 @@ function make(options) {
                     '    val textView = TextView(this)' + '\n' +
                     '    textView.text = "' + visualNovel.info.fullName + ' ' + visualNovel.info.version + '\\n\\nMade with"' + '\n' +
                     '    textView.textSize = 15f' + '\n' +
-                    '    textView.setTextColor(0xFFFFFFFF.toInt())' + '\n\n' +
+                    '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText = FrameLayout.LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -219,7 +237,7 @@ function make(options) {
                     '    frameLayout.addView(textView)' + '\n\n' +
 
                     '    val textView2 = TextView(this)' + '\n' +
-                    '    textView2.text = "PeforVNM"' + '\n' +
+                    '    textView2.text = "PerforVNM"' + '\n' +
                     '    textView2.textSize = 15f' + '\n' +
                     '    textView2.setTextColor(0xFF0000EE.toInt())' + '\n\n' +
 
@@ -242,7 +260,7 @@ function make(options) {
                     '    val textView3 = TextView(this)' + '\n' +
                     '    textView3.text = "' + PerforVNM.version + '"' + '\n' +
                     '    textView3.textSize = 15f' + '\n' +
-                    '    textView3.setTextColor(0xFFFFFFFF.toInt())' + '\n\n' +
+                    '    textView3.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText3 = FrameLayout.LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -259,7 +277,7 @@ function make(options) {
                     '    val textView4 = TextView(this)' + '\n' +
                     '    textView4.text = "This program is licensed under the PerformanC License, and its (PerforVNM) content is totally\\n open source."' + '\n' +
                     '    textView4.textSize = 15f' + '\n' +
-                    '    textView4.setTextColor(0x' + options.footer.textColor + '.toInt())' + '\n\n' +
+                    '    textView4.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText4 = FrameLayout.LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +

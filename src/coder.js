@@ -2,7 +2,7 @@ import fs from 'fs'
 
 global.visualNovel = { info: {}, code: '', scenes: [] }
 global.PerforVNM = {
-  version: '1.0.2-alpha',
+  version: '1.1.2-alpha',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -12,25 +12,25 @@ function init(options) {
   if (!options?.name) {
     console.log('ERROR: No name provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
   if (!options.fullName) {
     console.log('ERROR: No fullName provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
   if (!options.version) {
     console.log('ERROR: No version provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
   if (!options.applicationId) {
     console.log('ERROR: No applicationId provided.')
 
-    exit(1)
+    process.exit(1)
   }
 
   visualNovel.info = options
@@ -97,7 +97,7 @@ function finalize() {
     fs.writeFile(`../android/app/src/main/res/values/strings.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="app_name">${visualNovel.info.name}</string>\n</resources>`, (err) => {
       if (err) return console.error(`ERROR: ${err} (Android)`)
 
-      console.log('VN name written, writing other configurations.. (Android)')
+      console.log('Android app configuration files written, ready to build. (Android)')
     })
   })
 }

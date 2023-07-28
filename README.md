@@ -41,7 +41,7 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [ ] Transitions (Priority)
 - [ ] Text effects
 - [ ] Speech bubbles
-- [ ] Text box (Priority)
+- [x] Text box
 - [ ] Text box effects
 
 ### Code generation support
