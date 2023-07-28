@@ -1,5 +1,5 @@
 function writeLine(line) {
-  const writenCode = (firstWrite ? '\n\n' : '\n') + SPACE + line + '__PERFORVNM_CODE__'
+  const writenCode = (firstWrite ? '\n\n' : '\n') + '          ' + line + '__PERFORVNM_CODE__'
 
   firstWrite = true
 

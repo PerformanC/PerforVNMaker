@@ -2,11 +2,50 @@
 
 ## Description
 
-PerforVNMaker (or PerforVNM) is a visual novel "engine" written in NodeJS. It transpiles your code into Kotlin code, making a fully native Android app.
+PerforVNMaker (or PerforVNM) is a visual novel "engine" written in NodeJS. It transpiles your code into Kotlin code, making it a fully native Android app.
 
 ## WIP
 
 This project is still a WIP and highly unstable, it misses transpiling to IOS, Windows and Linux, and it's not even close to being finished.
+
+## Support
+
+
+### OS support
+
+- [x] Android
+- [ ] iOS
+- [ ] Windows
+- [ ] Linux distros
+- [ ] MacOS
+- [ ] Web
+
+### Features support
+
+- [x] Scenes
+- [x] Characters
+- [x] Scenarios
+- [x] Menu (In development) (Priority)
+- [ ] Save/Load system (Priority)
+- [ ] Settings
+- [ ] Achievements
+- [ ] Inventory
+- [ ] Music (Priority)
+- [ ] Sound effects
+- [ ] Animations
+- [ ] Transitions (Priority)
+- [ ] Text effects
+- [ ] Speech bubbles
+- [ ] Text box (Priority)
+- [ ] Text box effects
+
+### Transpiling support
+
+- [x] Transpiling to Kotlin
+- [ ] Transpiling to Swift
+- [ ] Transpiling to Objective-C
+- [ ] Transpiling to C
+- [ ] Transpiling to JS, HTML and CSS
 
 ## Usage
 
@@ -17,14 +56,29 @@ import coder from './coder.js'
 import scene from './scene.js'
 import menu from './menu.js'
 
-coder.init('PerforVNM', 'com.perforvnm')
+coder.init({
+  name: 'PerforVNM',
+  applicationId: 'com.perforvnm'
+})
 
-let firstScene = scene.init('scene1')
-firstScene = scene.addCharacter(firstScene, 'venix', 'venix_looking', 'center')
-firstScene = scene.addScenario(firstScene, 'scenario')
-scene.finalize(firstScene)
 
-menu.make('menu')
+let firstScene = scene.init({ name: 'scene1' })
+firstScene = scene.addCharacter(firstScene, { name: 'venix', path: 'venix_looking', position: 'center' })
+firstScene = scene.addScenario(firstScene, { path: 'scenario' })
+scene.finalize(firstScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+
+menu.make({
+  backgroundImage: 'menu',
+  footer: {
+    color: '808080',
+    textColor: 'FFFFFF'
+  },
+  game: {
+    fullName: 'The Void',
+    version: '1.0.0'
+  },
+  backTextColor: 'FFFFFF'
+})
 
 coder.finalize()
 ```

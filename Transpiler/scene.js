@@ -1,50 +1,80 @@
 import helper from './helper.js'
 
-function init(name) {
-  if (name == 'onCreate') {
+function init(options) {
+  if (options.name == 'onCreate') {
     console.error('--------- WARNING: Scene name cannot be onCreate. (Android)')
 
     exit(1)
   }
 
-  if (visualNovel.scenes.find(scene => scene.name == name)) {
-    console.error('--------- ERROR: Scene with duplicated name. (Android)\n- Scene name: ' + name)
+  if (options.name == 'menu') {
+    console.error('--------- WARNING: Scene name cannot be menu. (Android)')
+
+    exit(1)
+  }
+
+  if (options.name == 'about') {
+    console.error('--------- WARNING: Scene name cannot be onBackPressed. (Android)')
+
+    exit(1)
+  }
+
+  if (visualNovel.scenes.find(scene => scene.name == options.name)) {
+    console.error('--------- ERROR: Scene with duplicated name. (Android)\n- Scene name: ' + options.name)
 
     exit(1)
   }
 
   console.log('Starting scene.. (Android)')
 
-  return { type: 'scene', name: name, characters: [], background: '' }
+  return { type: 'scene', name: options.name, characters: [], background: '' }
 }
 
-function addCharacter(scene, name, path, position) {
-  if (scene.characters.find(character => character.name == name)) {
-    console.error(`--------- ERROR: Character already exists. (Android)\n- Character name: ${name}\n- Scene name: ${scene.name}\n- Path: ${path}\n- Position: ${position}`)
+function addCharacter(scene, options) {
+  if (scene.characters.find(character => character.name == options.name)) {
+    console.error(`--------- ERROR: Character already exists. (Android)\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Path: ${options.path}\n- Position: ${options.position}`)
 
     exit(1)
   }
 
-  console.log(`Adding character "${name}" for scene "${scene.name}".. (Android)`)
+  console.log(`Adding character "${options.name}" for scene "${scene.name}".. (Android)`)
 
-  scene.characters.push({ name, path, position })
+  scene.characters.push({ name: options.name, path: options.path, position: options.position })
 
-  console.log(`Character "${name}" added for scene "${scene.name}". (Android)`)
+  console.log(`Character "${options.name}" added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
-function addScenario(scene, path) {
+function addScenario(scene, options) {
+  if (options.path == null) {
+    console.error(`--------- ERROR: Scenario path not defined. (Android)\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
   console.log(`Adding scenario for scene "${scene.name}".. (Android)`)
 
-  scene.background = path
+  scene.background = options.path
 
   console.log(`Scenario added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
-function finalize(scene) {
+function finalize(scene, options) {
+  if (options.backTextColor == null) {
+    console.error(`--------- ERROR: Scene "back" text color not defined. (Android)\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
+  if (options.footerTextColor == null) {
+    console.error(`--------- ERROR: Scene text color not defined. (Android)\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
   console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
 
   if (visualNovel.scenes.length != 0) {
@@ -108,7 +138,7 @@ function finalize(scene) {
     sceneCode += '\n' + '    val button = Button(this)' + '\n' +
     '    button.text = "Back"' + '\n' +
     '    button.textSize = 10f' + '\n' +
-    '    button.setTextColor(Color.WHITE)' + '\n' + 
+    '    button.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' + 
     '    button.background = null' + '\n\n' +
 
     '    val layoutParams = FrameLayout.LayoutParams(' + '\n' +
@@ -116,7 +146,7 @@ function finalize(scene) {
     '      LayoutParams.WRAP_CONTENT' + '\n' +
     '    )' + '\n\n' +
 
-    '    layoutParams.gravity = android.view.Gravity.TOP or android.view.Gravity.START' + '\n' +
+    '    layoutParams.gravity = Gravity.TOP or Gravity.START' + '\n' +
     '    layoutParams.setMargins(50, 0, 0, 50)' + '\n\n' +
 
     '    button.layoutParams = layoutParams' + '\n\n' +
