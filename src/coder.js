@@ -2,7 +2,7 @@ import fs from 'fs'
 
 global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
 global.PerforVNM = {
-  version: '1.1.2-alpha',
+  version: '1.2.2-alpha',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -46,6 +46,10 @@ function init(options) {
   'import android.view.View' + '\n' +
   'import android.view.Gravity' + '\n' +
   'import android.view.ViewGroup.LayoutParams' + '\n' +
+  'import android.view.animation.Animation' + '\n' +
+  'import android.view.animation.LinearInterpolator' + '\n' +
+  'import android.view.animation.AlphaAnimation' + '\n' +
+  'import android.view.animation.AnimationUtils' + '\n' +
   'import android.view.WindowManager' + '\n' +
   'import android.graphics.PorterDuff' + '\n' +
   'import android.graphics.Paint' + '\n' +
@@ -87,6 +91,7 @@ function finalize() {
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_MENU__', '// No menu created.')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_CLASSES__', '')
   visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
+  visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
 
   console.log('Code finished up, writing to file.. (Android)')
 

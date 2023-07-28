@@ -9,6 +9,10 @@ import android.widget.Button
 import android.view.View
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.AlphaAnimation
+import android.view.animation.AnimationUtils
 import android.view.WindowManager
 import android.graphics.PorterDuff
 import android.graphics.Paint
@@ -308,11 +312,11 @@ class MainActivity : ComponentActivity() {
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      scene2()
+      scene2(true)
     }
   }
 
-  private fun scene2() {
+  private fun scene2(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -344,8 +348,18 @@ class MainActivity : ComponentActivity() {
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
     rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    if (animate) {
+      val animationRectangleSpeech = AlphaAnimation(0f, 0.8f)
+      animationRectangleSpeech.duration = 1000
+      animationRectangleSpeech.interpolator = LinearInterpolator()
+      animationRectangleSpeech.fillAfter = true
+
+      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
+    } else {
+      rectangleViewSpeech.setAlpha(0.8f)
+    }
 
     frameLayout.addView(rectangleViewSpeech)
 
@@ -373,8 +387,18 @@ class MainActivity : ComponentActivity() {
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
     rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    if (animate) {
+      val animationRectangleAuthor = AlphaAnimation(0f, 0.6f)
+      animationRectangleAuthor.duration = 1000
+      animationRectangleAuthor.interpolator = LinearInterpolator()
+      animationRectangleAuthor.fillAfter = true
+
+      rectangleViewAuthor.startAnimation(animationRectangleAuthor)
+    } else { 
+      rectangleViewAuthor.setAlpha(0.6f)
+    }
 
     frameLayout.addView(rectangleViewAuthor)
 
@@ -393,6 +417,14 @@ class MainActivity : ComponentActivity() {
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
+    if (animate) {
+      val animationAuthor = AlphaAnimation(0f, 1f)
+      animationAuthor.duration = 1000
+      animationAuthor.interpolator = LinearInterpolator()
+      animationAuthor.fillAfter = true
+
+      textViewAuthor.startAnimation(animationAuthor)
+    }
     frameLayout.addView(textViewAuthor)
 
     val buttonMenu = Button(this)
@@ -435,6 +467,143 @@ class MainActivity : ComponentActivity() {
 
     buttonBack.setOnClickListener {
       scene1()
+    }
+
+    frameLayout.addView(buttonBack)
+
+    setContentView(frameLayout)
+
+    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      scene3()
+
+      it.setOnClickListener(null)
+    }
+  }
+
+  private fun scene3() {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView_scenario = ImageView(this)
+    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_scenario)
+
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    val layoutParams_Pedro = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+    layoutParams_Pedro.setMargins(200, 0, 0, 0)
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
+    frameLayout.addView(imageView_Pedro)
+
+    val rectangleViewSpeech = RectangleView(this)
+
+    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
+    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
+    rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewSpeech)
+
+    val textViewSpeech = TextView(this)
+    textViewSpeech.text = "\"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way.\""
+    textViewSpeech.textSize = 12f
+    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsSpeech = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, 0, 0, 80)
+
+    textViewSpeech.layoutParams = layoutParamsSpeech
+
+    frameLayout.addView(textViewSpeech)
+
+    val rectangleViewAuthor = RectangleView(this)
+
+    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
+    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
+
+    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.6f)
+    rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewAuthor)
+
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.textSize = 20f
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(400, 0, 0, 200)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+
+    frameLayout.addView(textViewAuthor)
+
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.textSize = 10f
+    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
+    buttonMenu.background = null
+
+    val layoutParamsMenu = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(50, 0, 0, 0)
+
+    buttonMenu.layoutParams = layoutParamsMenu
+
+    buttonMenu.setOnClickListener {
+      menu()
+    }
+
+    frameLayout.addView(buttonMenu)
+
+    val buttonBack = Button(this)
+    buttonBack.text = "Back"
+    buttonBack.textSize = 10f
+    buttonBack.setTextColor(0xFFFFFFFF.toInt())
+    buttonBack.background = null
+
+    val layoutParamsBack = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(50, 80, 0, 0)
+
+    buttonBack.layoutParams = layoutParamsBack
+
+    buttonBack.setOnClickListener {
+      scene2(false)
     }
 
     frameLayout.addView(buttonBack)

@@ -4,6 +4,10 @@ function writeScene(sceneCode) {
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', writenCode)
 }
 
+function addParameter(scenes) {
+  
+}
+
 export default {
   writeScene
 }

@@ -165,7 +165,6 @@ function addSpeech(scene, options) {
 
   scene.speech = options
   scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
-  //{ author: { name: options.author.name, text: { color: options.author.text.color, fontSize: options.author.text.fontSize }, rectangle: { color: options.author.rectangle.color, opacity: options.author.rectangle.opacity } }, text: { content: JSON.stringify(options.text.content).slice(1, -1), color: options.text.color, rectangle: { color: options.text.rectangle.color, opacity: options.text.rectangle.opacity } } }
 
   console.log(`Speech added for scene "${scene.name}". (Android)`)
 
@@ -190,8 +189,10 @@ function finalize(scene, options) {
   if (visualNovel.scenes.length != 0) {
     const lastScene = visualNovel.scenes[visualNovel.scenes.length - 1]
 
+    visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '')
+
     const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                 '      ' + scene.name + '()' + '\n' +
+                 '      ' + scene.name + '(' + (!visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
                  '    }'
 
     visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
@@ -199,7 +200,7 @@ function finalize(scene, options) {
     visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, scene.name + '()')
   }
 
-  let sceneCode = '  private fun ' + scene.name + '() {' + '\n' +
+  let sceneCode = '  private fun ' + scene.name + '(' + ((visualNovel.scenes.length == 0 ? scene.speech : !visualNovel.scenes[visualNovel.scenes.length - 1].speech) ? 'animate: Boolean' : '') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
@@ -329,8 +330,18 @@ function finalize(scene, options) {
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
-                 '    rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
-                 '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n\n' +
+                 (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech ? '    rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' : '') +
+                 '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n' +
+                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('\n    if (animate) {' + '\n' +
+                 '      val animationRectangleSpeech = AlphaAnimation(0f, ' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
+                 '      animationRectangleSpeech.duration = 1000'  + '\n' +
+                 '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
+                 '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
+             
+                 '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n' +
+                 '    } else {' + '\n' +
+                 '      rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
+                 '    }' + '\n\n') : '\n') +
 
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
@@ -358,8 +369,18 @@ function finalize(scene, options) {
                  '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)' + '\n\n' +
 
                  '    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor' + '\n' +
-                 '    rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' +
+                 (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech ? '    rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' : '') +
                  '    rectangleViewAuthor.setColor(0xFF' + scene.speech.author.rectangle.color + '.toInt())' + '\n\n' +
+                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('    if (animate) {' + '\n' +
+                 '      val animationRectangleAuthor = AlphaAnimation(0f, ' + scene.speech.author.rectangle.opacity + 'f)' + '\n' +
+                 '      animationRectangleAuthor.duration = 1000'  + '\n' +
+                 '      animationRectangleAuthor.interpolator = LinearInterpolator()' + '\n' +
+                 '      animationRectangleAuthor.fillAfter = true' + '\n\n' +
+             
+                 '      rectangleViewAuthor.startAnimation(animationRectangleAuthor)' + '\n' +
+                 '    } else { ' + '\n' +
+                 '      rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' + 
+                 '    }' + '\n\n') : '') +
 
                  '    frameLayout.addView(rectangleViewAuthor)' + '\n\n' +
 
@@ -377,6 +398,14 @@ function finalize(scene, options) {
                  '    layoutParamsAuthor.setMargins(400, 0, 0, 200)' + '\n\n' +
 
                  '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
+                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('    if (animate) {' + '\n' + 
+                 '      val animationAuthor = AlphaAnimation(0f, 1f)' + '\n' +
+                 '      animationAuthor.duration = 1000'  + '\n' +
+                 '      animationAuthor.interpolator = LinearInterpolator()' + '\n' +
+                 '      animationAuthor.fillAfter = true' + '\n\n' +
+
+                 '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
+                 '    }' + '\n') : '\n') +
 
                  '    frameLayout.addView(textViewAuthor)' + '\n'
   }
@@ -421,7 +450,7 @@ function finalize(scene, options) {
     '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
     '    buttonBack.setOnClickListener {' + '\n' +
-    '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '()' + '\n' +
+    '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '(' + (visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' ) + ')' + '\n' +
     '    }' + '\n\n' +
 
     '    frameLayout.addView(buttonBack)' + '\n\n' +
