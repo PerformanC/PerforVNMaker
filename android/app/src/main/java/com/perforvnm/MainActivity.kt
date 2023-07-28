@@ -283,6 +283,28 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(imageView_Pedro)
 
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.textSize = 10f
+    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
+    buttonMenu.background = null
+
+    val layoutParamsMenu = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(50, 0, 0, 0)
+
+    buttonMenu.layoutParams = layoutParamsMenu
+
+    buttonMenu.setOnClickListener {
+      menu()
+    }
+
+    frameLayout.addView(buttonMenu)
+
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
@@ -373,11 +395,33 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(textViewAuthor)
 
-    val button = Button(this)
-    button.text = "Back"
-    button.textSize = 10f
-    button.setTextColor(0xFFFFFFFF.toInt())
-    button.background = null
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.textSize = 10f
+    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
+    buttonMenu.background = null
+
+    val layoutParamsMenu = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(50, 0, 0, 0)
+
+    buttonMenu.layoutParams = layoutParamsMenu
+
+    buttonMenu.setOnClickListener {
+      menu()
+    }
+
+    frameLayout.addView(buttonMenu)
+
+    val buttonBack = Button(this)
+    buttonBack.text = "Back"
+    buttonBack.textSize = 10f
+    buttonBack.setTextColor(0xFFFFFFFF.toInt())
+    buttonBack.background = null
 
     val layoutParamsBack = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,
@@ -385,15 +429,15 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(50, 0, 0, 50)
+    layoutParamsBack.setMargins(50, 80, 0, 0)
 
-    button.layoutParams = layoutParamsBack
+    buttonBack.layoutParams = layoutParamsBack
 
-    button.setOnClickListener {
+    buttonBack.setOnClickListener {
       scene1()
     }
 
-    frameLayout.addView(button)
+    frameLayout.addView(buttonBack)
 
     setContentView(frameLayout)
   }

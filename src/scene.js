@@ -330,7 +330,7 @@ function finalize(scene, options) {
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
                  '    rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
-                  '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n\n' +
+                 '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n\n' +
 
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
@@ -382,11 +382,33 @@ function finalize(scene, options) {
   }
 
   if (visualNovel.scenes.length != 0) {
-    sceneCode += '\n' + '    val button = Button(this)' + '\n' +
-    '    button.text = "Back"' + '\n' +
-    '    button.textSize = 10f' + '\n' +
-    '    button.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' + 
-    '    button.background = null' + '\n\n' +
+    sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
+    '    buttonMenu.text = "Menu"' + '\n' +
+    '    buttonMenu.textSize = 10f' + '\n' +
+    '    buttonMenu.setTextColor(0xFF' + options.footerTextColor + '.toInt())' + '\n' +
+    '    buttonMenu.background = null' + '\n\n' +
+
+    '    val layoutParamsMenu = FrameLayout.LayoutParams(' + '\n' +
+    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+    '      LayoutParams.WRAP_CONTENT' + '\n' +
+    '    )' + '\n\n' +
+
+    '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
+    '    layoutParamsMenu.setMargins(50, 0, 0, 0)' + '\n\n' +
+
+    '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
+
+    '    buttonMenu.setOnClickListener {' + '\n' +
+    '      ' + (visualNovel.menu ? visualNovel.menu : '__PERFORVNM_MENU__') + '\n' +
+    '    }' + '\n\n' +
+
+    '    frameLayout.addView(buttonMenu)' + '\n\n' +
+
+    '    val buttonBack = Button(this)' + '\n' +
+    '    buttonBack.text = "Back"' + '\n' +
+    '    buttonBack.textSize = 10f' + '\n' +
+    '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' + 
+    '    buttonBack.background = null' + '\n\n' +
 
     '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -394,19 +416,41 @@ function finalize(scene, options) {
     '    )' + '\n\n' +
 
     '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-    '    layoutParamsBack.setMargins(50, 0, 0, 50)' + '\n\n' +
+    '    layoutParamsBack.setMargins(50, 80, 0, 0)' + '\n\n' +
 
-    '    button.layoutParams = layoutParamsBack' + '\n\n' +
+    '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
-    '    button.setOnClickListener {' + '\n' +
+    '    buttonBack.setOnClickListener {' + '\n' +
     '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '()' + '\n' +
     '    }' + '\n\n' +
 
-    '    frameLayout.addView(button)' + '\n\n' +
+    '    frameLayout.addView(buttonBack)' + '\n\n' +
 
     '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__'
   } else {
-    sceneCode += '\n' + '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__'
+    sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
+    '    buttonMenu.text = "Menu"' + '\n' +
+    '    buttonMenu.textSize = 10f' + '\n' +
+    '    buttonMenu.setTextColor(0xFF' + options.footerTextColor + '.toInt())' + '\n' +
+    '    buttonMenu.background = null' + '\n\n' +
+
+    '    val layoutParamsMenu = FrameLayout.LayoutParams(' + '\n' +
+    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+    '      LayoutParams.WRAP_CONTENT' + '\n' +
+    '    )' + '\n\n' +
+
+    '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
+    '    layoutParamsMenu.setMargins(50, 0, 0, 0)' + '\n\n' +
+
+    '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
+
+    '    buttonMenu.setOnClickListener {' + '\n' +
+    '      ' + (visualNovel.menu ? visualNovel.menu : '__PERFORVNM_MENU__') + '\n' +
+    '    }' + '\n\n' +
+
+    '    frameLayout.addView(buttonMenu)' + '\n\n' +
+    
+    '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__'
   }
 
   sceneCode += '\n' + '  }'

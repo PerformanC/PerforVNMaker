@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-global.visualNovel = { info: {}, code: '', scenes: [] }
+global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
 global.PerforVNM = {
   version: '1.1.2-alpha',
   repository: 'https://github.com/PerformanC/PerforVNMaker'

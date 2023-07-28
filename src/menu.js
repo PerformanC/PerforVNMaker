@@ -296,6 +296,7 @@ function make(options) {
 
   helper.writeScene(sceneCode)
 
+  visualNovel.menu = 'menu()'
 
   console.log('Menu coded. (Android)')
 }
