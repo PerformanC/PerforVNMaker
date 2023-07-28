@@ -4,7 +4,9 @@ import menu from './menu.js'
 
 coder.init({
   name: 'PerforVNM',
-  applicationId: 'com.perforvnm'
+  fullName: 'The PerforVNM',
+  applicationId: 'com.perforvnm',
+  version: '1.0.0'
 })
 
 let firstScene = scene.init({ name: 'scene1' })
@@ -22,10 +24,6 @@ menu.make({
   footer: {
     color: '808080',
     textColor: 'FFFFFF'
-  },
-  game: {
-    fullName: 'The Void',
-    version: '1.0.0'
   },
   backTextColor: 'FFFFFF'
 })

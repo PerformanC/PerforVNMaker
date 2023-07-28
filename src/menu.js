@@ -2,37 +2,25 @@ import helper from './helper.js'
 
 function make(options) {
   if (options?.backgroundImage == null) {
-    console.error('--------- ERROR: Menu background image not defined. (Android)')
+    console.error('ERROR: Menu background image not provided.')
 
     exit(1)
   }
 
-  if (options?.game?.fullName == null) {
-    console.error('--------- ERROR: Menu game full name not defined. (Android)')
+  if (options.footer?.color == null) {
+    console.error('ERROR: Menu footer color not provided.')
 
     exit(1)
   }
 
-  if (options?.game?.version == null) {
-    console.error('--------- ERROR: Menu game version not defined. (Android)')
+  if (options.footer.textColor == null) {
+    console.error('ERROR: Menu text color not provided.')
 
     exit(1)
   }
 
-  if (options?.footer?.color == null) {
-    console.error('--------- ERROR: Menu footer color not defined. (Android)')
-
-    exit(1)
-  }
-
-  if (options?.footer?.textColor == null) {
-    console.error('--------- ERROR: Menu text color not defined. (Android)')
-
-    exit(1)
-  }
-
-  if (options?.backTextColor == null) {
-    console.error('--------- ERROR: Menu "back" text color not defined. (Android)')
+  if (options.backTextColor == null) {
+    console.error('ERROR: Menu "back" text color not provided.')
 
     exit(1)
   }
@@ -214,7 +202,7 @@ function make(options) {
                     '    frameLayout.addView(buttonBack)' + '\n\n' +
 
                     '    val textView = TextView(this)' + '\n' +
-                    '    textView.text = "' + options.game.fullName + ' ' + options.game.version + '\\n\\nMade with"' + '\n' +
+                    '    textView.text = "' + visualNovel.info.fullName + ' ' + visualNovel.info.version + '\\n\\nMade with"' + '\n' +
                     '    textView.textSize = 15f' + '\n' +
                     '    textView.setTextColor(0xFFFFFFFF.toInt())' + '\n\n' +
 

@@ -16,7 +16,6 @@ import android.graphics.Canvas
 import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.perforvnm.ui.theme.PerforVNMTheme
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +33,7 @@ class MainActivity : ComponentActivity() {
       }
 
       setContent {
-        PerforVNMTheme {
-          menu()
-        }
+        menu()
       }
   }
 
@@ -260,7 +257,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(buttonBack)
 
     val textView = TextView(this)
-    textView.text = "The Void 1.0.0\n\nMade with"
+    textView.text = "The PerforVNM 1.0.0\n\nMade with"
     textView.textSize = 15f
     textView.setTextColor(0xFFFFFFFF.toInt())
 
@@ -277,9 +274,9 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView)
 
     val textView2 = TextView(this)
-    textView2.text = "PerforVNM"
+    textView2.text = "PeforVNM"
     textView2.textSize = 15f
-    textView2.setTextColor(0xFF007bff.toInt())
+    textView2.setTextColor(0xFF0000EE.toInt())
 
     val layoutParamsText2 = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,
@@ -298,7 +295,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.0.0-alpha"
+    textView3.text = "1.0.2-alpha"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -317,7 +314,7 @@ class MainActivity : ComponentActivity() {
     val textView4 = TextView(this)
     textView4.text = "This program is licensed under the PerformanC License, and its (PerforVNM) content is totally\n open source."
     textView4.textSize = 15f
-    textView4.setTextColor(0xFFFFFFFF.toInt())
+    textView4.setTextColor(0xFFFFFF.toInt())
 
     val layoutParamsText4 = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,

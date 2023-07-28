@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-global.visualNovel = { code: '', scenes: [] }
+global.visualNovel = { info: {}, code: '', scenes: [] }
 global.PerforVNM = {
   version: '1.0.2-alpha',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
@@ -8,6 +8,32 @@ global.PerforVNM = {
 
 function init(options) {
   console.log('Starting VN, coding main code.. (Android)')
+
+  if (!options?.name) {
+    console.log('ERROR: No name provided.')
+
+    exit(1)
+  }
+
+  if (!options.fullName) {
+    console.log('ERROR: No fullName provided.')
+
+    exit(1)
+  }
+
+  if (!options.version) {
+    console.log('ERROR: No version provided.')
+
+    exit(1)
+  }
+
+  if (!options.applicationId) {
+    console.log('ERROR: No applicationId provided.')
+
+    exit(1)
+  }
+
+  visualNovel.info = options
 
   visualNovel.code = 'package ' + options.applicationId + '\n\n' +
 
@@ -26,8 +52,7 @@ function init(options) {
   'import android.graphics.Canvas' + '\n' +
   'import android.content.Context' + '\n' +
   'import androidx.activity.ComponentActivity' + '\n' +
-  'import androidx.activity.compose.setContent' + '\n' +
-  'import ' + options.applicationId + '.ui.theme.' + options.name + 'Theme' + '\n\n' +
+  'import androidx.activity.compose.setContent' + '\n\n' +
 
   'class MainActivity : ComponentActivity() {' + '\n' +
   '  override fun onCreate(savedInstanceState: Bundle?) {' + '\n' +
@@ -44,9 +69,7 @@ function init(options) {
   '      }' + '\n\n' +
 
   '      setContent {' + '\n' +
-  '        ' + options.name + 'Theme {' + '\n' +
-  '          __PERFORVNM_MENU__' + '\n' +
-  '        }' + '\n' +
+  '        __PERFORVNM_MENU__' + '\n' +
   '      }' + '\n' +
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
   '}' + '\n' +
@@ -66,9 +89,16 @@ function finalize() {
 
   console.log('Code finished up, writing to file.. (Android)')
 
-  fs.writeFile('vn.kt', visualNovel.code, function (err) {
-    if (err) return console.log(err);
-    console.log('VN Kotlin is now available in vn.kt. (Android)');
+  fs.writeFile(`../android/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
+    if (err) return console.error(`ERROR: ${err} (Android)`)
+
+    console.log('VN in Kotlin written, writing other configurations.. (Android)')
+
+    fs.writeFile(`../android/app/src/main/res/values/strings.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="app_name">${visualNovel.info.name}</string>\n</resources>`, (err) => {
+      if (err) return console.error(`ERROR: ${err} (Android)`)
+
+      console.log('VN name written, writing other configurations.. (Android)')
+    })
   })
 }
 

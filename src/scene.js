@@ -1,26 +1,26 @@
 import helper from './helper.js'
 
 function init(options) {
-  if (options.name == 'onCreate') {
-    console.error('--------- WARNING: Scene name cannot be onCreate. (Android)')
+  if (options?.name == 'onCreate') {
+    console.error('ERROR: Scene name cannot be onCreate. (Android)')
 
     exit(1)
   }
 
   if (options.name == 'menu') {
-    console.error('--------- WARNING: Scene name cannot be menu. (Android)')
+    console.error('ERROR: Scene name cannot be menu.')
 
     exit(1)
   }
 
   if (options.name == 'about') {
-    console.error('--------- WARNING: Scene name cannot be onBackPressed. (Android)')
+    console.error('ERROR: Scene name cannot be onBackPressed.')
 
     exit(1)
   }
 
   if (visualNovel.scenes.find(scene => scene.name == options.name)) {
-    console.error('--------- ERROR: Scene with duplicated name. (Android)\n- Scene name: ' + options.name)
+    console.error('ERROR: Scene with duplicated name.\n- Scene name: ' + options.name)
 
     exit(1)
   }
@@ -31,8 +31,26 @@ function init(options) {
 }
 
 function addCharacter(scene, options) {
+  if (options?.name == null) {
+    console.error(`ERROR: Character name not provided.\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
+  if (options.path == null) {
+    console.error(`ERROR: Character path not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
+  if (options.position == null) {
+    console.error(`ERROR: Character position not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+    exit(1)
+  }
+
   if (scene.characters.find(character => character.name == options.name)) {
-    console.error(`--------- ERROR: Character already exists. (Android)\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Path: ${options.path}\n- Position: ${options.position}`)
+    console.error(`ERROR: Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Path: ${options.path}\n- Position: ${options.position}`)
 
     exit(1)
   }
@@ -47,8 +65,8 @@ function addCharacter(scene, options) {
 }
 
 function addScenario(scene, options) {
-  if (options.path == null) {
-    console.error(`--------- ERROR: Scenario path not defined. (Android)\n- Scene name: ${scene.name}`)
+  if (options?.path == null) {
+    console.error(`ERROR: Scenario path not provided.\n- Scene name: ${scene.name}`)
 
     exit(1)
   }
@@ -63,14 +81,14 @@ function addScenario(scene, options) {
 }
 
 function finalize(scene, options) {
-  if (options.backTextColor == null) {
-    console.error(`--------- ERROR: Scene "back" text color not defined. (Android)\n- Scene name: ${scene.name}`)
+  if (options?.backTextColor == null) {
+    console.error(`ERROR: Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
 
     exit(1)
   }
 
   if (options.footerTextColor == null) {
-    console.error(`--------- ERROR: Scene text color not defined. (Android)\n- Scene name: ${scene.name}`)
+    console.error(`ERROR: Scene text color not provided.\n- Scene name: ${scene.name}`)
 
     exit(1)
   }
