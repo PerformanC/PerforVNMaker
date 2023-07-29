@@ -436,7 +436,15 @@ function finalize(scene, options) {
 
                  '    frameLayout.addView(textViewAuthor)' + '\n'
 
-    visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()\n    handler.removeCallbacksAndMessages(null)\n  }\n')
+    if (!visualNovel.scenes.find((scene) => scene.speech)) {
+      if (visualNovel?.menu?.backgroundMusic) {
+        visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n')
+  
+        visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', '\n    handler.removeCallbacksAndMessages(null)')
+      } else {
+        visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    handler.removeCallbacksAndMessages(null)\n  }\n')
+      }
+    }
   }
 
   if (visualNovel.scenes.length != 0) {
@@ -457,7 +465,7 @@ function finalize(scene, options) {
     '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
     '    buttonMenu.setOnClickListener {' + '\n' +
-    '      ' + (visualNovel.menu ? visualNovel.menu : '__PERFORVNM_MENU__') + '\n' +
+    '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
     '    }' + '\n\n' +
 
     '    frameLayout.addView(buttonMenu)' + '\n\n' +
@@ -503,7 +511,7 @@ function finalize(scene, options) {
     '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
     '    buttonMenu.setOnClickListener {' + '\n' +
-    '      ' + (visualNovel.menu ? visualNovel.menu : '__PERFORVNM_MENU__') + '\n' +
+    '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
     '    }' + '\n\n' +
 
     '    frameLayout.addView(buttonMenu)' + '\n\n' +

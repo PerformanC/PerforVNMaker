@@ -35,7 +35,7 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [ ] Settings
 - [ ] Achievements
 - [ ] Inventory
-- [ ] Music (Priority)
+- [x] Music (Only for menu. For scenes are in development) (Priority)
 - [ ] Sound effects
 - [ ] Animations
 - [ ] Transitions (Priority)
@@ -68,7 +68,10 @@ coder.init({
 })
 
 menu.make({
-  backgroundImage: 'menu',
+  background: {
+    image: 'menu',
+    music: 'menu_music'
+  },
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   footer: {

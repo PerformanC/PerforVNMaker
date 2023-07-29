@@ -10,7 +10,10 @@ coder.init({
 })
 
 menu.make({
-  backgroundImage: 'menu',
+  background: {
+    image: 'menu',
+    music: 'menu_music' // https://www.youtube.com/watch?v=DEhBqcbDHh4
+  },
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   footer: {

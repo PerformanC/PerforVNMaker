@@ -3,13 +3,22 @@ import fs from 'fs'
 import helper from './helper.js'
 
 function make(options) {
-  if (!options?.backgroundImage) {
+  if (!options?.background?.image) {
     console.error('ERROR: Menu background image not provided.')
 
     process.exit(1)
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.backgroundImage))) {
+  if (options.background.music) {
+    if (visualNovel.scenes.find((scene) => scene.speech)) {
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', 'mediaPlayer?.stop()\n    mediaPlayer?.release()\n    mediaPlayer = null')
+
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    mediaPlayer?.start()\n  }\n')
+    }  else
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    mediaPlayer?.start()\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    mediaPlayer?.stop()\n    mediaPlayer?.release()\n    mediaPlayer = null\n  }\n')
+  }
+
+  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.background.image))) {
     console.error('ERROR: Menu background image not found.')
 
     process.exit(1)
@@ -46,7 +55,7 @@ function make(options) {
                    '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                    '    val imageView = ImageView(this)' + '\n' +
-                   '    imageView.setImageResource(R.drawable.' + options.backgroundImage + ')' + '\n' +
+                   '    imageView.setImageResource(R.drawable.' + options.background.image + ')' + '\n' +
                    '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                    '    frameLayout.addView(imageView)' + '\n\n' +
@@ -78,6 +87,7 @@ function make(options) {
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                    '    buttonStart.setOnClickListener {' + '\n' +
+                   (options.background.music ? '      mediaPlayer?.stop()' + '\n\n' : '') +
                    '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                    '    }' + '\n\n' +
 
@@ -110,7 +120,15 @@ function make(options) {
 
   helper.writeScene(menuCode)
 
-  visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'menu()')
+  if (options.background.music) visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n' +
+                                                                                           '        mediaPlayer?.start()' + '\n\n' +
+
+                                                                                           '        mediaPlayer?.setOnCompletionListener {' + '\n' +
+                                                                                           '          mediaPlayer?.start()' + '\n' +
+                                                                                           '        }' + '\n\n' +
+
+                                                                                           '        menu()')
+  else visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'menu()')
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
@@ -136,7 +154,7 @@ function make(options) {
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                     '    val imageView = ImageView(this)' + '\n' +
-                    '    imageView.setImageResource(R.drawable.' + options.backgroundImage + ')' + '\n' +
+                    '    imageView.setImageResource(R.drawable.' + options.background.image + ')' + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                     '    imageView.setAlpha(0.5f)' + '\n\n' +
@@ -170,6 +188,7 @@ function make(options) {
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                     '    buttonStart.setOnClickListener {' + '\n' +
+                    (options.background.music ? '      mediaPlayer?.stop()' + '\n\n' : '') +
                     '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                     '    }' + '\n\n' +
 
@@ -296,7 +315,10 @@ function make(options) {
 
   helper.writeScene(sceneCode)
 
-  visualNovel.menu = 'menu()'
+  visualNovel.menu = {
+    name: 'menu()',
+    backgroundMusic: true
+  }
 
   console.log('Menu coded. (Android)')
 }

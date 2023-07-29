@@ -2,7 +2,7 @@ import fs from 'fs'
 
 global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
 global.PerforVNM = {
-  version: '1.3.2-beta',
+  version: '1.4.2-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -41,6 +41,7 @@ function init(options) {
   'import android.os.Bundle' + '\n' +
   'import android.os.Handler' + '\n' +
   'import android.os.Looper' + '\n' +
+  'import android.media.MediaPlayer' + '\n' +
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +

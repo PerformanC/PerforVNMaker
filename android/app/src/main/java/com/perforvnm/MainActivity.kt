@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.media.MediaPlayer
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.FrameLayout
@@ -26,9 +27,24 @@ import androidx.activity.compose.setContent
 class MainActivity : ComponentActivity() {
   private val handler = Handler(Looper.getMainLooper())
 
+  private var mediaPlayer: MediaPlayer? = null
+
+  override fun onPause() {
+    super.onPause()
+    mediaPlayer?.pause()
+  }
+
+  override fun onResume() {
+    super.onResume()
+    mediaPlayer?.start()
+  }
+
   override fun onDestroy() {
     super.onDestroy()
     handler.removeCallbacksAndMessages(null)
+    mediaPlayer?.stop()
+    mediaPlayer?.release()
+    mediaPlayer = null
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +62,13 @@ class MainActivity : ComponentActivity() {
       }
 
       setContent {
+        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+        mediaPlayer?.start()
+
+        mediaPlayer?.setOnCompletionListener {
+          mediaPlayer?.start()
+        }
+
         menu()
       }
   }
@@ -87,6 +110,8 @@ class MainActivity : ComponentActivity() {
     buttonStart.layoutParams = layoutParamsStart
 
     buttonStart.setOnClickListener {
+      mediaPlayer?.stop()
+
       scene1()
     }
 
@@ -156,6 +181,8 @@ class MainActivity : ComponentActivity() {
     buttonStart.layoutParams = layoutParamsStart
 
     buttonStart.setOnClickListener {
+      mediaPlayer?.stop()
+
       scene1()
     }
 
@@ -244,7 +271,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.2.2-alpha"
+    textView3.text = "1.4.2-beta"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
