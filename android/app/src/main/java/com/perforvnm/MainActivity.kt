@@ -2,6 +2,8 @@ package com.perforvnm
 
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.FrameLayout
@@ -22,6 +24,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
 class MainActivity : ComponentActivity() {
+  private val handler = Handler(Looper.getMainLooper())
+
+  override fun onDestroy() {
+    super.onDestroy()
+    handler.removeCallbacksAndMessages(null)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
@@ -235,7 +244,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.1.2-alpha"
+    textView3.text = "1.2.2-alpha"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -364,7 +373,6 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val textViewSpeech = TextView(this)
-    textViewSpeech.text = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
     textViewSpeech.textSize = 12f
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
 
@@ -377,6 +385,24 @@ class MainActivity : ComponentActivity() {
     layoutParamsSpeech.setMargins(0, 0, 0, 80)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
+
+    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
+
+    if (animate) {
+      var i = 0
+
+      handler.postDelayed(object : Runnable {
+        override fun run() {
+          if (i < speechText.length) {
+            textViewSpeech.text = speechText.substring(0, i + 1)
+            i++
+            handler.postDelayed(this, 50L)
+          }
+        }
+      }, 50L)
+    } else {
+      textViewSpeech.text = speechText
+    }
 
     frameLayout.addView(textViewSpeech)
 
@@ -518,7 +544,6 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val textViewSpeech = TextView(this)
-    textViewSpeech.text = "\"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way.\""
     textViewSpeech.textSize = 12f
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
 
@@ -531,6 +556,19 @@ class MainActivity : ComponentActivity() {
     layoutParamsSpeech.setMargins(0, 0, 0, 80)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
+
+    var speechText = "\"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way.\""
+    var i = 0
+
+    handler.postDelayed(object : Runnable {
+      override fun run() {
+        if (i < speechText.length) {
+          textViewSpeech.text = speechText.substring(0, i + 1)
+          i++
+          handler.postDelayed(this, 50L)
+        }
+      }
+    }, 50L)
 
     frameLayout.addView(textViewSpeech)
 

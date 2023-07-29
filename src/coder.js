@@ -2,7 +2,7 @@ import fs from 'fs'
 
 global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
 global.PerforVNM = {
-  version: '1.2.2-alpha',
+  version: '1.3.2-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -39,6 +39,8 @@ function init(options) {
 
   'import android.os.Build' + '\n' +
   'import android.os.Bundle' + '\n' +
+  'import android.os.Handler' + '\n' +
+  'import android.os.Looper' + '\n' +
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
@@ -58,7 +60,7 @@ function init(options) {
   'import androidx.activity.ComponentActivity' + '\n' +
   'import androidx.activity.compose.setContent' + '\n\n' +
 
-  'class MainActivity : ComponentActivity() {' + '\n' +
+  'class MainActivity : ComponentActivity() {__PERFORVNM_HEADER__' + '\n' +
   '  override fun onCreate(savedInstanceState: Bundle?) {' + '\n' +
   '    super.onCreate(savedInstanceState)' + '\n' +
   '      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
@@ -92,6 +94,7 @@ function finalize() {
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_CLASSES__', '')
   visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
+  visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '')
 
   console.log('Code finished up, writing to file.. (Android)')
 

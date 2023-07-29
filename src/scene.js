@@ -346,7 +346,6 @@ function finalize(scene, options) {
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
                  '    val textViewSpeech = TextView(this)' + '\n' +
-                 '    textViewSpeech.text = "' + scene.speech.text.content + '"' + '\n' +
                  '    textViewSpeech.textSize = ' + scene.speech.text.fontSize + 'f' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
@@ -359,6 +358,34 @@ function finalize(scene, options) {
                  '    layoutParamsSpeech.setMargins(0, 0, 0, 80)' + '\n\n' +
 
                  '    textViewSpeech.layoutParams = layoutParamsSpeech' + '\n\n' +
+
+                 '    var speechText = "' + scene.speech.text.content + '"' + '\n' +
+
+                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('\n    if (animate) {' + '\n' + 
+                 '      var i = 0' + '\n\n' +
+
+                 '      handler.postDelayed(object : Runnable {' + '\n' +
+                 '        override fun run() {' + '\n' +
+                 '          if (i < speechText.length) {' + '\n' +
+                 '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                 '            i++' + '\n' +
+                 '            handler.postDelayed(this, 50L)' + '\n' +
+                 '          }' + '\n' +
+                 '        }' + '\n' +
+                 '      }, 50L)' + '\n' +
+                 '    } else {' + '\n' +
+                 '      textViewSpeech.text = speechText' + '\n' +
+                 '    }' + '\n\n') : '    var i = 0' + '\n\n' +
+
+                 '    handler.postDelayed(object : Runnable {' + '\n' +
+                 '      override fun run() {' + '\n' +
+                 '        if (i < speechText.length) {' + '\n' +
+                 '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                 '          i++' + '\n' +
+                 '          handler.postDelayed(this, 50L)' + '\n' +
+                 '        }' + '\n' +
+                 '      }' + '\n' +
+                 '    }, 50L)' + '\n\n') +
 
                  '    frameLayout.addView(textViewSpeech)' + '\n\n' +
 
@@ -408,6 +435,8 @@ function finalize(scene, options) {
                  '    }' + '\n') : '\n') +
 
                  '    frameLayout.addView(textViewAuthor)' + '\n'
+
+    visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()\n    handler.removeCallbacksAndMessages(null)\n  }\n')
   }
 
   if (visualNovel.scenes.length != 0) {
