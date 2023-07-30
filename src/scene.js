@@ -69,6 +69,12 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
+  if (options.position.side != 'center' && typeof options.position.margin != 'number') {
+    console.error(`ERROR: Character position margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
   if (scene.characters.find(character => character.name == options.name)) {
     console.error(`ERROR: Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
 
@@ -131,6 +137,12 @@ function addSpeech(scene, options) {
     process.exit(1)
   }
 
+  if (typeof options.author.rectangle.opacity != 'number') {
+    console.error(`ERROR: Speech author rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
   if (!options.text?.content) {
     console.error(`ERROR: Speech text content not provided.\n- Scene name: ${scene.name}`)
 
@@ -157,6 +169,12 @@ function addSpeech(scene, options) {
 
   if (!options.text.rectangle?.opacity) {
     console.error(`ERROR: Speech text rectangle opacity not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (typeof options.text.rectangle.opacity != 'number') {
+    console.error(`ERROR: Speech text rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
@@ -190,6 +208,12 @@ function addSoundEffect(scene, options) {
     process.exit(1)
   }
 
+  if (typeof options.delay != 'number') {
+    console.error(`ERROR: Sound effect delay must be a number.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
   console.log(`Adding sound effect for scene "${scene.name}".. (Android)`)
 
   scene.effect = options
@@ -200,7 +224,7 @@ function addSoundEffect(scene, options) {
 }
 
 function finalize(scene, options) {
-  if (!options?.backTextColor) {
+  if (!options?.buttonsColor) {
     console.error(`ERROR: Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
@@ -217,10 +241,10 @@ function finalize(scene, options) {
   if (visualNovel.scenes.length != 0) {
     const lastScene = visualNovel.scenes[visualNovel.scenes.length - 1]
 
-    visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '')
+    helper.replace('__PERFORVNM_STOP_LISTERNING__', '')
 
     const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                 (visualNovel.scenes[visualNovel.scenes.length - 1].effect ? '      if (mediaPlayer) {' + '\n' +
+                 (visualNovel.scenes[visualNovel.scenes.length - 1].effect ? '      if (mediaPlayer != null) {' + '\n' +
                  '        mediaPlayer!!.stop()' + '\n' + 
                  '        mediaPlayer!!.release()' + '\n' +
                  '        mediaPlayer = null' + '\n' +
@@ -228,9 +252,9 @@ function finalize(scene, options) {
                  '      ' + scene.name + '(' + (!visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
                  '    }'
 
-    visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
+    helper.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
   } else {
-    visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, scene.name + '()')
+    helper.replace(/__PERFORVNM_FIRST_SCENE__/g, scene.name + '()')
   }
 
   let sceneCode = '  private fun ' + scene.name + '(' + ((visualNovel.scenes.length == 0 ? scene.speech : !visualNovel.scenes[visualNovel.scenes.length - 1].speech) ? 'animate: Boolean' : '') + ') {' + '\n' +
@@ -469,19 +493,33 @@ function finalize(scene, options) {
 
                  '    frameLayout.addView(textViewAuthor)' + '\n'   
 
-    if (!visualNovel.scenes.find((scene) => scene.speech)) {
-      if (visualNovel?.menu?.backgroundMusic) {
-        visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n')
+    if (!visualNovel.internalInfo.hasSpeech) {
+      if (visualNovel.menu?.backgroundMusic) {
+        helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n')
   
-        visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', '\n    handler.removeCallbacksAndMessages(null)')
+        helper.replace('__PERFORVNM_ONDESTROY__', '\n\n    handler.removeCallbacksAndMessages(null)')
       } else {
-        visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    handler.removeCallbacksAndMessages(null)\n  }\n')
+        helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    handler.removeCallbacksAndMessages(null)\n  }\n')
       }
     }
+
+    visualNovel.internalInfo.hasSpeech = true
   }
 
   if (scene.effect) {
-    sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
+    if (!visualNovel.internalInfo.setPlayer)
+      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
+
+    if (scene.effect.delay == 0) sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
+
+                                              '    mediaPlayer?.start()' + '\n\n' +
+
+                                              '    mediaPlayer?.setOnCompletionListener {' + '\n' +
+                                              '      mediaPlayer?.stop()' + '\n' +
+                                              '      mediaPlayer?.release()' + '\n' +
+                                              '      mediaPlayer = null' + '\n' +
+                                              '    }' + '\n'
+    else sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
 
                  '    handler.postDelayed(object : Runnable {' + '\n' +
                  '      override fun run() {' + '\n' +
@@ -494,13 +532,15 @@ function finalize(scene, options) {
                  '        }' + '\n' +
                  '      }' + '\n' + 
                  '    }, ' + scene.effect.delay + 'L)' + '\n'
+
+    visualNovel.internalInfo.hasEffect = true
   } 
 
   if (visualNovel.scenes.length != 0) {
     sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
     '    buttonMenu.text = "Menu"' + '\n' +
     '    buttonMenu.textSize = 10f' + '\n' +
-    '    buttonMenu.setTextColor(0xFF' + options.footerTextColor + '.toInt())' + '\n' +
+    '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
     '    buttonMenu.background = null' + '\n\n' +
 
     '    val layoutParamsMenu = FrameLayout.LayoutParams(' + '\n' +
@@ -527,7 +567,7 @@ function finalize(scene, options) {
     '    val buttonBack = Button(this)' + '\n' +
     '    buttonBack.text = "Back"' + '\n' +
     '    buttonBack.textSize = 10f' + '\n' +
-    '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' + 
+    '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
     '    buttonBack.background = null' + '\n\n' +
 
     '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
@@ -556,7 +596,7 @@ function finalize(scene, options) {
     sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
     '    buttonMenu.text = "Menu"' + '\n' +
     '    buttonMenu.textSize = 10f' + '\n' +
-    '    buttonMenu.setTextColor(0xFF' + options.footerTextColor + '.toInt())' + '\n' +
+    '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
     '    buttonMenu.background = null' + '\n\n' +
 
     '    val layoutParamsMenu = FrameLayout.LayoutParams(' + '\n' +

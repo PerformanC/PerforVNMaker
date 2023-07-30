@@ -16,12 +16,15 @@ function make(options) {
       process.exit(1)
     }
 
-    if (visualNovel.scenes.find((scene) => scene.speech)) {
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', 'if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }')
+    if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
+      helper.replace('__PERFORVNM_ONDESTROY__', '\nif (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }')
 
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n')
-    } else
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
+      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n')
+    } else {
+      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
+    }
+
+    visualNovel.internalInfo.setPlayer = true
   }
 
   if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.background.image))) {
@@ -99,7 +102,11 @@ function make(options) {
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                    '    buttonStart.setOnClickListener {' + '\n' +
-                   (options.background.music ? '      mediaPlayer?.stop()' + '\n\n' : '') +
+                   (options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
+                   '        mediaPlayer!!.stop()' + '\n' + 
+                   '        mediaPlayer!!.release()' + '\n' +
+                   '        mediaPlayer = null' + '\n' +
+                   '      }' + '\n\n' : '') +
                    '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                    '    }' + '\n\n' +
 
@@ -132,15 +139,15 @@ function make(options) {
 
   helper.writeScene(menuCode)
 
-  if (options.background.music) visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n' +
-                                                                                           '        mediaPlayer?.start()' + '\n\n' +
+  if (options.background.music) helper.replace(/__PERFORVNM_MENU__/g, 'mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n' +
+                                                                                           '      mediaPlayer?.start()' + '\n\n' +
 
-                                                                                           '        mediaPlayer?.setOnCompletionListener {' + '\n' +
-                                                                                           '          mediaPlayer?.start()' + '\n' +
-                                                                                           '        }' + '\n\n' +
+                                                                                           '      mediaPlayer?.setOnCompletionListener {' + '\n' +
+                                                                                           '        mediaPlayer?.start()' + '\n' +
+                                                                                           '      }' + '\n\n' +
 
-                                                                                           '        menu()')
-  else visualNovel.code = visualNovel.code.replace(/__PERFORVNM_MENU__/g, 'menu()')
+                                                                                           '      menu()')
+  else helper.replace(/__PERFORVNM_MENU__/g, 'menu()')
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
@@ -159,7 +166,7 @@ function make(options) {
                             '  }' + '\n' +
                             '}' + '\n'
 
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
+  helper.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
 
   const sceneCode = '  private fun about() {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
@@ -205,10 +212,10 @@ function make(options) {
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                     '    buttonStart.setOnClickListener {' + '\n' +
-                    (options.background.music ? '      if (mediaPlayer) {' + '\n' +
+                    (options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
                     '        mediaPlayer!!.stop()' + '\n' + 
-                    '        mediaPlayer!!.release()' +
-                    '        mediaPlayer = null' +
+                    '        mediaPlayer!!.release()' + '\n' +
+                    '        mediaPlayer = null' + '\n' +
                     '      }' + '\n\n' : '') +
                     '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                     '    }' + '\n\n' +

@@ -32,8 +32,8 @@ firstScene = scene.addCharacter(firstScene, {
   }
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
-firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 0 })
-scene.finalize(firstScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
+firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 1000 })
+scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 
 let secondScene = scene.init({ name: 'scene2' })
 secondScene = scene.addCharacter(secondScene, {
@@ -64,7 +64,7 @@ secondScene = scene.addSpeech(secondScene, {
     }
   }
 }) /* Adds a speech to the scene */
-scene.finalize(secondScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+scene.finalize(secondScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 let thirdScene = scene.init({ name: 'scene3' })
 thirdScene = scene.addCharacter(thirdScene, {
@@ -95,6 +95,6 @@ thirdScene = scene.addSpeech(thirdScene, {
     }
   }
 })
-scene.finalize(thirdScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 coder.finalize() /* Finishes up the code */

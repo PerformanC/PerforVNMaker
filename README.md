@@ -14,7 +14,7 @@ If you're making a VN with PerforVNM, please contact us, we would love to see yo
 
 Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 
-## Support
+## Functions support
 
 ### OS support
 
@@ -31,18 +31,20 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [x] Characters
 - [x] Scenarios
 - [x] Menu (In development) (Priority)
-- [ ] Save/Load system (Priority)
+- [x] Text box
+- [x] Music (Only for the menu. For scenes are in development) (Priority)
+- [x] Sound effects
+- [x] Transitions (Menu -> about only)
+- [ ] Custom paths (+ Priority)
+- [ ] Save/Load system (+ Priority)
 - [ ] Settings
 - [ ] Achievements
 - [ ] Inventory
-- [x] Music (Only for menu. For scenes are in development) (Priority)
-- [x] Sound effects
 - [ ] Animations
-- [x] Transitions (Menu -> about only)
 - [ ] Text effects
 - [ ] Speech bubbles
-- [x] Text box
 - [ ] Text box effects
+- [ ] Custom buttons & *View
 
 ### Code generation support
 
@@ -108,62 +110,34 @@ firstScene = scene.addSpeech(firstScene, {
     }
   }
 }) /* Adds a speech to the scene */
-scene.finalize(firstScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
+scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 
 coder.finalize() /* Finishes up the code */
 ```
 
-This will generate a Kotlin file, native Android code, with the name of the project, the version, the applicationId, the scenes, the characters, the scenarios and the menu.
+This code will generate an Android native code, with a menu, and a scene with a character, a scenario and a speech.
 
-It will be saved to the corresponding folder of android folder, and it will be ready to be built. You can build it by using Gradlew, with the command `./gradlew assembleRelease`.
+PerforVNM already takes care of saving the file in the right place for you, so you don't have to worry about that.
+
+Now to build the code, cd into the android folder, and run the command `./gradlew assembleRelease` for release APK and `./gradlew assembleDebug` for debug APK.
 
 After being built, you can access the APK file in the folder `app/build/outputs/apk/`.
 
-## Advantages and disadvantages vs other VNMs
-
-PerforVNM is new, missing a lot of features, would be unfair to compare feature terms with other VNMs, but here's a list of advantages and disadvantages of PerforVNM vs other VNMs (without features):
-
-### Weight
-
-Different from other VNMs that use an engine, PerforVNM generates native code. This means that the APK file will be lighter than other VNMs, because it doesn't need to have an engine to run the game.
-
-### Performance
-
-Making the name of the organization, PerforVNM focuses on performance, so the generated code will be faster than other VNMs, using less resources.
-
-### Easy of use
-
-PerforVNM is easy to use, it will handle optimizations for you internally, making sure that the output code will be the best possible.
-
-### Customization
-
-PerforVNM misses customizations because it's new, but it will have a lot of customizations in the future, and it will be easy to customize the output code.
-
 ## Code generation vs Engine
 
-When we're thinking of the side of the project developer, using an engine is easier, since you don't need about making the code, you just need to use the engine, and the engine will handle everything for you.
+Engines are always in our lives, and while they're the most used option, for us, PerformanC, they're not the best option.
 
-But when we're thinking of the side of the user, using an engine is worse, since the engine will use more resources, and it will be slower than native code.
+Engines don't create/convert code to native code, they interpret the code, causing a huge overhead, and making the code slower.
 
-Engines are a good option for projects that don't want to spend a lot of time on the project and learn new languages.
+Another reason is that we don't get full control of the code, since we're using an engine, and we can't modify the code as we want.
 
-The PerformanC team prefers to use native code because it's faster, it uses fewer resources, and it's easier to optimize and modify anything we want.
-
-### Bugs
-
-Engines are less likely to have bugs, since they're used by a lot of people, and they're tested by a lot of people, but when they have bugs, it's harder to fix them, since you don't have direct access to the source code.
-
-Our code is more likely to have bugs since it's new, and it's not tested by a lot of people, but when it has bugs, it's easier to fix them, since we have access to the source code.
-
-### Community support
-
-Engines / Most VNMs have a lot of community support since they're used by a lot of people, and they have a lot of people working on them.
-
-If you stick with us, you'll have less community support from people outside PerformanC.
+PerforVNMaker simply generates native code, it's faster than engines, and it's easier to modify the code, and way lighter.
 
 ## Support
 
 If you need help with anything, you can ask for help on [our Discord server](https://discord.gg/uPveNfTuCJ), and we will help you with anything you need.
+
+We're cool people, feel free to join us if you only want to talk.
 
 ## Feedback
 

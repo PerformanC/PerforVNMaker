@@ -26,16 +26,17 @@ import androidx.activity.compose.setContent
 
 class MainActivity : ComponentActivity() {
   private val handler = Handler(Looper.getMainLooper())
-
   private var mediaPlayer: MediaPlayer? = null
 
   override fun onPause() {
     super.onPause()
+
     mediaPlayer?.pause()
   }
 
   override fun onResume() {
     super.onResume()
+
     if (mediaPlayer != null) {
       mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())
       mediaPlayer!!.start()
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
   override fun onDestroy() {
     super.onDestroy()
+
     handler.removeCallbacksAndMessages(null)
     if (mediaPlayer != null) {
       mediaPlayer!!.stop()
@@ -54,28 +56,29 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-        window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        window.setDecorFitsSystemWindows(false)
-      } else {
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-          View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-          View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-      }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+      window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 
-      setContent {
-        mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      window.setDecorFitsSystemWindows(false)
+    } else {
+      @Suppress("DEPRECATION")
+      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+    }
+
+    setContent {
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+      mediaPlayer?.start()
+
+      mediaPlayer?.setOnCompletionListener {
         mediaPlayer?.start()
-
-        mediaPlayer?.setOnCompletionListener {
-          mediaPlayer?.start()
-        }
-
-        menu()
       }
+
+      menu()
+    }
   }
 
   private fun menu() {
@@ -115,7 +118,11 @@ class MainActivity : ComponentActivity() {
     buttonStart.layoutParams = layoutParamsStart
 
     buttonStart.setOnClickListener {
-      mediaPlayer?.stop()
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
 
       scene1()
     }
@@ -190,9 +197,11 @@ class MainActivity : ComponentActivity() {
     buttonStart.layoutParams = layoutParamsStart
 
     buttonStart.setOnClickListener {
-      if (mediaPlayer) {
+      if (mediaPlayer != null) {
         mediaPlayer!!.stop()
-        mediaPlayer!!.release()        mediaPlayer = null      }
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
 
       scene1()
     }
@@ -353,7 +362,7 @@ class MainActivity : ComponentActivity() {
           mediaPlayer = null
         }
       }
-    }, 50L)
+    }, 1000L)
 
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
@@ -386,7 +395,7 @@ class MainActivity : ComponentActivity() {
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer) {
+      if (mediaPlayer != null) {
         mediaPlayer!!.stop()
         mediaPlayer!!.release()
         mediaPlayer = null

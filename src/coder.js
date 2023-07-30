@@ -1,6 +1,8 @@
 import fs from 'fs'
 
-global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
+import helper from './helper.js'
+
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [] }
 global.PerforVNM = {
   version: '1.5.2-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
@@ -63,21 +65,22 @@ function init(options) {
 
   'class MainActivity : ComponentActivity() {__PERFORVNM_HEADER__' + '\n' +
   '  override fun onCreate(savedInstanceState: Bundle?) {' + '\n' +
-  '    super.onCreate(savedInstanceState)' + '\n' +
-  '      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
-  '        window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' + '\n\n' +
-  '      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {' + '\n' +
-  '        window.setDecorFitsSystemWindows(false)' + '\n' +
-  '      } else {' + '\n' +
-  '        @Suppress("DEPRECATION")' + '\n' +
-  '        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or' + '\n' +
-  '          View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or' + '\n' +
-  '          View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION' + '\n' +
-  '      }' + '\n\n' +
+  '    super.onCreate(savedInstanceState)' + '\n\n' +
 
-  '      setContent {' + '\n' +
-  '        __PERFORVNM_MENU__' + '\n' +
-  '      }' + '\n' +
+  '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
+  '      window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' + '\n\n' +
+  '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {' + '\n' +
+  '      window.setDecorFitsSystemWindows(false)' + '\n' +
+  '    } else {' + '\n' +
+  '      @Suppress("DEPRECATION")' + '\n' +
+  '      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or' + '\n' +
+  '        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or' + '\n' +
+  '        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION' + '\n' +
+  '    }' + '\n\n' +
+
+  '    setContent {' + '\n' +
+  '      __PERFORVNM_MENU__' + '\n' +
+  '    }' + '\n' +
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
   '}' + '\n' +
   '__PERFORVNM_CLASSES__'
@@ -88,14 +91,14 @@ function init(options) {
 function finalize() {
   console.log('Finalizing VN, finishing up code.. (Android)')
 
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_CODE__', '')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', '')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_MENU__', '// No menu created.')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_CLASSES__', '')
-  visualNovel.code = visualNovel.code.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '')
+  helper.replace('__PERFORVNM_CODE__', '')
+  helper.replace('__PERFORVNM_SCENES__', '')
+  helper.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
+  helper.replace('__PERFORVNM_MENU__', '// No menu created.')
+  helper.replace('__PERFORVNM_CLASSES__', '')
+  helper.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
+  helper.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
+  helper.replace('__PERFORVNM_HEADER__', '')
 
   console.log('Code finished up, writing to file.. (Android)')
 
