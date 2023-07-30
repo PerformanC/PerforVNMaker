@@ -36,9 +36,9 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [ ] Achievements
 - [ ] Inventory
 - [x] Music (Only for menu. For scenes are in development) (Priority)
-- [ ] Sound effects
+- [x] Sound effects
 - [ ] Animations
-- [ ] Transitions (Priority)
+- [x] Transitions (Menu -> about only)
 - [ ] Text effects
 - [ ] Speech bubbles
 - [x] Text box

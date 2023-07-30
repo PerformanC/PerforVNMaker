@@ -10,12 +10,18 @@ function make(options) {
   }
 
   if (options.background.music) {
-    if (visualNovel.scenes.find((scene) => scene.speech)) {
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', 'mediaPlayer?.stop()\n    mediaPlayer?.release()\n    mediaPlayer = null')
+    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music))) {
+      console.error(`ERROR: Menu background music not found.`)
+  
+      process.exit(1)
+    }
 
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    mediaPlayer?.start()\n  }\n')
-    }  else
-      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    mediaPlayer?.start()\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    mediaPlayer?.stop()\n    mediaPlayer?.release()\n    mediaPlayer = null\n  }\n')
+    if (visualNovel.scenes.find((scene) => scene.speech)) {
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_ONDESTROY__', 'if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }')
+
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n')
+    } else
+      visualNovel.code = visualNovel.code.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
   }
 
   if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.background.image))) {
@@ -48,6 +54,12 @@ function make(options) {
     process.exit(1)
   }
 
+  if (!options.footer.opacity) {
+    console.error('ERROR: Menu footer opacity not provided.')
+
+    process.exit(1)
+  }
+
   console.log('Starting VN, coding menu.. (Android)')
 
   const menuCode = '  private fun menu() {' + '\n' +
@@ -66,7 +78,7 @@ function make(options) {
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
  
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
-                   '    rectangleView.setAlpha(0.8f)' + '\n\n' +
+                   '    rectangleView.setAlpha(' + options.footer.opacity + 'f)' + '\n\n' +
 
                    '    frameLayout.addView(rectangleView)' + '\n\n' +
 
@@ -157,9 +169,14 @@ function make(options) {
                     '    imageView.setImageResource(R.drawable.' + options.background.image + ')' + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                    '    imageView.setAlpha(0.5f)' + '\n\n' +
-
                     '    frameLayout.addView(imageView)' + '\n\n' +
+
+                    '    val animationImageView = AlphaAnimation(0f, 0.5f)' + '\n' +
+                    '    animationImageView.duration = 500'  + '\n' +
+                    '    animationImageView.interpolator = LinearInterpolator()' + '\n' +
+                    '    animationImageView.fillAfter = true' + '\n\n' +
+                
+                    '    imageView.startAnimation(animationImageView)' + '\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
@@ -167,7 +184,7 @@ function make(options) {
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
-                    '    rectangleView.setAlpha(0.8f)' + '\n\n' +
+                    '    rectangleView.setAlpha(' + options.footer.opacity + 'f)' + '\n\n' +
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
@@ -188,7 +205,11 @@ function make(options) {
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
                     '    buttonStart.setOnClickListener {' + '\n' +
-                    (options.background.music ? '      mediaPlayer?.stop()' + '\n\n' : '') +
+                    (options.background.music ? '      if (mediaPlayer) {' + '\n' +
+                    '        mediaPlayer!!.stop()' + '\n' + 
+                    '        mediaPlayer!!.release()' +
+                    '        mediaPlayer = null' +
+                    '      }' + '\n\n' : '') +
                     '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
                     '    }' + '\n\n' +
 
@@ -210,10 +231,6 @@ function make(options) {
 
                     '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
-                    '    buttonAbout.setOnClickListener {' + '\n' +
-                    '      about()' + '\n' +
-                    '    }' + '\n\n' +
-
                     '    frameLayout.addView(buttonAbout)' + '\n\n' +
 
                     '    val buttonBack = Button(this)' + '\n' +
@@ -231,6 +248,13 @@ function make(options) {
                     '    layoutParamsBack.setMargins(250, 0, 0, 0)' + '\n\n' +
 
                     '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
+
+                    '    val animationTexts = AlphaAnimation(0f, 1f)' + '\n' +
+                    '    animationTexts.duration = 500'  + '\n' +
+                    '    animationTexts.interpolator = LinearInterpolator()' + '\n' +
+                    '    animationTexts.fillAfter = true' + '\n\n' +
+
+                    '    buttonBack.startAnimation(animationTexts)' + '\n\n' +
 
                     '    buttonBack.setOnClickListener {' + '\n' +
                     '      menu()' + '\n' +
@@ -251,7 +275,8 @@ function make(options) {
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText.setMargins(300, 200, 0, 0)' + '\n\n' +
 
-                    '    textView.layoutParams = layoutParamsText' + '\n\n' +
+                    '    textView.layoutParams = layoutParamsText' + '\n' +
+                    '    textView.startAnimation(animationTexts)' + '\n\n' +
 
                     '    frameLayout.addView(textView)' + '\n\n' +
 
@@ -268,7 +293,8 @@ function make(options) {
                     '    layoutParamsText2.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText2.setMargins(510, 303, 0, 0)' + '\n\n' +
 
-                    '    textView2.layoutParams = layoutParamsText2' + '\n\n' +
+                    '    textView2.layoutParams = layoutParamsText2' + '\n' +
+                    '    textView2.startAnimation(animationTexts)' + '\n\n' +
 
                     '    textView2.setOnClickListener {' + '\n' +
                     '      startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
@@ -289,7 +315,8 @@ function make(options) {
                     '    layoutParamsText3.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText3.setMargins(740, 303, 0, 0)' + '\n\n' +
 
-                    '    textView3.layoutParams = layoutParamsText3' + '\n\n' +
+                    '    textView3.layoutParams = layoutParamsText3' + '\n' +
+                    '    textView3.startAnimation(animationTexts)' + '\n\n' +
 
                     '    frameLayout.addView(textView3)' + '\n\n' +
 
@@ -306,7 +333,8 @@ function make(options) {
                     '    layoutParamsText4.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText4.setMargins(300, 400, 0, 0)' + '\n\n' +
 
-                    '    textView4.layoutParams = layoutParamsText4' + '\n\n' +
+                    '    textView4.layoutParams = layoutParamsText4' + '\n' +
+                    '    textView4.startAnimation(animationTexts)' + '\n\n' +
 
                     '    frameLayout.addView(textView4)' + '\n\n' +
 

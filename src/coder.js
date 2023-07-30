@@ -2,7 +2,7 @@ import fs from 'fs'
 
 global.visualNovel = { menu: null, info: {}, code: '', scenes: [] }
 global.PerforVNM = {
-  version: '1.4.2-beta',
+  version: '1.5.2-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 

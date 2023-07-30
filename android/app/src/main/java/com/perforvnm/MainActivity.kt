@@ -36,15 +36,20 @@ class MainActivity : ComponentActivity() {
 
   override fun onResume() {
     super.onResume()
-    mediaPlayer?.start()
+    if (mediaPlayer != null) {
+      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())
+      mediaPlayer!!.start()
+    }
   }
 
   override fun onDestroy() {
     super.onDestroy()
     handler.removeCallbacksAndMessages(null)
-    mediaPlayer?.stop()
-    mediaPlayer?.release()
-    mediaPlayer = null
+    if (mediaPlayer != null) {
+      mediaPlayer!!.stop()
+      mediaPlayer!!.release()
+      mediaPlayer = null
+    }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,10 +155,14 @@ class MainActivity : ComponentActivity() {
     imageView.setImageResource(R.drawable.menu)
     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
-    imageView.setAlpha(0.5f)
-
     frameLayout.addView(imageView)
 
+    val animationImageView = AlphaAnimation(0f, 0.5f)
+    animationImageView.duration = 500
+    animationImageView.interpolator = LinearInterpolator()
+    animationImageView.fillAfter = true
+
+    imageView.startAnimation(animationImageView)
     val rectangleView = RectangleView(this)
 
     val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
@@ -181,7 +190,9 @@ class MainActivity : ComponentActivity() {
     buttonStart.layoutParams = layoutParamsStart
 
     buttonStart.setOnClickListener {
-      mediaPlayer?.stop()
+      if (mediaPlayer) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()        mediaPlayer = null      }
 
       scene1()
     }
@@ -204,10 +215,6 @@ class MainActivity : ComponentActivity() {
 
     buttonAbout.layoutParams = layoutParamsAbout
 
-    buttonAbout.setOnClickListener {
-      about()
-    }
-
     frameLayout.addView(buttonAbout)
 
     val buttonBack = Button(this)
@@ -225,6 +232,13 @@ class MainActivity : ComponentActivity() {
     layoutParamsBack.setMargins(250, 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
+
+    val animationTexts = AlphaAnimation(0f, 1f)
+    animationTexts.duration = 500
+    animationTexts.interpolator = LinearInterpolator()
+    animationTexts.fillAfter = true
+
+    buttonBack.startAnimation(animationTexts)
 
     buttonBack.setOnClickListener {
       menu()
@@ -246,6 +260,7 @@ class MainActivity : ComponentActivity() {
     layoutParamsText.setMargins(300, 200, 0, 0)
 
     textView.layoutParams = layoutParamsText
+    textView.startAnimation(animationTexts)
 
     frameLayout.addView(textView)
 
@@ -263,6 +278,7 @@ class MainActivity : ComponentActivity() {
     layoutParamsText2.setMargins(510, 303, 0, 0)
 
     textView2.layoutParams = layoutParamsText2
+    textView2.startAnimation(animationTexts)
 
     textView2.setOnClickListener {
       startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
@@ -271,7 +287,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.4.2-beta"
+    textView3.text = "1.5.2-beta"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -284,6 +300,7 @@ class MainActivity : ComponentActivity() {
     layoutParamsText3.setMargins(740, 303, 0, 0)
 
     textView3.layoutParams = layoutParamsText3
+    textView3.startAnimation(animationTexts)
 
     frameLayout.addView(textView3)
 
@@ -301,6 +318,7 @@ class MainActivity : ComponentActivity() {
     layoutParamsText4.setMargins(300, 400, 0, 0)
 
     textView4.layoutParams = layoutParamsText4
+    textView4.startAnimation(animationTexts)
 
     frameLayout.addView(textView4)
 
@@ -323,6 +341,20 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(imageView_Pedro)
 
+    mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+    handler.postDelayed(object : Runnable {
+      override fun run() {
+        mediaPlayer?.start()
+
+        mediaPlayer?.setOnCompletionListener {
+          mediaPlayer?.stop()
+          mediaPlayer?.release()
+          mediaPlayer = null
+        }
+      }
+    }, 50L)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.textSize = 10f
@@ -340,6 +372,12 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
       menu()
     }
 
@@ -348,6 +386,12 @@ class MainActivity : ComponentActivity() {
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      if (mediaPlayer) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
       scene2(true)
     }
   }
@@ -679,7 +723,7 @@ class MainActivity : ComponentActivity() {
 
 class RectangleView(context: Context) : View(context) {
   private val paint = Paint().apply {
-    color = 0xFF808080.toInt()
+    color = 0xFF000000.toInt()
     style = Paint.Style.FILL
   }
 

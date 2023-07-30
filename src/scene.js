@@ -29,7 +29,7 @@ function init(options) {
 
   console.log('Starting scene.. (Android)')
 
-  return { type: 'scene', speech: null, name: options.name, characters: [], background: null }
+  return { type: 'scene', speech: null, name: options.name, characters: [], background: null, effect: null }
 }
 
 function addCharacter(scene, options) {
@@ -171,6 +171,34 @@ function addSpeech(scene, options) {
   return scene
 }
 
+function addSoundEffect(scene, options) {
+  if (!options?.sound) {
+    console.error(`ERROR: Sound effect sound not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.sound))) {
+    console.error(`ERROR: Sound effect sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
+
+    process.exit(1)
+  }
+
+  if (options?.delay == null) {
+    console.error(`ERROR: Sound effect delay not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  console.log(`Adding sound effect for scene "${scene.name}".. (Android)`)
+
+  scene.effect = options
+  
+  console.log(`Sound effect added for scene "${scene.name}". (Android)`)
+
+  return scene
+}
+
 function finalize(scene, options) {
   if (!options?.backTextColor) {
     console.error(`ERROR: Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
@@ -192,6 +220,11 @@ function finalize(scene, options) {
     visualNovel.code = visualNovel.code.replace('__PERFORVNM_STOP_LISTERNING__', '')
 
     const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
+                 (visualNovel.scenes[visualNovel.scenes.length - 1].effect ? '      if (mediaPlayer) {' + '\n' +
+                 '        mediaPlayer!!.stop()' + '\n' + 
+                 '        mediaPlayer!!.release()' + '\n' +
+                 '        mediaPlayer = null' + '\n' +
+                 '      }' + '\n\n' : '') +
                  '      ' + scene.name + '(' + (!visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
                  '    }'
 
@@ -434,7 +467,7 @@ function finalize(scene, options) {
                  '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
                  '    }' + '\n') : '\n') +
 
-                 '    frameLayout.addView(textViewAuthor)' + '\n'
+                 '    frameLayout.addView(textViewAuthor)' + '\n'   
 
     if (!visualNovel.scenes.find((scene) => scene.speech)) {
       if (visualNovel?.menu?.backgroundMusic) {
@@ -446,6 +479,22 @@ function finalize(scene, options) {
       }
     }
   }
+
+  if (scene.effect) {
+    sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
+
+                 '    handler.postDelayed(object : Runnable {' + '\n' +
+                 '      override fun run() {' + '\n' +
+                 '        mediaPlayer?.start()' + '\n\n' +
+
+                 '        mediaPlayer?.setOnCompletionListener {' + '\n' +
+                 '          mediaPlayer?.stop()' + '\n' +
+                 '          mediaPlayer?.release()' + '\n' +
+                 '          mediaPlayer = null' + '\n' +
+                 '        }' + '\n' +
+                 '      }' + '\n' + 
+                 '    }, ' + scene.effect.delay + 'L)' + '\n'
+  } 
 
   if (visualNovel.scenes.length != 0) {
     sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
@@ -465,6 +514,11 @@ function finalize(scene, options) {
     '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
     '    buttonMenu.setOnClickListener {' + '\n' +
+    (scene.effect ? ('      if (mediaPlayer != null) {' + '\n' +
+    '        mediaPlayer!!.stop()' + '\n' +
+    '        mediaPlayer!!.release()' + '\n' +
+    '        mediaPlayer = null' + '\n' +
+    '      }' + '\n\n') : '') +
     '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
     '    }' + '\n\n' +
 
@@ -487,6 +541,11 @@ function finalize(scene, options) {
     '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
     '    buttonBack.setOnClickListener {' + '\n' +
+    (scene.effect ? ('      if (mediaPlayer != null) {' + '\n' +
+    '        mediaPlayer!!.stop()' + '\n' +
+    '        mediaPlayer!!.release()' + '\n' +
+    '        mediaPlayer = null' + '\n' +
+    '      }' + '\n\n') : '') +
     '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '(' + (visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' ) + ')' + '\n' +
     '    }' + '\n\n' +
 
@@ -511,6 +570,11 @@ function finalize(scene, options) {
     '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
     '    buttonMenu.setOnClickListener {' + '\n' +
+    (scene.effect ? ('      if (mediaPlayer != null) {' + '\n' +
+    '        mediaPlayer!!.stop()' + '\n' +
+    '        mediaPlayer!!.release()' + '\n' +
+    '        mediaPlayer = null' + '\n' +
+    '      }' + '\n\n') : '') +
     '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
     '    }' + '\n\n' +
 
@@ -533,5 +597,6 @@ export default {
   addCharacter,
   addScenario,
   addSpeech,
+  addSoundEffect,
   finalize
 }

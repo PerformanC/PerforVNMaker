@@ -17,8 +17,9 @@ menu.make({
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   footer: {
-    color: '808080',
-    textColor: 'FFFFFFF'
+    color: '000000',
+    textColor: 'FFFFFFF',
+    opacity: 0.8
   }
 }) /* Generates the menu */
 
@@ -31,6 +32,7 @@ firstScene = scene.addCharacter(firstScene, {
   }
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
+firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 0 })
 scene.finalize(firstScene, { backTextColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 
 let secondScene = scene.init({ name: 'scene2' })
