@@ -30,17 +30,17 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [x] Scenes
 - [x] Characters
 - [x] Scenarios
-- [x] Menu (In development) (Priority)
+- [x] Menu (Footer only horizontal)
 - [x] Text box
 - [x] Music (Only for the menu. For scenes are in development) (Priority)
 - [x] Sound effects
-- [x] Transitions (Menu -> about only)
+- [x] Transitions (Menu -> about/settings only)
+- [x] Animations (Partial, only character movement)
 - [ ] Custom paths (+ Priority)
 - [ ] Save/Load system (+ Priority)
 - [x] Settings (Missing Scene music volume)
 - [ ] Achievements
 - [ ] Inventory
-- [ ] Animations
 - [ ] Text effects
 - [ ] Speech bubbles
 - [ ] Text box effects

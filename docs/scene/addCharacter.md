@@ -14,7 +14,17 @@ scene.addCharacter(scene, {
   image: 'pedro_staring',
   position: {
     side: 'left',
-    margin: 100
+    margins: {
+      side: 100,
+      top: 0
+    }
+  },
+  animateTo: {
+    side: 'right',
+    margins: {
+      side: 100,
+      top: 0
+    }
   }
 })
 ```
@@ -26,7 +36,14 @@ scene.addCharacter(scene, {
 - `image`: The image of the character.
 - `position`: The position of the character. An object with the following properties:
   - `side`: The side of the character can be `left`, `right` or `center`.
-  - `margin`: The margin of the character can be any number. (Not required if side == center)
+  - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
+    - `side`: The margin of the side of the character.
+    - `top`: The margin of the top of the character.
+- `animateTo`: The animation of the character. An object with the following properties:
+  - `side`: The side of the character can be `left`, `right` or `center`.
+  - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
+    - `side`: The margin of the side of the character.
+    - `top`: The margin of the top of the character.
 
 ## Return value
 

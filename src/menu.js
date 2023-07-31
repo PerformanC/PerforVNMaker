@@ -380,7 +380,7 @@ function make(options) {
                     '    frameLayout.addView(textView2)' + '\n\n' +
 
                     '    val textView3 = TextView(this)' + '\n' +
-                    '    textView3.text = "' + PerforVNM.version + '"' + '\n' +
+                    '    textView3.text = "' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code)"' + '\n' +
                     '    textView3.textSize = 15f' + '\n' +
                     '    textView3.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 

@@ -39,6 +39,12 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
+  if (scene.characters.find(character => character.name == options.name)) {
+    console.error(`ERROR: Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
+
+    process.exit(1)
+  }
+
   if (!options.image) {
     console.error(`ERROR: Character image not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
@@ -63,27 +69,71 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
-  if (options.position.side != 'center' && !options.position.margin) {
-    console.error(`ERROR: Character position margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+  if (options.position.side != 'center' && options.position.margins?.side == null) {
+    console.error(`ERROR: Character position side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
 
-  if (options.position.side != 'center' && typeof options.position.margin != 'number') {
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number') {
     console.error(`ERROR: Character position margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
 
-  if (scene.characters.find(character => character.name == options.name)) {
-    console.error(`ERROR: Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
+  if (options.position.side != 'center' && options.position.margins?.top == null) {
+    console.error(`ERROR: Character position top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
 
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number') {
+    console.error(`ERROR: Character position top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (options.animateTo) {
+    if (!options.animateTo.side) {
+      console.error(`ERROR: Character animateTo side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (!['center', 'left', 'right'].includes(options.animateTo.side)) {
+      console.error(`ERROR: Character animateTo side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (options.animateTo.side != 'center' && options.animateTo.margins?.side == null) {
+      console.error(`ERROR: Character animateTo side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (options.animateTo.side != 'center' && typeof options.animateTo.margins?.side != 'number') {
+      console.error(`ERROR: Character animateTo side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (options.animateTo.side != 'center' && options.animateTo.margins.top == null) {
+      console.error(`ERROR: Character animateTo top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (options.animateTo.side != 'center' && typeof options.animateTo.margins?.top != 'number') {
+      console.error(`ERROR: Character animateTo top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+  }
+
   console.log(`Adding character "${options.name}" for scene "${scene.name}".. (Android)`)
 
-  scene.characters.push({ name: options.name, image: options.image, position: options.position })
+  scene.characters.push({ name: options.name, image: options.image, position: options.position, animateTo: options.animateTo })
 
   console.log(`Character "${options.name}" added for scene "${scene.name}". (Android)`)
 
@@ -242,119 +292,93 @@ function finalize(scene, options) {
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
-  if (scene.characters.length == 0 && scene.background != '') {
-    sceneCode += '    val imageView_scenario = ImageView(this)' + '\n\n' +
-
+  if (scene.background != '') {
+    sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
                  '    imageView_scenario.setImageResource(R.raw.' + scene.background + ')' + '\n' +
                  '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                 '    frameLayout.addView(imageView_scenario)' + '\n'
-  } else if (scene.characters.length == 1 && scene.background == '') {
-    switch (scene.characters[0].position.side) {
-      case 'center': {
-        sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+                 '    frameLayout.addView(imageView_scenario)' + '\n\n'
+  }
 
-                     '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n'
+  for (let character of scene.characters) {
+    switch (character.position.side) {
+      case 'center': {
+        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
+                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+
+                     (character.animateTo ? '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n' +
+
+                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n\n' +
+                      
+                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' : '') +
+
+                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
       case 'left': {
-        sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
+                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + scene.characters[0].name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
 
-                     '    layoutParams_' + scene.characters[0].name + '.gravity = Gravity.START or Gravity.CENTER_VERTICAL' + '\n' +
-                     '    layoutParams_' + scene.characters[0].name + '.setMargins(' + scene.characters[0].position.margin + ', 0, 0, 0)' + '\n\n' +
+                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
+                     '    layoutParams_' + character.name + '.setMargins(' + character.position.margins.side + ', ' + character.position.margins.top + ', 0, 0)' + '\n\n' +
 
-                     '    imageView_' + scene.characters[0].name + '.layoutParams = layoutParams_' + scene.characters[0].name + '\n\n' +
+                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
 
-                     '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n'
+                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
       case 'right': {
-        sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
+                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + scene.characters[0].name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
 
-                     '    layoutParams_' + scene.characters[0].name + '.gravity = Gravity.END or Gravity.CENTER_VERTICAL' + '\n' +
-                     '    layoutParams_' + scene.characters[0].name + '.setMargins(0, 0, ' + scene.characters[0].position.margin + ', 0)' + '\n\n' +
-                      
-                     '    imageView_' + scene.characters[0].name + '.layoutParams = layoutParams_' + scene.characters[0].name + '\n\n' +
+                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
+                     '    layoutParams_' + character.name + '.setMargins(0, ' + character.position.margins.top + ', ' + character.position.margins.side + ', 0)' + '\n\n' +
 
-                     '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n'
+                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
+
+                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
     }
-  } else {
-    if (scene.background != '') {
-      sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
-                   '    imageView_scenario.setImageResource(R.raw.' + scene.background + ')' + '\n' +
-                   '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                   '    frameLayout.addView(imageView_scenario)' + '\n\n'
-    }
-
-    for (let character of scene.characters) {
-      switch (character.position.side) {
+    if (character.animateTo) {
+      switch (character.animateTo.side) {
         case 'center': {
-          sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                       '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
-
-                       '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
-
+          sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                       '      .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
+                       '      .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
+                       '      .setDuration(1000)' + '\n' +
+                       '      .start()' + '\n'
+  
           break
         }
-        case 'left': {
-          sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                       '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
-
-                       '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
-                       '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                       '      LayoutParams.WRAP_CONTENT' + '\n' +
-                       '    )' + '\n\n' +
-
-                       '    layoutParams_' + character.name + '.gravity = Gravity.START or Gravity.CENTER_VERTICAL' + '\n' +
-                       '    layoutParams_' + character.name + '.setMargins(' + character.position.margin + ', 0, 0, 0)' + '\n\n' +
-
-                       '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
-
-                       '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
-
-          break
-        }
+        case 'left':
         case 'right': {
-          sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                       '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
-
-                       '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
-                       '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                       '      LayoutParams.WRAP_CONTENT' + '\n' +
-                       '    )' + '\n\n' +
-
-                       '    layoutParams_' + character.name + '.gravity = Gravity.END or Gravity.CENTER_VERTICAL' + '\n' +
-                       '    layoutParams_' + character.name + '.setMargins(0, 0, ' + character.position.margin + ', 0)' + '\n\n' +
-
-                       '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
-
-                       '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
-
+          sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                       '      .translationX(' + character.animateTo.margins.side + '.toFloat())' + '\n' +
+                       '      .translationY(' + character.animateTo.margins.top + '.toFloat())' + '\n' +
+                       '      .setDuration(1000)' + '\n' +
+                       '      .start()' + '\n'
+  
           break
         }
       }
@@ -478,9 +502,6 @@ function finalize(scene, options) {
   }
 
   if (scene.effect) {
-    if (!visualNovel.internalInfo.setPlayer)
-      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
-
     if (scene.effect.delay == 0) sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
 
                                               '    mediaPlayer?.start()' + '\n\n' +

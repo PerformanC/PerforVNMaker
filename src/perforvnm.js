@@ -35,6 +35,13 @@ firstScene = scene.addCharacter(firstScene, {
   image: 'pedro_staring',
   position: {
     side: 'center'
+  },
+  animateTo: {
+    side: 'left',
+    margins: {
+      side: 200,
+      top: 0
+    }
   }
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
@@ -47,7 +54,10 @@ secondScene = scene.addCharacter(secondScene, {
   image: 'pedro_staring',
   position: {
     side: 'left',
-    margin: 200
+    margins: {
+      side: 200,
+      top: 0
+    }
   }
 })
 secondScene = scene.addScenario(secondScene, { image: 'background_thanking' })
@@ -78,7 +88,10 @@ thirdScene = scene.addCharacter(thirdScene, {
   image: 'pedro_staring',
   position: {
     side: 'left',
-    margin: 200
+    margins: {
+      side: 200,
+      top: 0
+    }
   }
 })
 thirdScene = scene.addScenario(thirdScene, { image: 'background_thanking' })

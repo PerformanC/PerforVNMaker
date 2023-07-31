@@ -4,7 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  version: '1.5.4-beta',
+  codeGeneratorVersion: '1.15.0-b.0',
+  generatedCodeVersion: '1.12.2-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -56,6 +57,8 @@ function init(options) {
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +
+  'import android.animation.Animator' + '\n' +
+  'import android.animation.ValueAnimator' + '\n' +
   'import android.view.WindowManager' + '\n' +
   'import android.graphics.PorterDuff' + '\n' +
   'import android.graphics.Paint' + '\n' +
@@ -222,7 +225,7 @@ function finalize() {
   fs.readFile('package.json', 'utf8', (err, data) => {
     if (err) return console.error(`ERROR: ${err} (Android)`)
 
-    fs.writeFile('package.json', data.replace(/"version": ".*"/g, `"version": "${PerforVNM.version}"`), (err) => {
+    fs.writeFile('package.json', data.replace(/"version": ".*"/g, `"version": "${PerforVNM.codeGeneratorVersion}"`), (err) => {
       if (err) return console.error(`ERROR: ${err} (Android)`)
     })
   })

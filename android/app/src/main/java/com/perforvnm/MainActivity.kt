@@ -17,6 +17,8 @@ import android.view.ViewGroup.LayoutParams
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.AlphaAnimation
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.view.WindowManager
 import android.graphics.PorterDuff
 import android.graphics.Paint
@@ -369,7 +371,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.5.4-beta"
+    textView3.text = "1.15.0-b.0 (code generator), 1.12.2-b.0 (generated code)"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -697,7 +699,22 @@ class MainActivity : ComponentActivity() {
     imageView_Pedro.setImageResource(R.raw.pedro_staring)
     imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
+    val layoutParams_Pedro = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParams_Pedro.gravity = Gravity.CENTER
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
     frameLayout.addView(imageView_Pedro)
+
+    imageView_Pedro.animate()
+      .translationX(200.toFloat())
+      .translationY(0.toFloat())
+      .setDuration(1000)
+      .start()
 
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
@@ -785,7 +802,7 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+    layoutParams_Pedro.gravity = Gravity.CENTER
     layoutParams_Pedro.setMargins(200, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
@@ -966,7 +983,7 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParams_Pedro.gravity = Gravity.START or Gravity.CENTER_VERTICAL
+    layoutParams_Pedro.gravity = Gravity.CENTER
     layoutParams_Pedro.setMargins(200, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
