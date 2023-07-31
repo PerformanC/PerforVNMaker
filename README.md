@@ -37,7 +37,7 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [x] Transitions (Menu -> about only)
 - [ ] Custom paths (+ Priority)
 - [ ] Save/Load system (+ Priority)
-- [ ] Settings
+- [x] Settings (Missing Scene music volume)
 - [ ] Achievements
 - [ ] Inventory
 - [ ] Animations

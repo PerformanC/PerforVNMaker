@@ -45,7 +45,7 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.image))) {
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image))) {
     console.error(`ERROR: Character image not found.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
     process.exit(1)
@@ -97,7 +97,7 @@ function addScenario(scene, options) {
     process.exit(1)
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.image))) {
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image))) {
     console.error(`ERROR: Scenario image not found.\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
     process.exit(1)
@@ -244,17 +244,15 @@ function finalize(scene, options) {
     helper.replace('__PERFORVNM_STOP_LISTERNING__', '')
 
     const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                 (visualNovel.scenes[visualNovel.scenes.length - 1].effect ? '      if (mediaPlayer != null) {' + '\n' +
+                 (lastScene.effect ? '      if (mediaPlayer != null) {' + '\n' +
                  '        mediaPlayer!!.stop()' + '\n' + 
                  '        mediaPlayer!!.release()' + '\n' +
                  '        mediaPlayer = null' + '\n' +
                  '      }' + '\n\n' : '') +
-                 '      ' + scene.name + '(' + (!visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
+                 '      ' + scene.name + '(' + (!lastScene.speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
                  '    }'
 
     helper.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
-  } else {
-    helper.replace(/__PERFORVNM_FIRST_SCENE__/g, scene.name + '()')
   }
 
   let sceneCode = '  private fun ' + scene.name + '(' + ((visualNovel.scenes.length == 0 ? scene.speech : !visualNovel.scenes[visualNovel.scenes.length - 1].speech) ? 'animate: Boolean' : '') + ') {' + '\n' +
@@ -264,7 +262,7 @@ function finalize(scene, options) {
   if (scene.characters.length == 0 && scene.background != '') {
     sceneCode += '    val imageView_scenario = ImageView(this)' + '\n\n' +
 
-                 '    imageView_scenario.setImageResource(R.drawable.' + scene.background + ')' + '\n' +
+                 '    imageView_scenario.setImageResource(R.raw.' + scene.background + ')' + '\n' +
                  '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                  '    frameLayout.addView(imageView_scenario)' + '\n'
@@ -272,7 +270,7 @@ function finalize(scene, options) {
     switch (scene.characters[0].position.side) {
       case 'center': {
         sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.drawable.' + scene.characters[0].image + ')' + '\n' +
+                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
                      '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                      '    frameLayout.addView(imageView_' + scene.characters[0].name + ')' + '\n'
@@ -281,7 +279,7 @@ function finalize(scene, options) {
       }
       case 'left': {
         sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.drawable.' + scene.characters[0].image + ')' + '\n' +
+                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
                      '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                      '    val layoutParams_' + scene.characters[0].name + ' = FrameLayout.LayoutParams(' + '\n' +
@@ -300,7 +298,7 @@ function finalize(scene, options) {
       }
       case 'right': {
         sceneCode += '    val imageView_' + scene.characters[0].name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.drawable.' + scene.characters[0].image + ')' + '\n' +
+                     '    imageView_' + scene.characters[0].name + '.setImageResource(R.raw.' + scene.characters[0].image + ')' + '\n' +
                      '    imageView_' + scene.characters[0].name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                      '    val layoutParams_' + scene.characters[0].name + ' = FrameLayout.LayoutParams(' + '\n' +
@@ -321,7 +319,7 @@ function finalize(scene, options) {
   } else {
     if (scene.background != '') {
       sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
-                   '    imageView_scenario.setImageResource(R.drawable.' + scene.background + ')' + '\n' +
+                   '    imageView_scenario.setImageResource(R.raw.' + scene.background + ')' + '\n' +
                    '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                    '    frameLayout.addView(imageView_scenario)' + '\n\n'
@@ -331,7 +329,7 @@ function finalize(scene, options) {
       switch (character.position.side) {
         case 'center': {
           sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.drawable.' + character.image + ')' + '\n' +
+                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                        '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                        '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
@@ -340,7 +338,7 @@ function finalize(scene, options) {
         }
         case 'left': {
           sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.drawable.' + character.image + ')' + '\n' +
+                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                        '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                        '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
@@ -359,7 +357,7 @@ function finalize(scene, options) {
         }
         case 'right': {
           sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                       '    imageView_' + character.name + '.setImageResource(R.drawable.' + character.image + ')' + '\n' +
+                       '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                        '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                        '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
@@ -426,10 +424,10 @@ function finalize(scene, options) {
                  '          if (i < speechText.length) {' + '\n' +
                  '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
                  '            i++' + '\n' +
-                 '            handler.postDelayed(this, 50L)' + '\n' +
+                 '            handler.postDelayed(this, textSpeed)' + '\n' +
                  '          }' + '\n' +
                  '        }' + '\n' +
-                 '      }, 50L)' + '\n' +
+                 '      }, textSpeed)' + '\n' +
                  '    } else {' + '\n' +
                  '      textViewSpeech.text = speechText' + '\n' +
                  '    }' + '\n\n') : '    var i = 0' + '\n\n' +
@@ -439,10 +437,10 @@ function finalize(scene, options) {
                  '        if (i < speechText.length) {' + '\n' +
                  '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
                  '          i++' + '\n' +
-                 '          handler.postDelayed(this, 50L)' + '\n' +
+                 '          handler.postDelayed(this, textSpeed)' + '\n' +
                  '        }' + '\n' +
                  '      }' + '\n' +
-                 '    }, 50L)' + '\n\n') +
+                 '    }, textSpeed)' + '\n\n') +
 
                  '    frameLayout.addView(textViewSpeech)' + '\n\n' +
 
@@ -493,16 +491,6 @@ function finalize(scene, options) {
 
                  '    frameLayout.addView(textViewAuthor)' + '\n'   
 
-    if (!visualNovel.internalInfo.hasSpeech) {
-      if (visualNovel.menu?.backgroundMusic) {
-        helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n')
-  
-        helper.replace('__PERFORVNM_ONDESTROY__', '\n\n    handler.removeCallbacksAndMessages(null)')
-      } else {
-        helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__\n  private val handler = Handler(Looper.getMainLooper())\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    handler.removeCallbacksAndMessages(null)\n  }\n')
-      }
-    }
-
     visualNovel.internalInfo.hasSpeech = true
   }
 
@@ -524,6 +512,8 @@ function finalize(scene, options) {
                  '    handler.postDelayed(object : Runnable {' + '\n' +
                  '      override fun run() {' + '\n' +
                  '        mediaPlayer?.start()' + '\n\n' +
+
+                 '        mediaPlayer?.setVolume(effectVolume, effectVolume)' + '\n' +
 
                  '        mediaPlayer?.setOnCompletionListener {' + '\n' +
                  '          mediaPlayer?.stop()' + '\n' +
@@ -609,12 +599,13 @@ function finalize(scene, options) {
 
     '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
-    '    buttonMenu.setOnClickListener {' + '\n' +
-    (scene.effect ? ('      if (mediaPlayer != null) {' + '\n' +
+    (scene.effect ? ('    buttonMenu.setOnClickListener {' + '\n' +
+    '      if (mediaPlayer != null) {' + '\n' +
     '        mediaPlayer!!.stop()' + '\n' +
     '        mediaPlayer!!.release()' + '\n' +
     '        mediaPlayer = null' + '\n' +
-    '      }' + '\n\n') : '') +
+    '      }__PERFORVNM_START_MUSIC__' + '\n\n') : '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n') +
+
     '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
     '    }' + '\n\n' +
 

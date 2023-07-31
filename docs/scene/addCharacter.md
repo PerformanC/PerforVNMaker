@@ -4,7 +4,7 @@
 
 Adds a character to the scene, in any position: in the left and right or the center of the scene.
 
-OBS: The character image must be in the `res/drawable` folder, and there are no restrictions on how many characters can be added to the scene.
+OBS: The character image must be in the `res/raw` folder, and there are no restrictions on how many characters can be added to the scene.
 
 ## Syntax
 

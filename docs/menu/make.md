@@ -4,6 +4,8 @@
 
 Generates the code of the menu of the VN, and also the about menu, **necessary** for you to be able to use the VN.
 
+OBS: The background image and music must be in the `res/raw` folder.
+
 ## Syntax
 
 ```js

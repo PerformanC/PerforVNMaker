@@ -9,23 +9,27 @@ import android.widget.TextView
 import android.widget.ImageView
 import android.widget.FrameLayout
 import android.widget.Button
+import android.widget.SeekBar
 import android.view.View
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.AlphaAnimation
-import android.view.animation.AnimationUtils
 import android.view.WindowManager
 import android.graphics.PorterDuff
 import android.graphics.Paint
 import android.graphics.Canvas
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
 class MainActivity : ComponentActivity() {
   private val handler = Handler(Looper.getMainLooper())
+  private var textSpeed = 1000L
+  private var effectVolume = 1f
   private var mediaPlayer: MediaPlayer? = null
 
   override fun onPause() {
@@ -47,6 +51,7 @@ class MainActivity : ComponentActivity() {
     super.onDestroy()
 
     handler.removeCallbacksAndMessages(null)
+
     if (mediaPlayer != null) {
       mediaPlayer!!.stop()
       mediaPlayer!!.release()
@@ -70,12 +75,21 @@ class MainActivity : ComponentActivity() {
     }
 
     setContent {
+      val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-      mediaPlayer?.start()
 
-      mediaPlayer?.setOnCompletionListener {
-        mediaPlayer?.start()
+      if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
+        val volume = sharedPreferences.getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
       }
+
+      textSpeed = sharedPreferences.getLong("textSpeed", 50L)
 
       menu()
     }
@@ -86,7 +100,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView = ImageView(this)
-    imageView.setImageResource(R.drawable.menu)
+    imageView.setImageResource(R.raw.menu)
     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView)
@@ -146,30 +160,67 @@ class MainActivity : ComponentActivity() {
     buttonAbout.layoutParams = layoutParamsAbout
 
     buttonAbout.setOnClickListener {
-      about()
+      about(true)
     }
 
     frameLayout.addView(buttonAbout)
 
+    val buttonSettings = Button(this)
+    buttonSettings.text = "Settings"
+    buttonSettings.textSize = 15f
+    buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSettings.background = null
+
+    val layoutParamsSettings = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSettings.setMargins(800, 0, 0, -10)
+
+    buttonSettings.layoutParams = layoutParamsSettings
+
+    buttonSettings.setOnClickListener {
+      settings(true)
+    }
+
+    frameLayout.addView(buttonSettings)
+
     setContentView(frameLayout)
   }
 
-  private fun about() {
+  private fun about(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView = ImageView(this)
-    imageView.setImageResource(R.drawable.menu)
+    imageView.setImageResource(R.raw.menu)
     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView)
 
-    val animationImageView = AlphaAnimation(0f, 0.5f)
-    animationImageView.duration = 500
-    animationImageView.interpolator = LinearInterpolator()
-    animationImageView.fillAfter = true
+    val rectangleGrayView = RectangleView(this)
 
-    imageView.startAnimation(animationImageView)
+    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)
+    layoutParamsGrayRectangle.gravity = Gravity.CENTER
+
+    rectangleGrayView.layoutParams = layoutParamsGrayRectangle
+    rectangleGrayView.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleGrayView)
+
+    if (animate) {
+      val animationRectangleGray = AlphaAnimation(0f, 0.8f)
+      animationRectangleGray.duration = 500
+      animationRectangleGray.interpolator = LinearInterpolator()
+      animationRectangleGray.fillAfter = true
+
+      rectangleGrayView.startAnimation(animationRectangleGray)
+    } else {
+      rectangleGrayView.setAlpha(0.8f)
+    }
+
     val rectangleView = RectangleView(this)
 
     val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
@@ -225,6 +276,28 @@ class MainActivity : ComponentActivity() {
     buttonAbout.layoutParams = layoutParamsAbout
 
     frameLayout.addView(buttonAbout)
+
+    val buttonSettings = Button(this)
+    buttonSettings.text = "Settings"
+    buttonSettings.textSize = 15f
+    buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSettings.background = null
+
+    val layoutParamsSettings = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSettings.setMargins(800, 0, 0, -10)
+
+    buttonSettings.layoutParams = layoutParamsSettings
+
+    buttonSettings.setOnClickListener {
+      settings(false)
+    }
+
+    frameLayout.addView(buttonSettings)
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
@@ -296,7 +369,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.5.2-beta"
+    textView3.text = "1.5.3-beta"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -334,18 +407,294 @@ class MainActivity : ComponentActivity() {
     setContentView(frameLayout)
   }
 
+  private fun settings(animate: Boolean) {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView = ImageView(this)
+    imageView.setImageResource(R.raw.menu)
+    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView)
+
+    val rectangleGrayView = RectangleView(this)
+
+    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)
+    layoutParamsGrayRectangle.gravity = Gravity.CENTER
+
+    rectangleGrayView.layoutParams = layoutParamsGrayRectangle
+    rectangleGrayView.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleGrayView)
+
+    if (animate) {
+      val animationRectangleGray = AlphaAnimation(0f, 0.8f)
+      animationRectangleGray.duration = 500
+      animationRectangleGray.interpolator = LinearInterpolator()
+      animationRectangleGray.fillAfter = true
+
+      rectangleGrayView.startAnimation(animationRectangleGray)
+    } else {
+      rectangleGrayView.setAlpha(0.8f)
+    }
+
+    val rectangleView = RectangleView(this)
+
+    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
+    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleView.layoutParams = layoutParamsRectangle
+    rectangleView.setAlpha(0.8f)
+
+    frameLayout.addView(rectangleView)
+
+    val buttonStart = Button(this)
+    buttonStart.text = "Start"
+    buttonStart.textSize = 15f
+    buttonStart.setTextColor(0xFFFFFFFFF.toInt())
+    buttonStart.background = null
+
+    val layoutParamsStart = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsStart.setMargins(300, 0, 0, -10)
+
+    buttonStart.layoutParams = layoutParamsStart
+
+    buttonStart.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      scene1()
+    }
+
+    frameLayout.addView(buttonStart)
+
+    val buttonAbout = Button(this)
+    buttonAbout.text = "About"
+    buttonAbout.textSize = 15f
+    buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
+    buttonAbout.background = null
+
+    val layoutParamsAbout = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAbout.setMargins(550, 0, 0, -10)
+
+    buttonAbout.layoutParams = layoutParamsAbout
+
+    buttonAbout.setOnClickListener {
+      about(false)
+    }
+
+    frameLayout.addView(buttonAbout)
+
+    val buttonSettings = Button(this)
+    buttonSettings.text = "Settings"
+    buttonSettings.textSize = 15f
+    buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSettings.background = null
+
+    val layoutParamsSettings = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSettings.setMargins(800, 0, 0, -10)
+
+    buttonSettings.layoutParams = layoutParamsSettings
+
+    frameLayout.addView(buttonSettings)
+
+    val buttonBack = Button(this)
+    buttonBack.text = "Back"
+    buttonBack.textSize = 20f
+    buttonBack.setTextColor(0xFFFFFFFF.toInt())
+    buttonBack.background = null
+
+    val layoutParamsBack = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(250, 0, 0, 0)
+
+    buttonBack.layoutParams = layoutParamsBack
+
+    val animationTexts = AlphaAnimation(0f, 1f)
+    animationTexts.duration = 500
+    animationTexts.interpolator = LinearInterpolator()
+    animationTexts.fillAfter = true
+
+    buttonBack.startAnimation(animationTexts)
+
+    buttonBack.setOnClickListener {
+      menu()
+    }
+
+    frameLayout.addView(buttonBack)
+
+    val textViewTextSpeed = TextView(this)
+    textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
+    textViewTextSpeed.textSize = 15f
+    textViewTextSpeed.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsText = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsText.gravity = Gravity.TOP or Gravity.START
+    layoutParamsText.setMargins(500, 200, 0, 0)
+
+    textViewTextSpeed.layoutParams = layoutParamsText
+    textViewTextSpeed.startAnimation(animationTexts)
+
+    frameLayout.addView(textViewTextSpeed)
+
+    val seekBarTextSpeed = SeekBar(this)
+    seekBarTextSpeed.max = 100
+    seekBarTextSpeed.progress = textSpeed.toInt()
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      seekBarTextSpeed.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
+      seekBarTextSpeed.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
+    } else {
+      @Suppress("DEPRECATION")
+      seekBarTextSpeed.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
+
+      @Suppress("DEPRECATION")
+      seekBarTextSpeed.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
+    }
+
+    seekBarTextSpeed.thumbOffset = 0
+
+    val layoutParamsSeekBar = FrameLayout.LayoutParams(
+      500,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSeekBar.setMargins(460, 260, 0, 0)
+
+    seekBarTextSpeed.layoutParams = layoutParamsSeekBar
+    seekBarTextSpeed.startAnimation(animationTexts)
+
+    frameLayout.addView(seekBarTextSpeed)
+
+    val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+
+    seekBarTextSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        if (fromUser) {
+          textViewTextSpeed.text = "Text speed: " + progress.toString() + "ms"
+          textSpeed = progress.toLong()
+
+          editor.putLong("textSpeed", progress.toLong())
+          editor.apply()
+        }
+      }
+
+      override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+      override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+
+    val musicVolume = sharedPreferences.getFloat("musicVolume", 1f)
+
+    val textViewMusicVolume = TextView(this)
+    textViewMusicVolume.text = "Music volume: " + (musicVolume * 100).toInt().toString() + "%"
+    textViewMusicVolume.textSize = 15f
+    textViewMusicVolume.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsTextMusicVolume = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.END
+    layoutParamsTextMusicVolume.setMargins(0, 200, 380, 0)
+
+    textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume
+    textViewMusicVolume.startAnimation(animationTexts)
+
+    frameLayout.addView(textViewMusicVolume)
+
+    val seekBarMusicVolume = SeekBar(this)
+    seekBarMusicVolume.max = 100
+    seekBarMusicVolume.progress = (musicVolume * 100).toInt()
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      seekBarMusicVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
+      seekBarMusicVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
+    } else {
+      @Suppress("DEPRECATION")
+      seekBarMusicVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
+
+      @Suppress("DEPRECATION")
+      seekBarMusicVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
+    }
+
+    seekBarMusicVolume.thumbOffset = 0
+
+    val layoutParamsSeekBarMusicVolume = FrameLayout.LayoutParams(
+      500,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END
+    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 260, 0)
+
+    seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume
+
+    seekBarMusicVolume.startAnimation(animationTexts)
+
+    frameLayout.addView(seekBarMusicVolume)
+
+    seekBarMusicVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        if (fromUser) {
+          textViewMusicVolume.text = "Music volume: " + progress.toString() + "%"
+
+          editor.putFloat("musicVolume", progress.toFloat() / 100)
+          editor.apply()
+
+          mediaPlayer?.setVolume(progress.toFloat() / 100, progress.toFloat() / 100)
+        }
+      }
+
+      override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+      override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+
+    setContentView(frameLayout)
+  }
+
   private fun scene1() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
 
     val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.setImageResource(R.raw.pedro_staring)
     imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_Pedro)
@@ -356,6 +705,7 @@ class MainActivity : ComponentActivity() {
       override fun run() {
         mediaPlayer?.start()
 
+        mediaPlayer?.setVolume(effectVolume, effectVolume)
         mediaPlayer?.setOnCompletionListener {
           mediaPlayer?.stop()
           mediaPlayer?.release()
@@ -387,6 +737,17 @@ class MainActivity : ComponentActivity() {
         mediaPlayer = null
       }
 
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+      if (mediaPlayer != null) {
+        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
+      }
+
       menu()
     }
 
@@ -410,13 +771,13 @@ class MainActivity : ComponentActivity() {
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
 
     val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.setImageResource(R.raw.pedro_staring)
     imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
     val layoutParams_Pedro = FrameLayout.LayoutParams(
@@ -476,10 +837,10 @@ class MainActivity : ComponentActivity() {
           if (i < speechText.length) {
             textViewSpeech.text = speechText.substring(0, i + 1)
             i++
-            handler.postDelayed(this, 50L)
+            handler.postDelayed(this, textSpeed)
           }
         }
-      }, 50L)
+      }, textSpeed)
     } else {
       textViewSpeech.text = speechText
     }
@@ -591,13 +952,13 @@ class MainActivity : ComponentActivity() {
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
     val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.drawable.background_thanking)
+    imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
 
     val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.drawable.pedro_staring)
+    imageView_Pedro.setImageResource(R.raw.pedro_staring)
     imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
 
     val layoutParams_Pedro = FrameLayout.LayoutParams(
@@ -645,10 +1006,10 @@ class MainActivity : ComponentActivity() {
         if (i < speechText.length) {
           textViewSpeech.text = speechText.substring(0, i + 1)
           i++
-          handler.postDelayed(this, 50L)
+          handler.postDelayed(this, textSpeed)
         }
       }
-    }, 50L)
+    }, textSpeed)
 
     frameLayout.addView(textViewSpeech)
 

@@ -2,9 +2,9 @@ import fs from 'fs'
 
 import helper from './helper.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [] }
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  version: '1.5.2-beta',
+  version: '1.5.3-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -48,18 +48,20 @@ function init(options) {
   'import android.widget.ImageView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
   'import android.widget.Button' + '\n' +
+  'import android.widget.SeekBar' + '\n' +
   'import android.view.View' + '\n' +
   'import android.view.Gravity' + '\n' +
+  'import android.view.LayoutInflater' + '\n' +
   'import android.view.ViewGroup.LayoutParams' + '\n' +
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +
-  'import android.view.animation.AnimationUtils' + '\n' +
   'import android.view.WindowManager' + '\n' +
   'import android.graphics.PorterDuff' + '\n' +
   'import android.graphics.Paint' + '\n' +
   'import android.graphics.Canvas' + '\n' +
   'import android.content.Context' + '\n' +
+  'import android.content.SharedPreferences' + '\n' +
   'import androidx.activity.ComponentActivity' + '\n' +
   'import androidx.activity.compose.setContent' + '\n\n' +
 
@@ -93,12 +95,82 @@ function finalize() {
 
   helper.replace('__PERFORVNM_CODE__', '')
   helper.replace('__PERFORVNM_SCENES__', '')
-  helper.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1].name.toUpperCase() + '__', '')
+  helper.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1]?.name.toUpperCase() + '__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
-  helper.replace(/__PERFORVNM_FIRST_SCENE__/g, '// No scene created.')
+
+  helper.replace(/__PERFORVNM_FIRST_SCENE__/g, visualNovel.scenes.length != 0 ? (visualNovel.scenes[0].name + '(' + (!visualNovel.scenes[0].speech ? 'true' : '') + ')') : '// No scene created.')
+
   helper.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
-  helper.replace('__PERFORVNM_HEADER__', '')
+
+  if (visualNovel.menu) {
+    const menuCode = 'buttonStart.setOnClickListener {' + '\n' +
+                      (visualNovel.menu.options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
+                      '        mediaPlayer!!.stop()' + '\n' +
+                      '        mediaPlayer!!.release()' + '\n' +
+                      '        mediaPlayer = null' + '\n' +
+                      '      }' + '\n\n' : '') +
+
+                      '      ' + visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' + '\n' +
+                      '    }'
+
+    helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
+  }
+
+  let addHeaders = ''
+  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect)
+    addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
+
+  if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)
+    addHeaders += '  private var textSpeed = ' + (visualNovel.menu?.textSpeed || 1000) + 'L' + '\n'
+
+  if (visualNovel.menu || visualNovel.internalInfo.hasEffect)
+    addHeaders += '  private var effectVolume = 1f' + '\n'
+
+  if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech) {
+    addHeaders += (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
+
+                  '  override fun onPause() {' + '\n' +
+                  '    super.onPause()' + '\n\n' +
+
+                  '    mediaPlayer?.pause()' + '\n' +
+                  '  }' + '\n\n' +
+
+                  '  override fun onResume() {' + '\n' +
+                  '    super.onResume()' + '\n\n' +
+
+                  '    if (mediaPlayer != null) {' + '\n' +
+                  '      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())' + '\n' +
+                  '      mediaPlayer!!.start()' + '\n' +
+                  '    }' + '\n' +
+                  '  }' + '\n\n' : '\n') +
+                  '  override fun onDestroy() {' + '\n' +
+                  '    super.onDestroy()' + '\n\n' +
+
+                  (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect  ? '    handler.removeCallbacksAndMessages(null)' + (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '\n\n' : '') : '') +
+
+                  (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '    if (mediaPlayer != null) {' + '\n' +
+                  '      mediaPlayer!!.stop()' + '\n' +
+                  '      mediaPlayer!!.release()' + '\n' +
+                  '      mediaPlayer = null' + '\n' +
+                  '    }' : '') + '\n' +
+                  '  }' + '\n'
+  }
+
+  helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
+
+  const startMusicCode = (visualNovel.scenes[0]?.effect ? '\n\n' : '\n') + '      mediaPlayer = MediaPlayer.create(this, R.raw.' + visualNovel.menu?.backgroundMusic + ')' + '\n\n' +
+
+                         '      if (mediaPlayer != null) {' + '\n' +
+                         '        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)' + '\n' +
+                         '        mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
+
+                         '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
+                         '          mediaPlayer!!.start()' + '\n' +
+                         '        }' + '\n' +
+                         '      }'
+
+  helper.replace('__PERFORVNM_START_MUSIC__', startMusicCode)
 
   console.log('Code finished up, writing to file.. (Android)')
 
@@ -113,6 +185,14 @@ function finalize() {
       console.log('Android app configuration files written, ready to build. (Android)')
     })
   })
+
+  while (visualNovel.customXML.length > 0) {
+    const customXML = visualNovel.customXML.shift()
+
+    fs.writeFile(`../android/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
+      if (err) return console.error(`ERROR: ${err} (Android)`)
+    })
+  }
 }
 
 export default {

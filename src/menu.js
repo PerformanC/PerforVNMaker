@@ -3,6 +3,42 @@ import fs from 'fs'
 import helper from './helper.js'
 
 function make(options) {
+  if (!options.textColor) {
+    console.error('ERROR: Menu text color not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.backTextColor) {
+    console.error('ERROR: Menu "back" text color not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.textSpeed) {
+    console.error('ERROR: (Menu config) Scenes text speed not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.seekBar?.backgroundColor) {
+    console.error('ERROR: Seek bar background color not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.seekBar.progressColor) {
+    console.error('ERROR: Seek bar progress color not provided.')
+
+    process.exit(1)
+  }
+
+  if (!options.seekBar.thumbColor) {
+    console.error('ERROR: Seek bar thumb color not provided.')
+
+    process.exit(1)
+  }
+
   if (!options?.background?.image) {
     console.error('ERROR: Menu background image not provided.')
 
@@ -16,31 +52,11 @@ function make(options) {
       process.exit(1)
     }
 
-    if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
-      helper.replace('__PERFORVNM_ONDESTROY__', '\nif (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }')
-
-      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n')
-    } else {
-      helper.replace('__PERFORVNM_HEADER__', '__PERFORVNM_HEADER__  private var mediaPlayer: MediaPlayer? = null\n\n  override fun onPause() {\n    super.onPause()\n\n    mediaPlayer?.pause()\n  }\n\n  override fun onResume() {\n    super.onResume()\n\n    if (mediaPlayer != null) {\n      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())\n      mediaPlayer!!.start()\n    }\n  }\n\n  override fun onDestroy() {\n    super.onDestroy()__PERFORVNM_ONDESTROY__\n    if (mediaPlayer != null) {\n      mediaPlayer!!.stop()\n      mediaPlayer!!.release()\n      mediaPlayer = null\n    }\n  }\n')
-    }
-
     visualNovel.internalInfo.setPlayer = true
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/drawable`).find((file) => file.startsWith(options.background.image))) {
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image))) {
     console.error('ERROR: Menu background image not found.')
-
-    process.exit(1)
-  }
-
-  if (!options.textColor) {
-    console.error('ERROR: Menu text color not provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.backTextColor) {
-    console.error('ERROR: Menu "back" text color not provided.')
 
     process.exit(1)
   }
@@ -65,12 +81,32 @@ function make(options) {
 
   console.log('Starting VN, coding menu.. (Android)')
 
+  const mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n' +
+                   (options.background.music ? '      mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n\n' +
+
+                   '      if (mediaPlayer != null) {' + '\n' +
+                   '        mediaPlayer!!.start()' + '\n\n' +
+
+                   '        val volume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n' +
+                   '        mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
+                  
+                   '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
+                   '          mediaPlayer!!.start()' + '\n' +
+                   '        }' + '\n' +
+                   '      }' + '\n\n' : '') +
+
+                   '      textSpeed = sharedPreferences.getLong("textSpeed", ' + options.textSpeed + 'L)' + '\n\n' +
+
+                   '      menu()'
+
+  helper.replace(/__PERFORVNM_MENU__/g, mainCode)
+
   const menuCode = '  private fun menu() {' + '\n' +
                    '    val frameLayout = FrameLayout(this)' + '\n' +
                    '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                    '    val imageView = ImageView(this)' + '\n' +
-                   '    imageView.setImageResource(R.drawable.' + options.background.image + ')' + '\n' +
+                   '    imageView.setImageResource(R.raw.' + options.background.image + ')' + '\n' +
                    '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                    '    frameLayout.addView(imageView)' + '\n\n' +
@@ -101,14 +137,7 @@ function make(options) {
 
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
-                   '    buttonStart.setOnClickListener {' + '\n' +
-                   (options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
-                   '        mediaPlayer!!.stop()' + '\n' + 
-                   '        mediaPlayer!!.release()' + '\n' +
-                   '        mediaPlayer = null' + '\n' +
-                   '      }' + '\n\n' : '') +
-                   '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
-                   '    }' + '\n\n' +
+                   '    __PERFORVNM_MENU_START__' + '\n\n' +
 
                    '    frameLayout.addView(buttonStart)' + '\n\n' +
 
@@ -129,25 +158,37 @@ function make(options) {
                    '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
                    '    buttonAbout.setOnClickListener {' + '\n' +
-                   '      about()' + '\n' +
+                   '      about(true)' + '\n' +
                    '    }' + '\n\n' +
 
                    '    frameLayout.addView(buttonAbout)' + '\n\n' +
+
+                   '    val buttonSettings = Button(this)' + '\n' +
+                   '    buttonSettings.text = "Settings"' + '\n' +
+                   '    buttonSettings.textSize = 15f' + '\n' +
+                   '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
+                   '    buttonSettings.background = null' + '\n\n' +
+
+                   '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                   '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                   '      LayoutParams.WRAP_CONTENT' + '\n' +
+                   '    )' + '\n\n' +
+
+                   '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                   '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+
+                   '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
+
+                   '    buttonSettings.setOnClickListener {' + '\n' +
+                   '      settings(true)' + '\n' +
+                   '    }' + '\n\n' +
+
+                   '    frameLayout.addView(buttonSettings)' + '\n\n' +
 
                    '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
   helper.writeScene(menuCode)
-
-  if (options.background.music) helper.replace(/__PERFORVNM_MENU__/g, 'mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n' +
-                                                                                           '      mediaPlayer?.start()' + '\n\n' +
-
-                                                                                           '      mediaPlayer?.setOnCompletionListener {' + '\n' +
-                                                                                           '        mediaPlayer?.start()' + '\n' +
-                                                                                           '      }' + '\n\n' +
-
-                                                                                           '      menu()')
-  else helper.replace(/__PERFORVNM_MENU__/g, 'menu()')
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
@@ -168,22 +209,36 @@ function make(options) {
 
   helper.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
 
-  const sceneCode = '  private fun about() {' + '\n' +
+  const aboutCode = '  private fun about(animate: Boolean) {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                     '    val imageView = ImageView(this)' + '\n' +
-                    '    imageView.setImageResource(R.drawable.' + options.background.image + ')' + '\n' +
+                    '    imageView.setImageResource(R.raw.' + options.background.image + ')' + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                     '    frameLayout.addView(imageView)' + '\n\n' +
 
-                    '    val animationImageView = AlphaAnimation(0f, 0.5f)' + '\n' +
-                    '    animationImageView.duration = 500'  + '\n' +
-                    '    animationImageView.interpolator = LinearInterpolator()' + '\n' +
-                    '    animationImageView.fillAfter = true' + '\n\n' +
+                    '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
+
+                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)' + '\n' +
+                    '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
+
+                    '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
+                    '    rectangleGrayView.setColor(0xFF000000.toInt())' + '\n\n' +
+
+                    '    frameLayout.addView(rectangleGrayView)' + '\n\n' +
+
+                    '    if (animate) {' + '\n' +
+                    '      val animationRectangleGray = AlphaAnimation(0f, 0.8f)' + '\n' +
+                    '      animationRectangleGray.duration = 500'  + '\n' +
+                    '      animationRectangleGray.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationRectangleGray.fillAfter = true' + '\n\n' +
                 
-                    '    imageView.startAnimation(animationImageView)' + '\n' +
+                    '      rectangleGrayView.startAnimation(animationRectangleGray)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      rectangleGrayView.setAlpha(0.8f)' + '\n' +
+                    '    }' + '\n\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
@@ -211,14 +266,7 @@ function make(options) {
 
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
-                    '    buttonStart.setOnClickListener {' + '\n' +
-                    (options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
-                    '        mediaPlayer!!.stop()' + '\n' + 
-                    '        mediaPlayer!!.release()' + '\n' +
-                    '        mediaPlayer = null' + '\n' +
-                    '      }' + '\n\n' : '') +
-                    '      ' + (visualNovel.scenes[0] ? visualNovel.scenes[0].name + '()' : '__PERFORVNM_FIRST_SCENE__') + '\n' +
-                    '    }' + '\n\n' +
+                    '    __PERFORVNM_MENU_START__' + '\n\n' +
 
                     '    frameLayout.addView(buttonStart)' + '\n\n' +
 
@@ -239,6 +287,28 @@ function make(options) {
                     '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
                     '    frameLayout.addView(buttonAbout)' + '\n\n' +
+
+                    '    val buttonSettings = Button(this)' + '\n' +
+                    '    buttonSettings.text = "Settings"' + '\n' +
+                    '    buttonSettings.textSize = 15f' + '\n' +
+                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
+                    '    buttonSettings.background = null' + '\n\n' +
+
+                    '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                    '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+
+                    '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
+
+                    '    buttonSettings.setOnClickListener {' + '\n' +
+                    '      settings(false)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    frameLayout.addView(buttonSettings)' + '\n\n' +
 
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
@@ -348,11 +418,310 @@ function make(options) {
                     '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
-  helper.writeScene(sceneCode)
+  helper.writeScene(aboutCode)
+  
+  const settingsCode = '  private fun settings(animate: Boolean) {' + '\n' +
+                    '    val frameLayout = FrameLayout(this)' + '\n' +
+                    '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
+                    '    val imageView = ImageView(this)' + '\n' +
+                    '    imageView.setImageResource(R.raw.' + options.background.image + ')' + '\n' +
+                    '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+
+                    '    frameLayout.addView(imageView)' + '\n\n' +
+
+                    '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
+
+                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)' + '\n' +
+                    '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
+
+                    '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
+                    '    rectangleGrayView.setColor(0xFF000000.toInt())' + '\n\n' +
+
+                    '    frameLayout.addView(rectangleGrayView)' + '\n\n' +
+
+                    '    if (animate) {' + '\n' +
+                    '      val animationRectangleGray = AlphaAnimation(0f, 0.8f)' + '\n' +
+                    '      animationRectangleGray.duration = 500'  + '\n' +
+                    '      animationRectangleGray.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationRectangleGray.fillAfter = true' + '\n\n' +
+                
+                    '      rectangleGrayView.startAnimation(animationRectangleGray)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      rectangleGrayView.setAlpha(0.8f)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    val rectangleView = RectangleView(this)' + '\n\n' +
+
+                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)' + '\n' +
+                    '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
+
+                    '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
+                    '    rectangleView.setAlpha(' + options.footer.opacity + 'f)' + '\n\n' +
+
+                    '    frameLayout.addView(rectangleView)' + '\n\n' +
+
+                    '    val buttonStart = Button(this)' + '\n' +
+                    '    buttonStart.text = "Start"' + '\n' +
+                    '    buttonStart.textSize = 15f' + '\n' +
+                    '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
+                    '    buttonStart.background = null' + '\n\n' +
+
+                    '    val layoutParamsStart = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                    '    layoutParamsStart.setMargins(300, 0, 0, -10)' + '\n\n' +
+
+                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
+
+                    '    __PERFORVNM_MENU_START__' + '\n\n' +
+
+                    '    frameLayout.addView(buttonStart)' + '\n\n' +
+
+                    '    val buttonAbout = Button(this)' + '\n' +
+                    '    buttonAbout.text = "About"' + '\n' +
+                    '    buttonAbout.textSize = 15f' + '\n' +
+                    '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
+                    '    buttonAbout.background = null' + '\n\n' +
+
+                    '    val layoutParamsAbout = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                    '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
+
+                    '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
+
+                    '    buttonAbout.setOnClickListener {' + '\n' +
+                    '      about(false)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    frameLayout.addView(buttonAbout)' + '\n\n' +
+
+                    '    val buttonSettings = Button(this)' + '\n' +
+                    '    buttonSettings.text = "Settings"' + '\n' +
+                    '    buttonSettings.textSize = 15f' + '\n' +
+                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
+                    '    buttonSettings.background = null' + '\n\n' +
+
+                    '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                    '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+
+                    '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
+
+                    '    frameLayout.addView(buttonSettings)' + '\n\n' +
+
+                    '    val buttonBack = Button(this)' + '\n' +
+                    '    buttonBack.text = "Back"' + '\n' +
+                    '    buttonBack.textSize = 20f' + '\n' +
+                    '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
+                    '    buttonBack.background = null' + '\n\n' +
+
+                    '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsBack.setMargins(250, 0, 0, 0)' + '\n\n' +
+
+                    '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
+
+                    '    val animationTexts = AlphaAnimation(0f, 1f)' + '\n' +
+                    '    animationTexts.duration = 500'  + '\n' +
+                    '    animationTexts.interpolator = LinearInterpolator()' + '\n' +
+                    '    animationTexts.fillAfter = true' + '\n\n' +
+
+                    '    buttonBack.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    buttonBack.setOnClickListener {' + '\n' +
+                    '      menu()' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    frameLayout.addView(buttonBack)' + '\n\n' +
+
+                    '    val textViewTextSpeed = TextView(this)' + '\n' +
+                    '    textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"' + '\n' +
+                    '    textViewTextSpeed.textSize = 15f' + '\n' +
+                    '    textViewTextSpeed.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
+
+                    '    val layoutParamsText = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsText.setMargins(500, 200, 0, 0)' + '\n\n' +
+
+                    '    textViewTextSpeed.layoutParams = layoutParamsText' + '\n' +
+                    '    textViewTextSpeed.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(textViewTextSpeed)' + '\n\n' +
+
+                    '    val seekBarTextSpeed = SeekBar(this)' + '\n' +
+                    '    seekBarTextSpeed.max = 100' + '\n' +
+                    '    seekBarTextSpeed.progress = textSpeed.toInt()' + '\n\n' +
+
+                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '      seekBarTextSpeed.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
+                    '      seekBarTextSpeed.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarTextSpeed.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
+
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarTextSpeed.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    seekBarTextSpeed.thumbOffset = 0' + '\n\n' +
+
+                    '    val layoutParamsSeekBar = FrameLayout.LayoutParams(' + '\n' +
+                    '      500,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsSeekBar.setMargins(460, 260, 0, 0)' + '\n\n' +
+
+                    '    seekBarTextSpeed.layoutParams = layoutParamsSeekBar' + '\n' +
+                    '    seekBarTextSpeed.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(seekBarTextSpeed)' + '\n\n' +
+
+                    '    val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n' +
+                    '    val editor = sharedPreferences.edit()' + '\n\n' +
+
+                    '    seekBarTextSpeed.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
+                    '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
+                    '        if (fromUser) {' + '\n' +
+                    '          textViewTextSpeed.text = "Text speed: " + progress.toString() + "ms"' + '\n' +
+                    '          textSpeed = progress.toLong()' + '\n\n' +
+
+                    '          editor.putLong("textSpeed", progress.toLong())' + '\n' +
+                    '          editor.apply()' + '\n' +
+                    '        }' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      override fun onStartTrackingTouch(seekBar: SeekBar?) {}' + '\n\n' +
+
+                    '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
+                    '    })' + '\n\n' +
+
+                    '    val musicVolume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n\n' +
+
+                    '    val textViewMusicVolume = TextView(this)' + '\n' +
+                    '    textViewMusicVolume.text = "Music volume: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
+                    '    textViewMusicVolume.textSize = 15f' + '\n' +
+                    '    textViewMusicVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
+
+                    '    val layoutParamsTextMusicVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
+                    '    layoutParamsTextMusicVolume.setMargins(0, 200, 380, 0)' + '\n\n' +
+
+                    '    textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume' + '\n' +
+                    '    textViewMusicVolume.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(textViewMusicVolume)' + '\n\n' +
+
+                    '    val seekBarMusicVolume = SeekBar(this)' + '\n' +
+                    '    seekBarMusicVolume.max = 100' + '\n' +
+                    '    seekBarMusicVolume.progress = (musicVolume * 100).toInt()' + '\n\n' +
+
+                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '      seekBarMusicVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
+                    '      seekBarMusicVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarMusicVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
+
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarMusicVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    seekBarMusicVolume.thumbOffset = 0' + '\n\n' +
+
+                    '    val layoutParamsSeekBarMusicVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '      500,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
+                    '    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 260, 0)' + '\n\n' +
+
+                    '    seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume' + '\n\n' +
+
+                    '    seekBarMusicVolume.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(seekBarMusicVolume)' + '\n\n' +
+
+                    '    seekBarMusicVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
+                    '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
+                    '        if (fromUser) {' + '\n' +
+                    '          textViewMusicVolume.text = "Music volume: " + progress.toString() + "%"' + '\n\n' +
+
+                    '          editor.putFloat("musicVolume", progress.toFloat() / 100)' + '\n' +
+                    '          editor.apply()' + '\n\n' +
+
+                    '          mediaPlayer?.setVolume(progress.toFloat() / 100, progress.toFloat() / 100)' + '\n' +
+                    '        }' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      override fun onStartTrackingTouch(seekBar: SeekBar?) {}' + '\n\n' +
+
+                    '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
+                    '    })' + '\n\n' +
+
+                    '    setContentView(frameLayout)' + '\n' +
+                    '  }'
+
+  helper.writeScene(settingsCode)
+
+  visualNovel.customXML.push({
+    path: 'drawable/custom_seekbar_progress.xml',
+    content: '<layer-list xmlns:android="http://schemas.android.com/apk/res/android">' + '\n' +
+             '  <item android:id="@android:id/background">' + '\n' +
+             '    <shape android:shape="rectangle">' + '\n' +
+             '      <solid android:color="#' + options.seekBar.backgroundColor + '" />' + '\n' +
+             '      <size android:height="12dp" />' + '\n' +
+             '    </shape>' + '\n' +
+             '  </item>' + '\n' +
+             '  <item android:id="@android:id/progress">' + '\n' +
+             '    <clip>' + '\n' +
+             '      <shape android:shape="rectangle">' + '\n' +
+             '        <solid android:color="#' + options.seekBar.progressColor + '" />' + '\n' +
+             '        <size android:height="12dp" />' + '\n' +
+             '      </shape>' + '\n' +
+             '    </clip>' + '\n' +
+             '  </item>' + '\n' +
+             '</layer-list>'
+  })
+
+  visualNovel.customXML.push({
+    path: 'drawable/custom_seekbar_thumb.xml',
+    content: '<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">' + '\n' +
+             '  <solid android:color="#' + options.seekBar.thumbColor + '" />' + '\n' +
+             '  <size android:width="7dp" android:height="12dp" />' + '\n' +
+             '</shape>'
+  })
+  
   visualNovel.menu = {
     name: 'menu()',
-    backgroundMusic: true
+    backgroundMusic: options.background.music,
+    options
   }
 
   console.log('Menu coded. (Android)')

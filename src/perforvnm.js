@@ -10,12 +10,18 @@ coder.init({
 })
 
 menu.make({
+  textSpeed: 50,
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  seekBar: {
+    backgroundColor: 'F00000',
+    progressColor: 'FFFFFF',
+    thumbColor: '22FF00'
+  },
   background: {
     image: 'menu',
     music: 'menu_music' // https://www.youtube.com/watch?v=DEhBqcbDHh4
   },
-  textColor: 'FFFFFF',
-  backTextColor: 'FFFFFF',
   footer: {
     color: '000000',
     textColor: 'FFFFFFF',

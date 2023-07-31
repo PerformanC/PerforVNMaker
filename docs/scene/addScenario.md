@@ -4,7 +4,7 @@
 
 Adds a scenario (background image) to the scene.
 
-OBS: The scenario image must be in the `res/drawable` folder.
+OBS: The scenario image must be in the `res/raw` folder.
 
 ## Syntax
 
