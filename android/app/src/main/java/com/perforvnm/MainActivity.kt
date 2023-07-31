@@ -369,7 +369,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.5.3-beta"
+    textView3.text = "1.5.4-beta"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 

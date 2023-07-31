@@ -238,23 +238,6 @@ function finalize(scene, options) {
 
   console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
 
-  if (visualNovel.scenes.length != 0) {
-    const lastScene = visualNovel.scenes[visualNovel.scenes.length - 1]
-
-    helper.replace('__PERFORVNM_STOP_LISTERNING__', '')
-
-    const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                 (lastScene.effect ? '      if (mediaPlayer != null) {' + '\n' +
-                 '        mediaPlayer!!.stop()' + '\n' + 
-                 '        mediaPlayer!!.release()' + '\n' +
-                 '        mediaPlayer = null' + '\n' +
-                 '      }' + '\n\n' : '') +
-                 '      ' + scene.name + '(' + (!lastScene.speech ? 'true' : '') +')' + '__PERFORVNM_STOP_LISTERNING__' + '\n' +
-                 '    }'
-
-    helper.replace('__PERFORVNM_SCENE_' + lastScene.name.toUpperCase() + '__', code)
-  }
-
   let sceneCode = '  private fun ' + scene.name + '(' + ((visualNovel.scenes.length == 0 ? scene.speech : !visualNovel.scenes[visualNovel.scenes.length - 1].speech) ? 'animate: Boolean' : '') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
@@ -616,9 +599,7 @@ function finalize(scene, options) {
 
   sceneCode += '\n' + '  }'
 
-  helper.writeScene(sceneCode)
-
-  visualNovel.scenes.push(scene)
+  visualNovel.scenes.push({ ...scene, code: sceneCode })
 
   console.log(`Scene "${scene.name}" coded. (Android)`)
 }

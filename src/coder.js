@@ -4,7 +4,7 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  version: '1.5.3-beta',
+  version: '1.5.4-beta',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -94,14 +94,39 @@ function finalize() {
   console.log('Finalizing VN, finishing up code.. (Android)')
 
   helper.replace('__PERFORVNM_CODE__', '')
-  helper.replace('__PERFORVNM_SCENES__', '')
-  helper.replace('__PERFORVNM_SCENE_' + visualNovel.scenes[visualNovel.scenes.length - 1]?.name.toUpperCase() + '__', '')
+
+  if (visualNovel.scenes.length) {
+    let scenesCode = []
+    let i = 0
+
+    for (const scene of visualNovel.scenes) {
+      if (i != visualNovel.scenes.length - 1) {
+        const nextScene = visualNovel.scenes[i + 1]
+
+        const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
+                     (scene.effect ? '      if (mediaPlayer != null) {' + '\n' +
+                     '        mediaPlayer!!.stop()' + '\n' + 
+                     '        mediaPlayer!!.release()' + '\n' +
+                     '        mediaPlayer = null' + '\n' +
+                     '      }' + '\n\n' : '') +
+                     '      ' + nextScene.name + '(' + (nextScene.speech && !scene.speech ? 'true' : '') +')' + '\n' +
+
+                     (i == visualNovel.scenes.length - 2 ? '\n      it.setOnClickListener(null)\n' : '') +
+                     '    }'
+
+       scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
+      } else scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
+
+      scenesCode.push('\n\n' + scene.code)
+
+      i++
+    }
+
+    helper.replace('__PERFORVNM_SCENES__', scenesCode.join(''))
+  } else helper.replace('__PERFORVNM_SCENES__', '')
+
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
-
-  helper.replace(/__PERFORVNM_FIRST_SCENE__/g, visualNovel.scenes.length != 0 ? (visualNovel.scenes[0].name + '(' + (!visualNovel.scenes[0].speech ? 'true' : '') + ')') : '// No scene created.')
-
-  helper.replace('__PERFORVNM_STOP_LISTERNING__', '\n\n      it.setOnClickListener(null)')
 
   if (visualNovel.menu) {
     const menuCode = 'buttonStart.setOnClickListener {' + '\n' +
@@ -111,7 +136,7 @@ function finalize() {
                       '        mediaPlayer = null' + '\n' +
                       '      }' + '\n\n' : '') +
 
-                      '      ' + visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' + '\n' +
+                      '      ' + (visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' + '\n' : '      // No scenes created.' + '\n') +
                       '    }'
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
@@ -193,6 +218,14 @@ function finalize() {
       if (err) return console.error(`ERROR: ${err} (Android)`)
     })
   }
+
+  fs.readFile('package.json', 'utf8', (err, data) => {
+    if (err) return console.error(`ERROR: ${err} (Android)`)
+
+    fs.writeFile('package.json', data.replace(/"version": ".*"/g, `"version": "${PerforVNM.version}"`), (err) => {
+      if (err) return console.error(`ERROR: ${err} (Android)`)
+    })
+  })
 }
 
 export default {
