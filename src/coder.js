@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.16.0-b.0',
-  generatedCodeVersion: '1.14.2-b.0',
+  codeGeneratorVersion: '1.16.1-b.0',
+  generatedCodeVersion: '1.14.3-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -153,12 +153,12 @@ function finalize() {
     addHeaders += '  private var textSpeed = ' + (visualNovel.menu?.textSpeed || 1000) + 'L' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasEffect)
-    addHeaders += '  private var effectVolume = 1f' + '\n'
+    addHeaders += '  private var sEffectVolume = 1f' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSceneMusic)
     addHeaders += '  private var sceneMusicVolume = 1f' + '\n'
 
-  if (visualNovel.internalInfo.hasSceneMusic && visualNovel.internalInfo.hasEffect)
+  if (visualNovel.internalInfo.needs2Players)
     addHeaders += '  private var mediaPlayer2: MediaPlayer? = null' + '\n'
 
   if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
@@ -169,7 +169,7 @@ function finalize() {
 
                   '    mediaPlayer?.pause()' + '\n' +
 
-                  (visualNovel.internalInfo.hasSceneMusic && visualNovel.internalInfo.hasEffect ? '    mediaPlayer2?.pause()' + '\n' : '') +
+                  (visualNovel.internalInfo.needs2Players ? '    mediaPlayer2?.pause()' + '\n' : '') +
 
                   '  }' + '\n\n' +
 
@@ -181,7 +181,7 @@ function finalize() {
                   '      mediaPlayer!!.start()' + '\n' +
                   '    }' + '\n' +
 
-                  (visualNovel.internalInfo.hasSceneMusic && visualNovel.internalInfo.hasEffect ? '\n' +
+                  (visualNovel.internalInfo.needs2Players ? '\n' +
                   '    if (mediaPlayer2 != null) {' + '\n' +
                   '      mediaPlayer2!!.seekTo(mediaPlayer2!!.getCurrentPosition())' + '\n' +
                   '      mediaPlayer2!!.start()' + '\n' +
@@ -191,15 +191,15 @@ function finalize() {
                   '  override fun onDestroy() {' + '\n' +
                   '    super.onDestroy()' + '\n\n' +
 
-                  (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect  ? '    handler.removeCallbacksAndMessages(null)' + (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || (visualNovel.internalInfo.hasSceneMusic && visualNovel.internalInfo.hasEffect) ? '\n\n' : '') : '') +
+                  (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect  ? '    handler.removeCallbacksAndMessages(null)' + (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.needs2Players ? '\n\n' : '') : '') +
 
                   (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '    if (mediaPlayer != null) {' + '\n' +
                   '      mediaPlayer!!.stop()' + '\n' +
                   '      mediaPlayer!!.release()' + '\n' +
                   '      mediaPlayer = null' + '\n' +
-                  '    }' : '') + '\n' +
+                  '    }' : '') + (visualNovel.internalInfo.needs2Players ? '\n\n' : '') +
 
-                  (visualNovel.internalInfo.hasSceneMusic && visualNovel.internalInfo.hasEffect ? '\n' +
+                  (visualNovel.internalInfo.needs2Players ? '\n' +
                   '    if (mediaPlayer2 != null) {' + '\n' +
                   '      mediaPlayer2!!.stop()' + '\n' +
                   '      mediaPlayer2!!.release()' + '\n' +

@@ -31,7 +31,7 @@ import androidx.activity.compose.setContent
 class MainActivity : ComponentActivity() {
   private val handler = Handler(Looper.getMainLooper())
   private var textSpeed = 1000L
-  private var effectVolume = 1f
+  private var sEffectVolume = 1f
   private var sceneMusicVolume = 1f
   private var mediaPlayer: MediaPlayer? = null
 
@@ -59,8 +59,7 @@ class MainActivity : ComponentActivity() {
       mediaPlayer!!.stop()
       mediaPlayer!!.release()
       mediaPlayer = null
-    }
-  }
+    }  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -93,6 +92,8 @@ class MainActivity : ComponentActivity() {
       }
 
       textSpeed = sharedPreferences.getLong("textSpeed", 50L)
+
+      sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)
 
       menu()
     }
@@ -372,7 +373,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.15.0-b.0 (code generator), 1.12.2-b.0 (generated code)"
+    textView3.text = "1.16.1-b.0 (code generator), 1.14.3-b.0 (generated code)"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -682,64 +683,62 @@ class MainActivity : ComponentActivity() {
       override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     })
 
-    val soundVolume = sharedPreferences.getFloat("soundVolume", 1f)
+    val textViewSEffectVolume = TextView(this)
+    textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"
+    textViewSEffectVolume.textSize = 15f
+    textViewSEffectVolume.setTextColor(0xFFFFFFFF.toInt())
 
-    val textViewSoundVolume = TextView(this)
-    textViewSoundVolume.text = "Sound effects: " + (soundVolume * 100).toInt().toString() + "%"
-    textViewSoundVolume.textSize = 15f
-    textViewSoundVolume.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsTextSoundVolume = FrameLayout.LayoutParams(
+    val layoutParamsTextSEffectVolume = FrameLayout.LayoutParams(
       LayoutParams.WRAP_CONTENT,
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsTextSoundVolume.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextSoundVolume.setMargins(1550, 330, 0, 0)
+    layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
+    layoutParamsTextSEffectVolume.setMargins(1550, 330, 0, 0)
 
-    textViewSoundVolume.layoutParams = layoutParamsTextSoundVolume
-    textViewSoundVolume.startAnimation(animationTexts)
+    textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume
+    textViewSEffectVolume.startAnimation(animationTexts)
 
-    frameLayout.addView(textViewSoundVolume)
+    frameLayout.addView(textViewSEffectVolume)
 
-    val seekBarSoundVolume = SeekBar(this)
-    seekBarSoundVolume.max = 100
-    seekBarSoundVolume.progress = (soundVolume * 100).toInt()
+    val seekBarSEffectVolume = SeekBar(this)
+    seekBarSEffectVolume.max = 100
+    seekBarSEffectVolume.progress = (sEffectVolume * 100).toInt()
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
-      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
+      seekBarSEffectVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
+      seekBarSEffectVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
     } else {
       @Suppress("DEPRECATION")
-      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
+      seekBarSEffectVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
 
       @Suppress("DEPRECATION")
-      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
+      seekBarSEffectVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
     }
 
-    seekBarSoundVolume.thumbOffset = 0
+    seekBarSEffectVolume.thumbOffset = 0
 
-    val layoutParamsSeekBarSoundVolume = FrameLayout.LayoutParams(
+    val layoutParamsSeekBarSEffectVolume = FrameLayout.LayoutParams(
       500,
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsSeekBarSoundVolume.gravity = Gravity.TOP or Gravity.END
-    layoutParamsSeekBarSoundVolume.setMargins(0, 390, 390, 0)
+    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.END
+    layoutParamsSeekBarSEffectVolume.setMargins(0, 390, 390, 0)
 
-    seekBarSoundVolume.layoutParams = layoutParamsSeekBarSoundVolume
-    seekBarSoundVolume.startAnimation(animationTexts)
+    seekBarSEffectVolume.layoutParams = layoutParamsSeekBarSEffectVolume
+    seekBarSEffectVolume.startAnimation(animationTexts)
 
-    frameLayout.addView(seekBarSoundVolume)
+    frameLayout.addView(seekBarSEffectVolume)
 
-    seekBarSoundVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+    seekBarSEffectVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
       override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-          textViewSoundVolume.text = "Sound effects: " + progress.toString() + "%"
+          textViewSEffectVolume.text = "Sound effects: " + progress.toString() + "%"
 
-          effectVolume = progress.toFloat() / 100
+          sEffectVolume = progress.toFloat() / 100
 
-          editor.putFloat("soundVolume", effectVolume)
+          editor.putFloat("sEffectVolume", sEffectVolume)
           editor.apply()
 
         }
@@ -855,7 +854,7 @@ class MainActivity : ComponentActivity() {
       override fun run() {
         mediaPlayer!!.start()
 
-        mediaPlayer!!.setVolume(effectVolume, effectVolume)
+        mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
 
         mediaPlayer!!.setOnCompletionListener {
           if (mediaPlayer != null) {

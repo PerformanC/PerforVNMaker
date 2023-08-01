@@ -606,7 +606,7 @@ function finalize(scene, options) {
       codes.push('    if (mediaPlayer2 != null) {' + '\n\n' +
                  '      mediaPlayer2!!.start()' + '\n\n' +
 
-                 '      mediaPlayer2!!.setVolume(effectVolume, effectVolume)' + '\n' +
+                 '      mediaPlayer2!!.setVolume(sEffectVolume, sEffectVolume)' + '\n' +
 
                  '      mediaPlayer2!!.setOnCompletionListener {' + '\n' +
                  '        if (mediaPlayer2 != null) {' + '\n' +
@@ -620,7 +620,7 @@ function finalize(scene, options) {
                     '      override fun run() {' + '\n' +
                     '        mediaPlayer2!!.start()' + '\n\n' +
 
-                    '        mediaPlayer2!!.setVolume(effectVolume, effectVolume)' + '\n\n' +
+                    '        mediaPlayer2!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
 
                     '        mediaPlayer2!!.setOnCompletionListener {' + '\n' +
                     '          if (mediaPlayer2 != null) {' + '\n' +
@@ -647,7 +647,7 @@ function finalize(scene, options) {
                    '    if (mediaPlayer != null) {' + '\n' +
                    '      mediaPlayer!!.start()' + '\n\n' +
 
-                   '      mediaPlayer!!.setVolume(effectVolume, effectVolume)' + '\n\n' +
+                   '      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
 
                    '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
                    '        if (mediaPlayer != null) {' + '\n' +
@@ -664,7 +664,7 @@ function finalize(scene, options) {
                       '      override fun run() {' + '\n' +
                       '        mediaPlayer!!.start()' + '\n\n' +
 
-                      '        mediaPlayer!!.setVolume(effectVolume, effectVolume)' + '\n\n' +
+                      '        mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
 
                       '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
                       '          if (mediaPlayer != null) {' + '\n' +

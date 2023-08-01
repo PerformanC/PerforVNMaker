@@ -97,6 +97,8 @@ function make(options) {
 
                    '      textSpeed = sharedPreferences.getLong("textSpeed", ' + options.textSpeed + 'L)' + '\n\n' +
 
+                   '      sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)' + '\n\n' +
+
                    '      menu()'
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
@@ -684,64 +686,62 @@ function make(options) {
                     '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
                     '    })' + '\n\n' +
 
-                    '    val soundVolume = sharedPreferences.getFloat("soundVolume", 1f)' + '\n\n' +
+                    '    val textViewSEffectVolume = TextView(this)' + '\n' +
+                    '    textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"' + '\n' +
+                    '    textViewSEffectVolume.textSize = 15f' + '\n' +
+                    '    textViewSEffectVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val textViewSoundVolume = TextView(this)' + '\n' +
-                    '    textViewSoundVolume.text = "Sound effects: " + (soundVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewSoundVolume.textSize = 15f' + '\n' +
-                    '    textViewSoundVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
-
-                    '    val layoutParamsTextSoundVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsTextSEffectVolume = FrameLayout.LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsTextSoundVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsTextSoundVolume.setMargins(1550, 330, 0, 0)' + '\n\n' +
+                    '    layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsTextSEffectVolume.setMargins(1550, 330, 0, 0)' + '\n\n' +
 
-                    '    textViewSoundVolume.layoutParams = layoutParamsTextSoundVolume' + '\n' +
-                    '    textViewSoundVolume.startAnimation(animationTexts)' + '\n\n' +
+                    '    textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume' + '\n' +
+                    '    textViewSEffectVolume.startAnimation(animationTexts)' + '\n\n' +
 
-                    '    frameLayout.addView(textViewSoundVolume)' + '\n\n' +
+                    '    frameLayout.addView(textViewSEffectVolume)' + '\n\n' +
 
-                    '    val seekBarSoundVolume = SeekBar(this)' + '\n' +
-                    '    seekBarSoundVolume.max = 100' + '\n' +
-                    '    seekBarSoundVolume.progress = (soundVolume * 100).toInt()' + '\n\n' +
+                    '    val seekBarSEffectVolume = SeekBar(this)' + '\n' +
+                    '    seekBarSEffectVolume.max = 100' + '\n' +
+                    '    seekBarSEffectVolume.progress = (sEffectVolume * 100).toInt()' + '\n\n' +
 
                     '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
-                    '      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
-                    '      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
+                    '      seekBarSEffectVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
+                    '      seekBarSEffectVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
                     '    } else {' + '\n' +
                     '      @Suppress("DEPRECATION")' + '\n' +
-                    '      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
+                    '      seekBarSEffectVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
 
                     '      @Suppress("DEPRECATION")' + '\n' +
-                    '      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
+                    '      seekBarSEffectVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
                     '    }' + '\n\n' +
 
-                    '    seekBarSoundVolume.thumbOffset = 0' + '\n\n' +
+                    '    seekBarSEffectVolume.thumbOffset = 0' + '\n\n' +
 
-                    '    val layoutParamsSeekBarSoundVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSeekBarSEffectVolume = FrameLayout.LayoutParams(' + '\n' +
                     '      500,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsSeekBarSoundVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsSeekBarSoundVolume.setMargins(0, 390, 390, 0)' + '\n\n' +
+                    '    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
+                    '    layoutParamsSeekBarSEffectVolume.setMargins(0, 390, 390, 0)' + '\n\n' +
 
-                    '    seekBarSoundVolume.layoutParams = layoutParamsSeekBarSoundVolume' + '\n' +
-                    '    seekBarSoundVolume.startAnimation(animationTexts)' + '\n\n' +
+                    '    seekBarSEffectVolume.layoutParams = layoutParamsSeekBarSEffectVolume' + '\n' +
+                    '    seekBarSEffectVolume.startAnimation(animationTexts)' + '\n\n' +
 
-                    '    frameLayout.addView(seekBarSoundVolume)' + '\n\n' +
+                    '    frameLayout.addView(seekBarSEffectVolume)' + '\n\n' +
 
-                    '    seekBarSoundVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
+                    '    seekBarSEffectVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
                     '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
                     '        if (fromUser) {' + '\n' +
-                    '          textViewSoundVolume.text = "Sound effects: " + progress.toString() + "%"' + '\n\n' +
+                    '          textViewSEffectVolume.text = "Sound effects: " + progress.toString() + "%"' + '\n\n' +
 
-                    '          effectVolume = progress.toFloat() / 100' + '\n\n' +
+                    '          sEffectVolume = progress.toFloat() / 100' + '\n\n' +
 
-                    '          editor.putFloat("soundVolume", effectVolume)' + '\n' +
+                    '          editor.putFloat("sEffectVolume", sEffectVolume)' + '\n' +
                     '          editor.apply()' + '\n\n' +
                     '        }' + '\n' +
                     '      }' + '\n\n' +
