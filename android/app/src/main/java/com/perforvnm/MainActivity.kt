@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
   private val handler = Handler(Looper.getMainLooper())
   private var textSpeed = 1000L
   private var effectVolume = 1f
+  private var sceneMusicVolume = 1f
   private var mediaPlayer: MediaPlayer? = null
 
   override fun onPause() {
@@ -558,7 +559,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(500, 200, 0, 0)
+    layoutParamsText.setMargins(542, 200, 0, 0)
 
     textViewTextSpeed.layoutParams = layoutParamsText
     textViewTextSpeed.startAnimation(animationTexts)
@@ -588,7 +589,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSeekBar.setMargins(460, 260, 0, 0)
+    layoutParamsSeekBar.setMargins(500, 260, 0, 0)
 
     seekBarTextSpeed.layoutParams = layoutParamsSeekBar
     seekBarTextSpeed.startAnimation(animationTexts)
@@ -617,7 +618,7 @@ class MainActivity : ComponentActivity() {
     val musicVolume = sharedPreferences.getFloat("musicVolume", 1f)
 
     val textViewMusicVolume = TextView(this)
-    textViewMusicVolume.text = "Music volume: " + (musicVolume * 100).toInt().toString() + "%"
+    textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"
     textViewMusicVolume.textSize = 15f
     textViewMusicVolume.setTextColor(0xFFFFFFFF.toInt())
 
@@ -626,8 +627,8 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.END
-    layoutParamsTextMusicVolume.setMargins(0, 200, 380, 0)
+    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
+    layoutParamsTextMusicVolume.setMargins(1550, 200, 0, 0)
 
     textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume
     textViewMusicVolume.startAnimation(animationTexts)
@@ -657,10 +658,9 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END
-    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 260, 0)
+    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 390, 0)
 
     seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume
-
     seekBarMusicVolume.startAnimation(animationTexts)
 
     frameLayout.addView(seekBarMusicVolume)
@@ -668,12 +668,145 @@ class MainActivity : ComponentActivity() {
     seekBarMusicVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
       override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
         if (fromUser) {
-          textViewMusicVolume.text = "Music volume: " + progress.toString() + "%"
+          textViewMusicVolume.text = "Menu music: " + progress.toString() + "%"
 
           editor.putFloat("musicVolume", progress.toFloat() / 100)
           editor.apply()
 
           mediaPlayer?.setVolume(progress.toFloat() / 100, progress.toFloat() / 100)
+        }
+      }
+
+      override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+      override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+
+    val soundVolume = sharedPreferences.getFloat("soundVolume", 1f)
+
+    val textViewSoundVolume = TextView(this)
+    textViewSoundVolume.text = "Sound effects: " + (soundVolume * 100).toInt().toString() + "%"
+    textViewSoundVolume.textSize = 15f
+    textViewSoundVolume.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsTextSoundVolume = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsTextSoundVolume.gravity = Gravity.TOP or Gravity.START
+    layoutParamsTextSoundVolume.setMargins(1550, 330, 0, 0)
+
+    textViewSoundVolume.layoutParams = layoutParamsTextSoundVolume
+    textViewSoundVolume.startAnimation(animationTexts)
+
+    frameLayout.addView(textViewSoundVolume)
+
+    val seekBarSoundVolume = SeekBar(this)
+    seekBarSoundVolume.max = 100
+    seekBarSoundVolume.progress = (soundVolume * 100).toInt()
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
+      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
+    } else {
+      @Suppress("DEPRECATION")
+      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
+
+      @Suppress("DEPRECATION")
+      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
+    }
+
+    seekBarSoundVolume.thumbOffset = 0
+
+    val layoutParamsSeekBarSoundVolume = FrameLayout.LayoutParams(
+      500,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSeekBarSoundVolume.gravity = Gravity.TOP or Gravity.END
+    layoutParamsSeekBarSoundVolume.setMargins(0, 390, 390, 0)
+
+    seekBarSoundVolume.layoutParams = layoutParamsSeekBarSoundVolume
+    seekBarSoundVolume.startAnimation(animationTexts)
+
+    frameLayout.addView(seekBarSoundVolume)
+
+    seekBarSoundVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        if (fromUser) {
+          textViewSoundVolume.text = "Sound effects: " + progress.toString() + "%"
+
+          effectVolume = progress.toFloat() / 100
+
+          editor.putFloat("soundVolume", effectVolume)
+          editor.apply()
+
+        }
+      }
+
+      override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+      override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+    })
+
+    val textViewSceneMusic = TextView(this)
+    textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"
+    textViewSceneMusic.textSize = 15f
+    textViewSceneMusic.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsTextSceneMusic = FrameLayout.LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
+    layoutParamsTextSceneMusic.setMargins(1550, 460, 0, 0)
+
+    textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic
+    textViewSceneMusic.startAnimation(animationTexts)
+
+    frameLayout.addView(textViewSceneMusic)
+
+    val seekBarSceneMusic = SeekBar(this)
+    seekBarSceneMusic.max = 100
+    seekBarSceneMusic.progress = (sceneMusicVolume * 100).toInt()
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      seekBarSceneMusic.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)
+      seekBarSceneMusic.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)
+    } else {
+      @Suppress("DEPRECATION")
+      seekBarSceneMusic.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)
+
+      @Suppress("DEPRECATION")
+      seekBarSceneMusic.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)
+    }
+
+    seekBarSceneMusic.thumbOffset = 0
+
+    val layoutParamsSeekBarSceneMusic = FrameLayout.LayoutParams(
+      500,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.END
+    layoutParamsSeekBarSceneMusic.setMargins(0, 520, 390, 0)
+
+    seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic
+    seekBarSceneMusic.startAnimation(animationTexts)
+
+    frameLayout.addView(seekBarSceneMusic)
+
+    seekBarSceneMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        if (fromUser) {
+          textViewSceneMusic.text = "Scene music: " + progress.toString() + "%"
+
+          sceneMusicVolume = progress.toFloat() / 100
+
+          editor.putFloat("sceneMusicVolume", sceneMusicVolume)
+          editor.apply()
         }
       }
 
@@ -718,15 +851,18 @@ class MainActivity : ComponentActivity() {
 
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
-    handler.postDelayed(object : Runnable {
+    if (mediaPlayer != null) handler.postDelayed(object : Runnable {
       override fun run() {
-        mediaPlayer?.start()
+        mediaPlayer!!.start()
 
-        mediaPlayer?.setVolume(effectVolume, effectVolume)
-        mediaPlayer?.setOnCompletionListener {
-          mediaPlayer?.stop()
-          mediaPlayer?.release()
-          mediaPlayer = null
+        mediaPlayer!!.setVolume(effectVolume, effectVolume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          if (mediaPlayer != null) {
+            mediaPlayer!!.stop()
+            mediaPlayer!!.release()
+            mediaPlayer = null
+          }
         }
       }
     }, 1000L)

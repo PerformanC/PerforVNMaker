@@ -561,7 +561,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText.setMargins(500, 200, 0, 0)' + '\n\n' +
+                    '    layoutParamsText.setMargins(542, 200, 0, 0)' + '\n\n' +
 
                     '    textViewTextSpeed.layoutParams = layoutParamsText' + '\n' +
                     '    textViewTextSpeed.startAnimation(animationTexts)' + '\n\n' +
@@ -591,7 +591,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsSeekBar.setMargins(460, 260, 0, 0)' + '\n\n' +
+                    '    layoutParamsSeekBar.setMargins(500, 260, 0, 0)' + '\n\n' +
 
                     '    seekBarTextSpeed.layoutParams = layoutParamsSeekBar' + '\n' +
                     '    seekBarTextSpeed.startAnimation(animationTexts)' + '\n\n' +
@@ -620,7 +620,7 @@ function make(options) {
                     '    val musicVolume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n\n' +
 
                     '    val textViewMusicVolume = TextView(this)' + '\n' +
-                    '    textViewMusicVolume.text = "Music volume: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
+                    '    textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
                     '    textViewMusicVolume.textSize = 15f' + '\n' +
                     '    textViewMusicVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
@@ -629,8 +629,8 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsTextMusicVolume.setMargins(0, 200, 380, 0)' + '\n\n' +
+                    '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsTextMusicVolume.setMargins(1550, 200, 0, 0)' + '\n\n' +
 
                     '    textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume' + '\n' +
                     '    textViewMusicVolume.startAnimation(animationTexts)' + '\n\n' +
@@ -660,10 +660,9 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 260, 0)' + '\n\n' +
+                    '    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 390, 0)' + '\n\n' +
 
-                    '    seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume' + '\n\n' +
-
+                    '    seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume' + '\n' +
                     '    seekBarMusicVolume.startAnimation(animationTexts)' + '\n\n' +
 
                     '    frameLayout.addView(seekBarMusicVolume)' + '\n\n' +
@@ -671,12 +670,144 @@ function make(options) {
                     '    seekBarMusicVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
                     '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
                     '        if (fromUser) {' + '\n' +
-                    '          textViewMusicVolume.text = "Music volume: " + progress.toString() + "%"' + '\n\n' +
+                    '          textViewMusicVolume.text = "Menu music: " + progress.toString() + "%"' + '\n\n' +
 
                     '          editor.putFloat("musicVolume", progress.toFloat() / 100)' + '\n' +
                     '          editor.apply()' + '\n\n' +
 
                     '          mediaPlayer?.setVolume(progress.toFloat() / 100, progress.toFloat() / 100)' + '\n' +
+                    '        }' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      override fun onStartTrackingTouch(seekBar: SeekBar?) {}' + '\n\n' +
+
+                    '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
+                    '    })' + '\n\n' +
+
+                    '    val soundVolume = sharedPreferences.getFloat("soundVolume", 1f)' + '\n\n' +
+
+                    '    val textViewSoundVolume = TextView(this)' + '\n' +
+                    '    textViewSoundVolume.text = "Sound effects: " + (soundVolume * 100).toInt().toString() + "%"' + '\n' +
+                    '    textViewSoundVolume.textSize = 15f' + '\n' +
+                    '    textViewSoundVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
+
+                    '    val layoutParamsTextSoundVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsTextSoundVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsTextSoundVolume.setMargins(1550, 330, 0, 0)' + '\n\n' +
+
+                    '    textViewSoundVolume.layoutParams = layoutParamsTextSoundVolume' + '\n' +
+                    '    textViewSoundVolume.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(textViewSoundVolume)' + '\n\n' +
+
+                    '    val seekBarSoundVolume = SeekBar(this)' + '\n' +
+                    '    seekBarSoundVolume.max = 100' + '\n' +
+                    '    seekBarSoundVolume.progress = (soundVolume * 100).toInt()' + '\n\n' +
+
+                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
+                    '      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarSoundVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
+
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarSoundVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    seekBarSoundVolume.thumbOffset = 0' + '\n\n' +
+
+                    '    val layoutParamsSeekBarSoundVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '      500,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSeekBarSoundVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
+                    '    layoutParamsSeekBarSoundVolume.setMargins(0, 390, 390, 0)' + '\n\n' +
+
+                    '    seekBarSoundVolume.layoutParams = layoutParamsSeekBarSoundVolume' + '\n' +
+                    '    seekBarSoundVolume.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(seekBarSoundVolume)' + '\n\n' +
+
+                    '    seekBarSoundVolume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
+                    '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
+                    '        if (fromUser) {' + '\n' +
+                    '          textViewSoundVolume.text = "Sound effects: " + progress.toString() + "%"' + '\n\n' +
+
+                    '          effectVolume = progress.toFloat() / 100' + '\n\n' +
+
+                    '          editor.putFloat("soundVolume", effectVolume)' + '\n' +
+                    '          editor.apply()' + '\n\n' +
+                    '        }' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      override fun onStartTrackingTouch(seekBar: SeekBar?) {}' + '\n\n' +
+
+                    '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
+                    '    })' + '\n\n' +
+
+                    '    val textViewSceneMusic = TextView(this)' + '\n' +
+                    '    textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"' + '\n' +
+                    '    textViewSceneMusic.textSize = 15f' + '\n' +
+                    '    textViewSceneMusic.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
+
+                    '    val layoutParamsTextSceneMusic = FrameLayout.LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsTextSceneMusic.setMargins(1550, 460, 0, 0)' + '\n\n' +
+
+                    '    textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic' + '\n' +
+                    '    textViewSceneMusic.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(textViewSceneMusic)' + '\n\n' +
+
+                    '    val seekBarSceneMusic = SeekBar(this)' + '\n' +
+                    '    seekBarSceneMusic.max = 100' + '\n' +
+                    '    seekBarSceneMusic.progress = (sceneMusicVolume * 100).toInt()' + '\n\n' +
+
+                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '      seekBarSceneMusic.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
+                    '      seekBarSceneMusic.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
+                    '    } else {' + '\n' +
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarSceneMusic.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress)' + '\n\n' +
+
+                    '      @Suppress("DEPRECATION")' + '\n' +
+                    '      seekBarSceneMusic.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb)' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    seekBarSceneMusic.thumbOffset = 0' + '\n\n' +
+
+                    '    val layoutParamsSeekBarSceneMusic = FrameLayout.LayoutParams(' + '\n' +
+                    '      500,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
+
+                    '    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.END' + '\n' +
+                    '    layoutParamsSeekBarSceneMusic.setMargins(0, 520, 390, 0)' + '\n\n' +
+
+                    '    seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic' + '\n' +
+                    '    seekBarSceneMusic.startAnimation(animationTexts)' + '\n\n' +
+
+                    '    frameLayout.addView(seekBarSceneMusic)' + '\n\n' +
+
+                    '    seekBarSceneMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {' + '\n' +
+                    '      override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {' + '\n' +
+                    '        if (fromUser) {' + '\n' +
+                    '          textViewSceneMusic.text = "Scene music: " + progress.toString() + "%"' + '\n\n' +
+
+                    '          sceneMusicVolume = progress.toFloat() / 100' + '\n\n' +
+
+                    '          editor.putFloat("sceneMusicVolume", sceneMusicVolume)' + '\n' +
+                    '          editor.apply()' + '\n' +
                     '        }' + '\n' +
                     '      }' + '\n\n' +
 
@@ -696,14 +827,14 @@ function make(options) {
              '  <item android:id="@android:id/background">' + '\n' +
              '    <shape android:shape="rectangle">' + '\n' +
              '      <solid android:color="#' + options.seekBar.backgroundColor + '" />' + '\n' +
-             '      <size android:height="12dp" />' + '\n' +
+             '      <size android:height="14dp" />' + '\n' +
              '    </shape>' + '\n' +
              '  </item>' + '\n' +
              '  <item android:id="@android:id/progress">' + '\n' +
              '    <clip>' + '\n' +
              '      <shape android:shape="rectangle">' + '\n' +
              '        <solid android:color="#' + options.seekBar.progressColor + '" />' + '\n' +
-             '        <size android:height="12dp" />' + '\n' +
+             '        <size android:height="14dp" />' + '\n' +
              '      </shape>' + '\n' +
              '    </clip>' + '\n' +
              '  </item>' + '\n' +
@@ -714,7 +845,7 @@ function make(options) {
     path: 'drawable/custom_seekbar_thumb.xml',
     content: '<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">' + '\n' +
              '  <solid android:color="#' + options.seekBar.thumbColor + '" />' + '\n' +
-             '  <size android:width="7dp" android:height="12dp" />' + '\n' +
+             '  <size android:width="7dp" android:height="14dp" />' + '\n' +
              '</shape>'
   })
   

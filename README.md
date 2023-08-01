@@ -32,7 +32,7 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 - [x] Scenarios
 - [x] Menu (Footer only horizontal)
 - [x] Text box
-- [x] Music (Only for the menu. For scenes are in development) (Priority)
+- [x] Music
 - [x] Sound effects
 - [x] Transitions (Menu -> about/settings only)
 - [x] Animations (Partial, only character movement)
