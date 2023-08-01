@@ -717,7 +717,7 @@ function finalize(scene, options) {
 
                '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
-               (stopPlayers.length != 0 ? '    buttonMenu.setOnClickListener {' + '\n' + stopPlayers.join('\n\n') + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonMenu.setOnClickListener {' + '\n') +
+               (stopPlayers.length != 0 ? '    buttonMenu.setOnClickListener {' + '\n' + stopPlayers.join('\n\n') + '\n' + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n') +
 
                '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
                '    }' + '\n\n' +
@@ -740,7 +740,7 @@ function finalize(scene, options) {
 
                '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
-               (stopPlayers.length != 0 ? '    buttonBack.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n' + stopPlayers.join('\n\n') + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonBack.setOnClickListener {' + '\n' ) +
+               (stopPlayers.length != 0 ? '    buttonBack.setOnClickListener {' + '\n' + stopPlayers.join('\n\n') + '\n\n'  : '    buttonBack.setOnClickListener {' + '\n' ) +
 
                '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '(' + (visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' ) + ')' + '\n' +
                '    }' + '\n\n' +

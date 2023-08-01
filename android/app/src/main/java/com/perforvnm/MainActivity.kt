@@ -373,7 +373,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.16.1-b.0 (code generator), 1.14.3-b.0 (generated code)"
+    textView3.text = "1.16.1-b.0 (code generator), 1.14.4-b.0 (generated code)"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -892,6 +892,8 @@ class MainActivity : ComponentActivity() {
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
       if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
         val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
         mediaPlayer!!.setVolume(volume, volume)
 
@@ -1063,6 +1065,19 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+      if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
+        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
+      }
+
       menu()
     }
 
@@ -1212,6 +1227,19 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+      if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
+        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
+      }
+
       menu()
     }
 

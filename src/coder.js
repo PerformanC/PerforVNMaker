@@ -5,7 +5,7 @@ import helper from './helper.js'
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
   codeGeneratorVersion: '1.16.1-b.0',
-  generatedCodeVersion: '1.14.3-b.0',
+  generatedCodeVersion: '1.14.4-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -210,9 +210,11 @@ function finalize() {
 
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
-  const startMusicCode = (visualNovel.scenes[0]?.effect ? '\n\n' : '\n') + '      mediaPlayer = MediaPlayer.create(this, R.raw.' + visualNovel.menu?.backgroundMusic + ')' + '\n\n' +
+  const startMusicCode = '\n' + '      mediaPlayer = MediaPlayer.create(this, R.raw.' + visualNovel.menu?.backgroundMusic + ')' + '\n\n' +
 
                          '      if (mediaPlayer != null) {' + '\n' +
+                         '        mediaPlayer!!.start()' + '\n\n' +
+
                          '        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)' + '\n' +
                          '        mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
 
@@ -221,7 +223,7 @@ function finalize() {
                          '        }' + '\n' +
                          '      }'
 
-  helper.replace('__PERFORVNM_START_MUSIC__', startMusicCode)
+  helper.replace(/__PERFORVNM_START_MUSIC__/g, startMusicCode)
 
   console.log('Code finished up, writing to file.. (Android)')
 
