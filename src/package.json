@@ -1,6 +1,6 @@
 {
   "name": "perforvnm",
-  "version": "1.16.1-b.0",
+  "version": "1.16.2-b.0",
   "description": "Code generation tool for Visual Novels",
   "main": "perforvnm.js",
   "type": "module",

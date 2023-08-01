@@ -675,12 +675,14 @@ function finalize(scene, options) {
                       '        }' + '\n' +
                       '      }' + '\n' +
                       '    }, ' + scene.effect.delay + 'L)' + '\n'
+
+    visualNovel.internalInfo.hasEffect = true
   }
 
-  const stopPlayers = []
+  const finishScene = []
 
   if ((scene.effect && !scene.music) || (scene.effect && scene.music)) {
-    stopPlayers.push('      if (mediaPlayer != null) {' + '\n' +
+    finishScene.push('      if (mediaPlayer != null) {' + '\n' +
                      '        mediaPlayer!!.stop()' + '\n' +
                      '        mediaPlayer!!.release()' + '\n' +
                      '        mediaPlayer = null' + '\n' +
@@ -688,18 +690,23 @@ function finalize(scene, options) {
   }
 
   if (scene.effect && scene.music) {
-    stopPlayers.push('      if (mediaPlayer != null) {' + '\n' +
+    finishScene.push('      if (mediaPlayer != null) {' + '\n' +
                      '        mediaPlayer!!.stop()' + '\n' +
                      '        mediaPlayer!!.release()' + '\n' +
                      '        mediaPlayer = null' + '\n' +
                      '      }')
 
-    stopPlayers.push('      if (mediaPlayer2 != null) {' + '\n' +
+    finishScene.push('      if (mediaPlayer2 != null) {' + '\n' +
                      '        mediaPlayer2!!.stop()' + '\n' +
                      '        mediaPlayer2!!.release()' + '\n' +
                      '        mediaPlayer2 = null' + '\n' +
                      '      }')
   }
+
+  if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
+    finishScene.push('      handler.removeCallbacksAndMessages(null)')
+
+  finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
 
   sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
@@ -717,7 +724,7 @@ function finalize(scene, options) {
 
                '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
-               (stopPlayers.length != 0 ? '    buttonMenu.setOnClickListener {' + '\n' + stopPlayers.join('\n\n') + '\n' + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n') +
+               (finishScene.length != 0 ? '    buttonMenu.setOnClickListener {' + '\n' + finishScene.join('\n\n') + '\n' + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n') +
 
                '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
                '    }' + '\n\n' +
@@ -740,7 +747,7 @@ function finalize(scene, options) {
 
                '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
-               (stopPlayers.length != 0 ? '    buttonBack.setOnClickListener {' + '\n' + stopPlayers.join('\n\n') + '\n\n'  : '    buttonBack.setOnClickListener {' + '\n' ) +
+               (finishScene.length != 0 ? '    buttonBack.setOnClickListener {' + '\n' + finishScene.join('\n\n') + '\n\n'  : '    buttonBack.setOnClickListener {' + '\n' ) +
 
                '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '(' + (visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' ) + ')' + '\n' +
                '    }' + '\n\n' +

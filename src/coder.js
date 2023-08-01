@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.16.1-b.0',
-  generatedCodeVersion: '1.14.4-b.0',
+  codeGeneratorVersion: '1.16.2-b.0',
+  generatedCodeVersion: '1.14.6-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -105,16 +105,41 @@ function finalize() {
     for (const scene of visualNovel.scenes) {
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
+        const finishScene = []
+
+        if ((scene.effect && !scene.music) || (scene.effect && scene.music)) {
+          finishScene.push('      if (mediaPlayer != null) {' + '\n' +
+                           '        mediaPlayer!!.stop()' + '\n' +
+                           '        mediaPlayer!!.release()' + '\n' +
+                           '        mediaPlayer = null' + '\n' +
+                           '      }' + '\n')
+        }
+      
+        if (scene.effect && scene.music) {
+          finishScene.push('      if (mediaPlayer != null) {' + '\n' +
+                           '        mediaPlayer!!.stop()' + '\n' +
+                           '        mediaPlayer!!.release()' + '\n' +
+                           '        mediaPlayer = null' + '\n' +
+                           '      }' + '\n')
+      
+          finishScene.push('      if (mediaPlayer2 != null) {' + '\n' +
+                           '        mediaPlayer2!!.stop()' + '\n' +
+                           '        mediaPlayer2!!.release()' + '\n' +
+                           '        mediaPlayer2 = null' + '\n' +
+                           '      }' + '\n')
+        }
+
+        if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
+          finishScene.push('      handler.removeCallbacksAndMessages(null)')
+
+        if (i == visualNovel.scenes.length - 2)
+          finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
+    
+        finishScene.push('      it.setOnClickListener(null)')
 
         const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                     (scene.effect ? '      if (mediaPlayer != null) {' + '\n' +
-                     '        mediaPlayer!!.stop()' + '\n' + 
-                     '        mediaPlayer!!.release()' + '\n' +
-                     '        mediaPlayer = null' + '\n' +
-                     '      }' + '\n\n' : '') +
+                     finishScene.join('\n') + '\n\n' +
                      '      ' + nextScene.name + '(' + (nextScene.speech && !scene.speech ? 'true' : '') +')' + '\n' +
-
-                     (i == visualNovel.scenes.length - 2 ? '\n      it.setOnClickListener(null)\n' : '') +
                      '    }'
 
        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
@@ -161,7 +186,7 @@ function finalize() {
   if (visualNovel.internalInfo.needs2Players)
     addHeaders += '  private var mediaPlayer2: MediaPlayer? = null' + '\n'
 
-  if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
+  if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
     addHeaders += (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
 
                   '  override fun onPause() {' + '\n' +

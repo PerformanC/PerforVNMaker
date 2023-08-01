@@ -52,7 +52,7 @@ function make(options) {
       process.exit(1)
     }
 
-    visualNovel.internalInfo.setPlayer = true
+    visualNovel.internalInfo.menuMusic = true
   }
 
   if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image))) {

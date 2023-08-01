@@ -373,7 +373,7 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(textView2)
 
     val textView3 = TextView(this)
-    textView3.text = "1.16.1-b.0 (code generator), 1.14.4-b.0 (generated code)"
+    textView3.text = "1.16.2-b.0 (code generator), 1.14.6-b.0 (generated code)"
     textView3.textSize = 15f
     textView3.setTextColor(0xFFFFFFFF.toInt())
 
@@ -889,6 +889,10 @@ class MainActivity : ComponentActivity() {
         mediaPlayer = null
       }
 
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
       if (mediaPlayer != null) {
@@ -915,6 +919,9 @@ class MainActivity : ComponentActivity() {
         mediaPlayer!!.release()
         mediaPlayer = null
       }
+
+      handler.removeCallbacksAndMessages(null)
+      it.setOnClickListener(null)
 
       scene2(true)
     }
@@ -1065,6 +1072,10 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
       if (mediaPlayer != null) {
@@ -1100,6 +1111,10 @@ class MainActivity : ComponentActivity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       scene1()
     }
 
@@ -1108,9 +1123,11 @@ class MainActivity : ComponentActivity() {
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      scene3()
-
+      handler.removeCallbacksAndMessages(null)
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
       it.setOnClickListener(null)
+
+      scene3()
     }
   }
 
@@ -1227,6 +1244,10 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 
       if (mediaPlayer != null) {
@@ -1262,6 +1283,10 @@ class MainActivity : ComponentActivity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       scene2(false)
     }
 
