@@ -1,121 +1,28 @@
 # PerforVNMaker - Visual Novel Maker
 
-## Description
+Visual Novel Maker with code generation technology.
 
-PerforVNM is a code generator for VNs that generates native Android code.
+## Project status
 
-## WIP
+Although this project is already decently stable, it's still under development, with features and API changes being and going to be made.
 
-This project is still under development, missing a lot of features, and it's not ready to be used in production yet.
+## Making a VN with us?
 
-## Making a VN with PerforVNM?
+If made, or are making a VN with Perfor, please contact us, we would love to hear your feedback and feature requests, and to work beside you to hear our user needs.
 
-If you're making a VN with PerforVNM, please contact us, we would love to see your project and make sure that everything is working fine.
+To that, feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ) to talk with us.
 
-Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
+And thank you for using PerforVNM.
 
-## Functions support
+## Feature support
 
-### OS support
-
-- [x] Android
-- [ ] iOS
-- [ ] Windows
-- [ ] Linux distros
-- [ ] MacOS
-- [ ] Web
-
-### Features support
-
-- [x] Scenes
-- [x] Characters
-- [x] Scenarios
-- [x] Menu (Footer only horizontal)
-- [x] Text box
-- [x] Music
-- [x] Sound effects
-- [x] Transitions (Menu -> about/settings only)
-- [x] Animations (Partial, only character movement)
-- [ ] Custom paths (+ Priority)
-- [ ] Save/Load system (+ Priority)
-- [x] Settings (Missing Scene music volume)
-- [ ] Achievements
-- [ ] Inventory
-- [ ] Text effects
-- [ ] Speech bubbles
-- [ ] Text box effects
-- [ ] Custom buttons & *View
-
-### Code generation support
-
-- [x] Kotlin (Android)
-- [ ] Swift (iOS)
-- [ ] C (Windows, Linux and MacOS)
-- [ ] JS, HTML and CSS (Web)
+You can read the [OS support](OS_SUPPORT.md) file to see the features supported by PerforVNM for each OS.
 
 ## Usage
 
-There are examples of the usage in src/perfornvm.js, but here's a quick example:
+For usage example, it's recommended that you look at our [test file](src/perforvnm.js), which is a test file that we use to test the code generation quality.
 
-```js
-import coder from './coder.js'
-import scene from './scene.js'
-import menu from './menu.js'
-
-coder.init({
-  name: 'PerforVNM',
-  fullName: 'The PerforVNM',
-  applicationId: 'com.perforvnm',
-  version: '1.0.0'
-})
-
-menu.make({
-  background: {
-    image: 'menu',
-    music: 'menu_music'
-  },
-  textColor: 'FFFFFF',
-  backTextColor: 'FFFFFF',
-  footer: {
-    color: '808080',
-    textColor: 'FFFFFFF'
-  }
-}) /* Generates the menu */
-
-let firstScene = scene.init({ name: 'scene1' }) /* Initializes a scene */
-firstScene = scene.addCharacter(firstScene, {
-  name: 'Pedro',
-  image: 'pedro_staring',
-  position: {
-    side: 'center'
-  }
-}) /* Adds a character to the scene */
-firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
-firstScene = scene.addSpeech(firstScene, {
-  author: {
-    name: 'Pedro',
-    textColor: 'FFFFFF',
-    rectangle: {
-      color: '000000',
-      opacity: 0.6
-    }
-  },
-  text: {
-    content: '"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM."',
-    color: 'FFFFFF',
-    fontSize: 12,
-    rectangle: {
-      color: '000000',
-      opacity: 0.8
-    }
-  }
-}) /* Adds a speech to the scene */
-scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
-
-coder.finalize() /* Finishes up the code */
-```
-
-This code will generate an Android native code, with a menu, and a scene with a character, a scenario and a speech.
+This code will generate an Android native code, with a menu, and a scene with a character (with animation), a scenario and a speech.
 
 PerforVNM already takes care of saving the file in the right place for you, so you don't have to worry about that.
 
@@ -125,30 +32,36 @@ After being built, you can access the APK file in the folder `app/build/outputs/
 
 ## Code generation vs Engine
 
-Engines are always in our lives, and while they're the most used option, for us, PerformanC, they're not the best option.
+Engines are everywhere, used by everyone, but why we don't use them?
 
-Engines don't create/convert code to native code, they interpret the code, causing a huge overhead, and making the code slower.
+While they allow the creation of cross-platform applications with extreme ease, they have some problems, such as performance.
 
-Another reason is that we don't get full control of the code, since we're using an engine, and we can't modify the code as we want.
+PerforVNM is focused on not having space for competitors in terms of performance, and for us to reach that goal, we must make the codes as native as possible, and engines don't allow that.
 
-PerforVNMaker simply generates native code, it's faster than engines, and it's easier to modify the code, and way lighter.
+We know that engines are easier to use, but we're working on making PerforVNM as easy to use as engines, and we're working on making PerforVNM as powerful as engines (in terms of creating VN apps).
 
 ## Support
 
-If you need help with anything, you can ask for help on [our Discord server](https://discord.gg/uPveNfTuCJ), and we will help you with anything you need.
+We want our users to have the best experience possible using our software, so if you have any problem or question, you can contact us on [our Discord server](https://discord.gg/uPveNfTuCJ), and we will help you with anything you need.
 
-We're cool people, feel free to join us if you only want to talk.
+Feel free to join if you want someone to talk to, or if you want to help us with the project.
 
 ## Feedback
 
-In all sincerity we can have, your feedback is very important to us, so if you have any feedback, you can contact us on [our Discord server](https://discord.gg/uPveNfTuCJ), and we *will* listen to your feedback.
+We're made by the community, and we want to make the community happy, so we want to hear your feedback, and we want to hear your feature requests and even your complaints.
+
+Please honor us with your feedback, and we will honor you with our best work.
+
+So, feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ) to create a post in `#feedback`.
 
 ## Contribute to the project
 
-This project is only made by one person, so if you want to contribute, you can do it by making a pull request, and if you want to work on the project, you can contact me on Discord: @pedro.js
+This project is made by few people, so if you want to contribute, you can do it by making a pull request, and if you want to work on the project, you can contact me on Discord: @pedro.js
 
 ## License
 
 PeforVNM is licensed under PerformanC's License, which is a modified version of the MIT License, focusing on the protection of the source code and the rights of the PerformanC team over the source code.
 
 If you wish to use some part of the source code, you must contact us first, and if we agree, you can use the source code, but you must give us credit for the source code you use.
+
+OBS: The generated code is not affected by the license above unless taken to be used for another code generator, transpiler or engine.
