@@ -135,7 +135,7 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Animations (Partial, only character movement)
 - [x] Scenarios (Completed)
 - [x] Menu (Missing vertical footer)
-- [x] Dialogues (Completed)
+- [x] Speech (Completed)
 - [x] Music (Completed)
 - [x] Sound effects (Missing support for more than 1 sound effect)
 - [x] Transitions (Menu -> about/settings only)

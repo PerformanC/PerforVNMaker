@@ -1029,31 +1029,6 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleViewAuthor)
 
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.textSize = 20f
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(400, 0, 0, 200)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    if (animate) {
-      val animationAuthor = AlphaAnimation(0f, 1f)
-      animationAuthor.duration = 1000
-      animationAuthor.interpolator = LinearInterpolator()
-      animationAuthor.fillAfter = true
-
-      textViewAuthor.startAnimation(animationAuthor)
-    }
-    frameLayout.addView(textViewAuthor)
-
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.textSize = 10f

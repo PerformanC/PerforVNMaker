@@ -63,8 +63,8 @@ secondScene = scene.addCharacter(secondScene, {
 secondScene = scene.addScenario(secondScene, { image: 'background_thanking' })
 secondScene = scene.addSpeech(secondScene, {
   author: {
-    name: 'Pedro',
-    textColor: 'FFFFFF',
+    // name: 'Pedro',
+    // textColor: 'FFFFFF',
     rectangle: {
       color: '000000',
       opacity: 0.6

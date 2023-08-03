@@ -161,13 +161,13 @@ function addScenario(scene, options) {
 }
 
 function addSpeech(scene, options) {
-  if (!options?.author?.name) {
-    console.error(`ERROR: Speech author name not provided.\n- Scene name: ${scene.name}`)
+  // if (!options?.author?.name) {
+  //   console.error(`ERROR: Speech author name not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  //   process.exit(1)
+  // }
 
-  if (!options.author.textColor) {
+  if (options.author?.name && !options.author.textColor) {
     console.error(`ERROR: Speech author text color not provided.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
@@ -503,9 +503,9 @@ function finalize(scene, options) {
                  '      rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' + 
                  '    }' + '\n\n') : '') +
 
-                 '    frameLayout.addView(rectangleViewAuthor)' + '\n\n' +
+                 '    frameLayout.addView(rectangleViewAuthor)' +
 
-                 '    val textViewAuthor = TextView(this)' + '\n' +
+                 (scene.speech.author.name ? '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
                  '    textViewAuthor.text = "' + scene.speech.author.name + '"' + '\n' +
                  '    textViewAuthor.textSize = 20f' + '\n' +
                  '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
@@ -528,7 +528,7 @@ function finalize(scene, options) {
                  '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
                  '    }' + '\n') : '\n') +
 
-                 '    frameLayout.addView(textViewAuthor)' + '\n'   
+                 '    frameLayout.addView(textViewAuthor)' : '') + '\n'
 
     visualNovel.internalInfo.hasSpeech = true
   }
