@@ -115,7 +115,7 @@ function make(options) {
 
                    '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                   '    val layoutParams = FrameLayout.LayoutParams(1920, 100)' + '\n' +
+                   '    val layoutParams = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
  
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
@@ -223,7 +223,7 @@ function make(options) {
 
                     '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)' + '\n' +
+                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
                     '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
 
                     '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
@@ -244,7 +244,7 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)' + '\n' +
+                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -342,7 +342,16 @@ function make(options) {
                     '    frameLayout.addView(buttonBack)' + '\n\n' +
 
                     '    val textView = TextView(this)' + '\n' +
-                    '    textView.text = "' + visualNovel.info.fullName + ' ' + visualNovel.info.version + '\\n\\nMade with"' + '\n' +
+                    '    textView.text = SpannableStringBuilder().apply {' + '\n' +
+                    '      append("' + visualNovel.info.fullName + ' ' + visualNovel.info.version + '\\n\\nMade with ")' + '\n' +
+                    '      append("PerforVNM")' + '\n' +
+                    '      setSpan(object : ClickableSpan() {' + '\n' +
+                    '        override fun onClick(widget: View) {' + '\n' +
+                    '          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
+                    '        }' + '\n' +
+                    '      }, length - "PerforVNM".length, length, 0)' + '\n' +
+                    '      append(" ' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
+                    '    }' + '\n' +
                     '    textView.textSize = 15f' + '\n' +
                     '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
@@ -357,65 +366,10 @@ function make(options) {
                     '    textView.layoutParams = layoutParamsText' + '\n' +
                     '    textView.startAnimation(animationTexts)' + '\n\n' +
 
+                    '    textView.ellipsize = TextUtils.TruncateAt.END' + '\n' +
+                    '    textView.movementMethod = LinkMovementMethod.getInstance()' + '\n\n' +
+
                     '    frameLayout.addView(textView)' + '\n\n' +
-
-                    '    val textView2 = TextView(this)' + '\n' +
-                    '    textView2.text = "PerforVNM"' + '\n' +
-                    '    textView2.textSize = 15f' + '\n' +
-                    '    textView2.setTextColor(0xFF0000EE.toInt())' + '\n\n' +
-
-                    '    val layoutParamsText2 = FrameLayout.LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
-
-                    '    layoutParamsText2.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText2.setMargins(510, 303, 0, 0)' + '\n\n' +
-
-                    '    textView2.layoutParams = layoutParamsText2' + '\n' +
-                    '    textView2.startAnimation(animationTexts)' + '\n\n' +
-
-                    '    textView2.setOnClickListener {' + '\n' +
-                    '      startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
-                    '    }' + '\n\n' +
-
-                    '    frameLayout.addView(textView2)' + '\n\n' +
-
-                    '    val textView3 = TextView(this)' + '\n' +
-                    '    textView3.text = "' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code)"' + '\n' +
-                    '    textView3.textSize = 15f' + '\n' +
-                    '    textView3.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
-
-                    '    val layoutParamsText3 = FrameLayout.LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
-
-                    '    layoutParamsText3.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText3.setMargins(740, 303, 0, 0)' + '\n\n' +
-
-                    '    textView3.layoutParams = layoutParamsText3' + '\n' +
-                    '    textView3.startAnimation(animationTexts)' + '\n\n' +
-
-                    '    frameLayout.addView(textView3)' + '\n\n' +
-
-                    '    val textView4 = TextView(this)' + '\n' +
-                    '    textView4.text = "This program is licensed under the PerformanC License, and its (PerforVNM) content is totally\\n open source."' + '\n' +
-                    '    textView4.textSize = 15f' + '\n' +
-                    '    textView4.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
-
-                    '    val layoutParamsText4 = FrameLayout.LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
-
-                    '    layoutParamsText4.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText4.setMargins(300, 400, 0, 0)' + '\n\n' +
-
-                    '    textView4.layoutParams = layoutParamsText4' + '\n' +
-                    '    textView4.startAnimation(animationTexts)' + '\n\n' +
-
-                    '    frameLayout.addView(textView4)' + '\n\n' +
 
                     '    setContentView(frameLayout)' + '\n' +
                     '  }'
@@ -434,7 +388,7 @@ function make(options) {
 
                     '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)' + '\n' +
+                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
                     '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
 
                     '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
@@ -455,7 +409,7 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)' + '\n' +
+                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -562,8 +516,13 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val resourceDisplayMetrics: DisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
+
+                    '    val leftDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText.setMargins(542, 200, 0, 0)' + '\n\n' +
+                    '    layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)' + '\n\n' +
 
                     '    textViewTextSpeed.layoutParams = layoutParamsText' + '\n' +
                     '    textViewTextSpeed.startAnimation(animationTexts)' + '\n\n' +
@@ -592,8 +551,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsSeekBar.setMargins(500, 260, 0, 0)' + '\n\n' +
+                    '    layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)' + '\n\n' +
 
                     '    seekBarTextSpeed.layoutParams = layoutParamsSeekBar' + '\n' +
                     '    seekBarTextSpeed.startAnimation(animationTexts)' + '\n\n' +
@@ -631,8 +593,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpRightTexts: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpTextMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsTextMusicVolume.setMargins(1550, 200, 0, 0)' + '\n\n' +
+                    '    layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)' + '\n\n' +
 
                     '    textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume' + '\n' +
                     '    textViewMusicVolume.startAnimation(animationTexts)' + '\n\n' +
@@ -661,8 +626,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 390, 0)' + '\n\n' +
+                    '    val leftDpRightSeekbars: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 576f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpSeekBarMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
+                    '    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsSeekBarMusicVolume.setMargins(leftDpRightSeekbars, topDpSeekBarMusicVolume, 0, 0)' + '\n\n' +
 
                     '    seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume' + '\n' +
                     '    seekBarMusicVolume.startAnimation(animationTexts)' + '\n\n' +
@@ -696,8 +664,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val topDpSeekBarSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 126f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsTextSEffectVolume.setMargins(1550, 330, 0, 0)' + '\n\n' +
+                    '    layoutParamsTextSEffectVolume.setMargins(leftDpRightTexts, topDpSeekBarSEffectVolume, 0, 0)' + '\n\n' +
 
                     '    textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume' + '\n' +
                     '    textViewSEffectVolume.startAnimation(animationTexts)' + '\n\n' +
@@ -726,8 +696,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsSeekBarSEffectVolume.setMargins(0, 390, 390, 0)' + '\n\n' +
+                    '    val topDpTextSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
+                    '    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsSeekBarSEffectVolume.setMargins(leftDpRightSeekbars, topDpTextSEffectVolume, 0, 0)' + '\n\n' +
 
                     '    seekBarSEffectVolume.layoutParams = layoutParamsSeekBarSEffectVolume' + '\n' +
                     '    seekBarSEffectVolume.startAnimation(animationTexts)' + '\n\n' +
@@ -761,8 +733,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val topDpSeekBarSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 176f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsTextSceneMusic.setMargins(1550, 460, 0, 0)' + '\n\n' +
+                    '    layoutParamsTextSceneMusic.setMargins(leftDpRightTexts, topDpSeekBarSceneMusic, 0, 0)' + '\n\n' +
 
                     '    textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic' + '\n' +
                     '    textViewSceneMusic.startAnimation(animationTexts)' + '\n\n' +
@@ -791,8 +765,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.END' + '\n' +
-                    '    layoutParamsSeekBarSceneMusic.setMargins(0, 520, 390, 0)' + '\n\n' +
+                    '    val topDpTextSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
+                    '    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '    layoutParamsSeekBarSceneMusic.setMargins(leftDpRightSeekbars, topDpTextSceneMusic, 0, 0)' + '\n\n' +
 
                     '    seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic' + '\n' +
                     '    seekBarSceneMusic.startAnimation(animationTexts)' + '\n\n' +

@@ -48,10 +48,10 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ)
 
 ### Code generation support
 
-- [x] Kotlin
-- [ ] Swift / Objective-C
-- [ ] C
-- [ ] JS, HTML and CSS
+- [x] Kotlin (Android)
+- [ ] Swift (iOS)
+- [ ] C (Windows, Linux and MacOS)
+- [ ] JS, HTML and CSS (Web)
 
 ## Usage
 

@@ -420,7 +420,7 @@ function finalize(scene, options) {
   if (scene.speech) {
     sceneCode += '\n' + '    val rectangleViewSpeech = RectangleView(this)' + '\n\n' +
 
-                 '    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)' + '\n' +
+                 '    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 200)' + '\n' +
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
@@ -485,7 +485,7 @@ function finalize(scene, options) {
 
                  '    val rectangleViewAuthor = RectangleView(this)' + '\n\n' +
 
-                 '    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)' + '\n' +
+                 '    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 70)' + '\n' +
                  '    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
                  '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)' + '\n\n' +
 

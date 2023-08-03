@@ -5,7 +5,7 @@ import helper from './helper.js'
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
   codeGeneratorVersion: '1.16.2-b.0',
-  generatedCodeVersion: '1.14.6-b.0',
+  generatedCodeVersion: '1.14.7-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -44,6 +44,8 @@ function init(options) {
   'import android.os.Bundle' + '\n' +
   'import android.os.Handler' + '\n' +
   'import android.os.Looper' + '\n' +
+  'import android.util.DisplayMetrics' + '\n' +
+  'import android.util.TypedValue' + '\n' +
   'import android.media.MediaPlayer' + '\n' +
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
@@ -52,14 +54,18 @@ function init(options) {
   'import android.widget.SeekBar' + '\n' +
   'import android.view.View' + '\n' +
   'import android.view.Gravity' + '\n' +
-  'import android.view.LayoutInflater' + '\n' +
+  'import android.view.WindowInsets' + '\n' +
+  'import android.view.WindowManager' + '\n' +
   'import android.view.ViewGroup.LayoutParams' + '\n' +
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +
   'import android.animation.Animator' + '\n' +
   'import android.animation.ValueAnimator' + '\n' +
-  'import android.view.WindowManager' + '\n' +
+  'import android.text.TextUtils' + '\n' +
+  'import android.text.SpannableStringBuilder' + '\n' +
+  'import android.text.style.ClickableSpan' + '\n' +
+  'import android.text.method.LinkMovementMethod' + '\n' +
   'import android.graphics.PorterDuff' + '\n' +
   'import android.graphics.Paint' + '\n' +
   'import android.graphics.Canvas' + '\n' +
@@ -74,13 +80,29 @@ function init(options) {
 
   '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
   '      window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' + '\n\n' +
+
   '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {' + '\n' +
-  '      window.setDecorFitsSystemWindows(false)' + '\n' +
+  '      window.setDecorFitsSystemWindows(false)' + '\n\n' +
+
+  '      window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())' + '\n\n' +
+
+  '      val windowMetrics = windowManager.currentWindowMetrics' + '\n' +
+  '      displayMetrics.widthPixels = windowMetrics.bounds.width()' + '\n' +
+  '      displayMetrics.heightPixels = windowMetrics.bounds.height()' + '\n' +
   '    } else {' + '\n' +
   '      @Suppress("DEPRECATION")' + '\n' +
-  '      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or' + '\n' +
-  '        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or' + '\n' +
-  '        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION' + '\n' +
+  '      window.decorView.systemUiVisibility = (' + '\n' +
+  '        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_FULLSCREEN' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN' + '\n' +
+  '        or View.SYSTEM_UI_FLAG_LOW_PROFILE' + '\n' +
+  '      )' + '\n\n' +
+
+  '      @Suppress("DEPRECATION")' + '\n' +
+  '      windowManager.defaultDisplay.getMetrics(displayMetrics)' + '\n' +
   '    }' + '\n\n' +
 
   '    setContent {' + '\n' +
@@ -186,6 +208,9 @@ function finalize() {
   if (visualNovel.internalInfo.needs2Players)
     addHeaders += '  private var mediaPlayer2: MediaPlayer? = null' + '\n'
 
+  if (visualNovel.menu || visualNovel.scenes.length != 0)
+    addHeaders += '  private val displayMetrics = DisplayMetrics()' + '\n'
+
   if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
     addHeaders += (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
 
@@ -229,7 +254,7 @@ function finalize() {
                   '      mediaPlayer2!!.stop()' + '\n' +
                   '      mediaPlayer2!!.release()' + '\n' +
                   '      mediaPlayer2 = null' + '\n' +
-                  '    }' : '') +
+                  '    }' + '\n' : '\n') +
                   '  }' + '\n'
   }
 

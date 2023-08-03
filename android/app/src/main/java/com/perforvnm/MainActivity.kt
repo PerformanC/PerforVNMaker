@@ -4,6 +4,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.media.MediaPlayer
 import android.widget.TextView
 import android.widget.ImageView
@@ -12,14 +14,18 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.view.View
 import android.view.Gravity
-import android.view.LayoutInflater
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.AlphaAnimation
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.view.WindowManager
+import android.text.TextUtils
+import android.text.SpannableStringBuilder
+import android.text.style.ClickableSpan
+import android.text.method.LinkMovementMethod
 import android.graphics.PorterDuff
 import android.graphics.Paint
 import android.graphics.Canvas
@@ -33,6 +39,7 @@ class MainActivity : ComponentActivity() {
   private var textSpeed = 1000L
   private var sEffectVolume = 1f
   private var sceneMusicVolume = 1f
+  private val displayMetrics = DisplayMetrics()
   private var mediaPlayer: MediaPlayer? = null
 
   override fun onPause() {
@@ -59,7 +66,8 @@ class MainActivity : ComponentActivity() {
       mediaPlayer!!.stop()
       mediaPlayer!!.release()
       mediaPlayer = null
-    }  }
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -69,11 +77,26 @@ class MainActivity : ComponentActivity() {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.setDecorFitsSystemWindows(false)
+
+      window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+
+      val windowMetrics = windowManager.currentWindowMetrics
+      displayMetrics.widthPixels = windowMetrics.bounds.width()
+      displayMetrics.heightPixels = windowMetrics.bounds.height()
     } else {
       @Suppress("DEPRECATION")
-      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
-        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+      window.decorView.systemUiVisibility = (
+        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        or View.SYSTEM_UI_FLAG_FULLSCREEN
+        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        or View.SYSTEM_UI_FLAG_LOW_PROFILE
+      )
+
+      @Suppress("DEPRECATION")
+      windowManager.defaultDisplay.getMetrics(displayMetrics)
     }
 
     setContent {
@@ -111,7 +134,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParams = FrameLayout.LayoutParams(1920, 100)
+    val layoutParams = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
     layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParams
@@ -206,7 +229,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleGrayView = RectangleView(this)
 
-    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)
+    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
     layoutParamsGrayRectangle.gravity = Gravity.CENTER
 
     rectangleGrayView.layoutParams = layoutParamsGrayRectangle
@@ -227,7 +250,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
+    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -333,7 +356,16 @@ class MainActivity : ComponentActivity() {
     frameLayout.addView(buttonBack)
 
     val textView = TextView(this)
-    textView.text = "The PerforVNM 1.0.0\n\nMade with"
+    textView.text = SpannableStringBuilder().apply {
+      append("The PerforVNM 1.0.0\n\nMade with ")
+      append("PerforVNM")
+      setSpan(object : ClickableSpan() {
+        override fun onClick(widget: View) {
+          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
+        }
+      }, length - "PerforVNM".length, length, 0)
+      append(" 1.16.2-b.0 (code generator), 1.14.6-b.0 (generated code).")
+    }
     textView.textSize = 15f
     textView.setTextColor(0xFFFFFFFF.toInt())
 
@@ -348,65 +380,10 @@ class MainActivity : ComponentActivity() {
     textView.layoutParams = layoutParamsText
     textView.startAnimation(animationTexts)
 
+    textView.ellipsize = TextUtils.TruncateAt.END
+    textView.movementMethod = LinkMovementMethod.getInstance()
+
     frameLayout.addView(textView)
-
-    val textView2 = TextView(this)
-    textView2.text = "PerforVNM"
-    textView2.textSize = 15f
-    textView2.setTextColor(0xFF0000EE.toInt())
-
-    val layoutParamsText2 = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsText2.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText2.setMargins(510, 303, 0, 0)
-
-    textView2.layoutParams = layoutParamsText2
-    textView2.startAnimation(animationTexts)
-
-    textView2.setOnClickListener {
-      startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
-    }
-
-    frameLayout.addView(textView2)
-
-    val textView3 = TextView(this)
-    textView3.text = "1.16.2-b.0 (code generator), 1.14.6-b.0 (generated code)"
-    textView3.textSize = 15f
-    textView3.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsText3 = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsText3.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText3.setMargins(740, 303, 0, 0)
-
-    textView3.layoutParams = layoutParamsText3
-    textView3.startAnimation(animationTexts)
-
-    frameLayout.addView(textView3)
-
-    val textView4 = TextView(this)
-    textView4.text = "This program is licensed under the PerformanC License, and its (PerforVNM) content is totally\n open source."
-    textView4.textSize = 15f
-    textView4.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsText4 = FrameLayout.LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsText4.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText4.setMargins(300, 400, 0, 0)
-
-    textView4.layoutParams = layoutParamsText4
-    textView4.startAnimation(animationTexts)
-
-    frameLayout.addView(textView4)
 
     setContentView(frameLayout)
   }
@@ -423,7 +400,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleGrayView = RectangleView(this)
 
-    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(1920, 1080)
+    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
     layoutParamsGrayRectangle.gravity = Gravity.CENTER
 
     rectangleGrayView.layoutParams = layoutParamsGrayRectangle
@@ -444,7 +421,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = FrameLayout.LayoutParams(1920, 100)
+    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -559,8 +536,13 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val resourceDisplayMetrics: DisplayMetrics = getResources().getDisplayMetrics()
+
+    val leftDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()
+    val topDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()
+
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(542, 200, 0, 0)
+    layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)
 
     textViewTextSpeed.layoutParams = layoutParamsText
     textViewTextSpeed.startAnimation(animationTexts)
@@ -589,8 +571,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()
+    val topDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()
+
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSeekBar.setMargins(500, 260, 0, 0)
+    layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)
 
     seekBarTextSpeed.layoutParams = layoutParamsSeekBar
     seekBarTextSpeed.startAnimation(animationTexts)
@@ -628,8 +613,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpRightTexts: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()
+    val topDpTextMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()
+
     layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextMusicVolume.setMargins(1550, 200, 0, 0)
+    layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)
 
     textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume
     textViewMusicVolume.startAnimation(animationTexts)
@@ -658,8 +646,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.END
-    layoutParamsSeekBarMusicVolume.setMargins(0, 260, 390, 0)
+    val leftDpRightSeekbars: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 576f, resourceDisplayMetrics).toInt()
+    val topDpSeekBarMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()
+
+    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSeekBarMusicVolume.setMargins(leftDpRightSeekbars, topDpSeekBarMusicVolume, 0, 0)
 
     seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume
     seekBarMusicVolume.startAnimation(animationTexts)
@@ -693,8 +684,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val topDpSeekBarSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 126f, resourceDisplayMetrics).toInt()
+
     layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextSEffectVolume.setMargins(1550, 330, 0, 0)
+    layoutParamsTextSEffectVolume.setMargins(leftDpRightTexts, topDpSeekBarSEffectVolume, 0, 0)
 
     textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume
     textViewSEffectVolume.startAnimation(animationTexts)
@@ -723,8 +716,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.END
-    layoutParamsSeekBarSEffectVolume.setMargins(0, 390, 390, 0)
+    val topDpTextSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150f, resourceDisplayMetrics).toInt()
+
+    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSeekBarSEffectVolume.setMargins(leftDpRightSeekbars, topDpTextSEffectVolume, 0, 0)
 
     seekBarSEffectVolume.layoutParams = layoutParamsSeekBarSEffectVolume
     seekBarSEffectVolume.startAnimation(animationTexts)
@@ -759,8 +754,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val topDpSeekBarSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 176f, resourceDisplayMetrics).toInt()
+
     layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextSceneMusic.setMargins(1550, 460, 0, 0)
+    layoutParamsTextSceneMusic.setMargins(leftDpRightTexts, topDpSeekBarSceneMusic, 0, 0)
 
     textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic
     textViewSceneMusic.startAnimation(animationTexts)
@@ -789,8 +786,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.END
-    layoutParamsSeekBarSceneMusic.setMargins(0, 520, 390, 0)
+    val topDpTextSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f, resourceDisplayMetrics).toInt()
+
+    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSeekBarSceneMusic.setMargins(leftDpRightSeekbars, topDpTextSceneMusic, 0, 0)
 
     seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic
     seekBarSceneMusic.startAnimation(animationTexts)
@@ -955,7 +954,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
+    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 200)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1010,7 +1009,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleViewAuthor = RectangleView(this)
 
-    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
+    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
 
@@ -1159,7 +1158,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(1920, 200)
+    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 200)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1199,7 +1198,7 @@ class MainActivity : ComponentActivity() {
 
     val rectangleViewAuthor = RectangleView(this)
 
-    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(1920, 70)
+    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
 
