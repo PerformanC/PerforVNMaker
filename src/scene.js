@@ -339,7 +339,7 @@ function finalize(scene, options) {
                      '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                      '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     (character.animateTo ? '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     (character.animateTo ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
@@ -357,7 +357,7 @@ function finalize(scene, options) {
                      '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                      '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
@@ -376,7 +376,7 @@ function finalize(scene, options) {
                      '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                      '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + character.name + ' = FrameLayout.LayoutParams(' + '\n' +
+                     '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
@@ -420,7 +420,7 @@ function finalize(scene, options) {
   if (scene.speech) {
     sceneCode += '\n' + '    val rectangleViewSpeech = RectangleView(this)' + '\n\n' +
 
-                 '    val layoutParamsRectangleSpeech = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 200)' + '\n' +
+                 '    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, 200)' + '\n' +
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
@@ -443,7 +443,7 @@ function finalize(scene, options) {
                  '    textViewSpeech.textSize = ' + scene.speech.text.fontSize + 'f' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
-                 '    val layoutParamsSpeech = FrameLayout.LayoutParams(' + '\n' +
+                 '    val layoutParamsSpeech = LayoutParams(' + '\n' +
                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
                  '      LayoutParams.WRAP_CONTENT' + '\n' +
                  '    )' + '\n\n' +
@@ -485,7 +485,7 @@ function finalize(scene, options) {
 
                  '    val rectangleViewAuthor = RectangleView(this)' + '\n\n' +
 
-                 '    val layoutParamsRectangleAuthor = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, 70)' + '\n' +
+                 '    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)' + '\n' +
                  '    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
                  '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)' + '\n\n' +
 
@@ -510,7 +510,7 @@ function finalize(scene, options) {
                  '    textViewAuthor.textSize = 20f' + '\n' +
                  '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
 
-                 '    val layoutParamsAuthor = FrameLayout.LayoutParams(' + '\n' +
+                 '    val layoutParamsAuthor = LayoutParams(' + '\n' +
                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
                  '      LayoutParams.WRAP_CONTENT' + '\n' +
                  '    )' + '\n\n' +
@@ -714,7 +714,7 @@ function finalize(scene, options) {
                '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
-               '    val layoutParamsMenu = FrameLayout.LayoutParams(' + '\n' +
+               '    val layoutParamsMenu = LayoutParams(' + '\n' +
                '      LayoutParams.WRAP_CONTENT,' + '\n' +
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
@@ -737,7 +737,7 @@ function finalize(scene, options) {
                '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
                '    buttonBack.background = null' + '\n\n' +
 
-               '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
+               '    val layoutParamsBack = LayoutParams(' + '\n' +
                '      LayoutParams.WRAP_CONTENT,' + '\n' +
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +

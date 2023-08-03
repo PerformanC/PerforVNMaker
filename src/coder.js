@@ -5,7 +5,7 @@ import helper from './helper.js'
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
   codeGeneratorVersion: '1.16.2-b.0',
-  generatedCodeVersion: '1.14.7-b.0',
+  generatedCodeVersion: '1.14.8-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -50,13 +50,13 @@ function init(options) {
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
+  'import android.widget.FrameLayout.LayoutParams' + '\n' +
   'import android.widget.Button' + '\n' +
   'import android.widget.SeekBar' + '\n' +
   'import android.view.View' + '\n' +
   'import android.view.Gravity' + '\n' +
   'import android.view.WindowInsets' + '\n' +
   'import android.view.WindowManager' + '\n' +
-  'import android.view.ViewGroup.LayoutParams' + '\n' +
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +

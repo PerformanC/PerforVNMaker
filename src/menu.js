@@ -115,7 +115,7 @@ function make(options) {
 
                    '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                   '    val layoutParams = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                   '    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
  
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
@@ -129,7 +129,7 @@ function make(options) {
                    '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonStart.background = null' + '\n\n' +
 
-                   '    val layoutParamsStart = FrameLayout.LayoutParams(' + '\n' +
+                   '    val layoutParamsStart = LayoutParams(' + '\n' +
                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
@@ -149,7 +149,7 @@ function make(options) {
                    '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonAbout.background = null' + '\n\n' +
 
-                   '    val layoutParamsAbout = FrameLayout.LayoutParams(' + '\n' +
+                   '    val layoutParamsAbout = LayoutParams(' + '\n' +
                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
@@ -171,7 +171,7 @@ function make(options) {
                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonSettings.background = null' + '\n\n' +
 
-                   '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                   '    val layoutParamsSettings = LayoutParams(' + '\n' +
                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
@@ -223,7 +223,7 @@ function make(options) {
 
                     '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
+                    '    val layoutParamsGrayRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
                     '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
 
                     '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
@@ -244,7 +244,7 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -258,7 +258,7 @@ function make(options) {
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
-                    '    val layoutParamsStart = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsStart = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -278,7 +278,7 @@ function make(options) {
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
-                    '    val layoutParamsAbout = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsAbout = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -296,7 +296,7 @@ function make(options) {
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
-                    '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSettings = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -318,7 +318,7 @@ function make(options) {
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
-                    '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsBack = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -355,7 +355,7 @@ function make(options) {
                     '    textView.textSize = 15f' + '\n' +
                     '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val layoutParamsText = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsText = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -388,7 +388,7 @@ function make(options) {
 
                     '    val rectangleGrayView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsGrayRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
+                    '    val layoutParamsGrayRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)' + '\n' +
                     '    layoutParamsGrayRectangle.gravity = Gravity.CENTER' + '\n\n' +
 
                     '    rectangleGrayView.layoutParams = layoutParamsGrayRectangle' + '\n' +
@@ -409,7 +409,7 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -423,7 +423,7 @@ function make(options) {
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
-                    '    val layoutParamsStart = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsStart = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -443,7 +443,7 @@ function make(options) {
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
-                    '    val layoutParamsAbout = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsAbout = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -465,7 +465,7 @@ function make(options) {
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
-                    '    val layoutParamsSettings = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSettings = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -483,7 +483,7 @@ function make(options) {
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
-                    '    val layoutParamsBack = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsBack = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
@@ -511,15 +511,15 @@ function make(options) {
                     '    textViewTextSpeed.textSize = 15f' + '\n' +
                     '    textViewTextSpeed.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val layoutParamsText = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsText = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val resourceDisplayMetrics: DisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
+                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
 
-                    '    val leftDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpTextSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val leftDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)' + '\n\n' +
@@ -546,13 +546,13 @@ function make(options) {
 
                     '    seekBarTextSpeed.thumbOffset = 0' + '\n\n' +
 
-                    '    val layoutParamsSeekBar = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSeekBar = LayoutParams(' + '\n' +
                     '      500,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val leftDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpSeekBarSpeed: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val leftDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)' + '\n\n' +
@@ -588,13 +588,13 @@ function make(options) {
                     '    textViewMusicVolume.textSize = 15f' + '\n' +
                     '    textViewMusicVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val layoutParamsTextMusicVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsTextMusicVolume = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val leftDpRightTexts: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpTextMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val leftDpRightTexts = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpTextMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)' + '\n\n' +
@@ -621,13 +621,13 @@ function make(options) {
 
                     '    seekBarMusicVolume.thumbOffset = 0' + '\n\n' +
 
-                    '    val layoutParamsSeekBarMusicVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSeekBarMusicVolume = LayoutParams(' + '\n' +
                     '      500,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val leftDpRightSeekbars: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 576f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpSeekBarMusicVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val leftDpRightSeekbars = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 576f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpSeekBarMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsSeekBarMusicVolume.setMargins(leftDpRightSeekbars, topDpSeekBarMusicVolume, 0, 0)' + '\n\n' +
@@ -659,12 +659,12 @@ function make(options) {
                     '    textViewSEffectVolume.textSize = 15f' + '\n' +
                     '    textViewSEffectVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val layoutParamsTextSEffectVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsTextSEffectVolume = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val topDpSeekBarSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 126f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpSeekBarSEffectVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 126f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsTextSEffectVolume.setMargins(leftDpRightTexts, topDpSeekBarSEffectVolume, 0, 0)' + '\n\n' +
@@ -691,12 +691,12 @@ function make(options) {
 
                     '    seekBarSEffectVolume.thumbOffset = 0' + '\n\n' +
 
-                    '    val layoutParamsSeekBarSEffectVolume = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSeekBarSEffectVolume = LayoutParams(' + '\n' +
                     '      500,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val topDpTextSEffectVolume: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpTextSEffectVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsSeekBarSEffectVolume.setMargins(leftDpRightSeekbars, topDpTextSEffectVolume, 0, 0)' + '\n\n' +
@@ -728,12 +728,12 @@ function make(options) {
                     '    textViewSceneMusic.textSize = 15f' + '\n' +
                     '    textViewSceneMusic.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
-                    '    val layoutParamsTextSceneMusic = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsTextSceneMusic = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val topDpSeekBarSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 176f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpSeekBarSceneMusic = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 176f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsTextSceneMusic.setMargins(leftDpRightTexts, topDpSeekBarSceneMusic, 0, 0)' + '\n\n' +
@@ -760,12 +760,12 @@ function make(options) {
 
                     '    seekBarSceneMusic.thumbOffset = 0' + '\n\n' +
 
-                    '    val layoutParamsSeekBarSceneMusic = FrameLayout.LayoutParams(' + '\n' +
+                    '    val layoutParamsSeekBarSceneMusic = LayoutParams(' + '\n' +
                     '      500,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val topDpTextSceneMusic: Int = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpTextSceneMusic = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsSeekBarSceneMusic.setMargins(leftDpRightSeekbars, topDpTextSceneMusic, 0, 0)' + '\n\n' +
