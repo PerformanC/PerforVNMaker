@@ -159,9 +159,13 @@ function finalize() {
     
         finishScene.push('      it.setOnClickListener(null)')
 
+        const functionParams = []
+        if (nextScene.speech && !scene.speech) functionParams.push('true')
+        if (visualNovel.scenes.length != 0 && nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) functionParams.push('true')
+
         const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
                      finishScene.join('\n') + '\n\n' +
-                     '      ' + nextScene.name + '(' + (nextScene.speech && !scene.speech ? 'true' : '') +')' + '\n' +
+                     '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n' +
                      '    }'
 
        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)

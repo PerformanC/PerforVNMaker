@@ -320,9 +320,17 @@ function finalize(scene, options) {
 
   console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
 
-  let sceneCode = '  private fun ' + scene.name + '(' + ((visualNovel.scenes.length == 0 ? scene.speech : !visualNovel.scenes[visualNovel.scenes.length - 1].speech) ? 'animate: Boolean' : '') + ') {' + '\n' +
+  const functionParams = []
+
+  if (visualNovel.scenes.length == 0 && scene.speech) functionParams.push('animate: Boolean')
+  if (visualNovel.scenes.length != 0 && !visualNovel.scenes[visualNovel.scenes.length - 1].speech) functionParams.push('animate: Boolean')
+
+  if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) functionParams.push('animateAuthor: Boolean')
+
+  let sceneCode = '  private fun ' + scene.name + '(' + functionParams.join(', ') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
+
 
   if (scene.background != '') {
     sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
@@ -519,14 +527,15 @@ function finalize(scene, options) {
                  '    layoutParamsAuthor.setMargins(400, 0, 0, 200)' + '\n\n' +
 
                  '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
-                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('    if (animate) {' + '\n' + 
+
+                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech || (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) ? ('    ' + (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name ? 'if (animateAuthor) {' : 'if (animate) {') + '\n' + 
                  '      val animationAuthor = AlphaAnimation(0f, 1f)' + '\n' +
                  '      animationAuthor.duration = 1000'  + '\n' +
                  '      animationAuthor.interpolator = LinearInterpolator()' + '\n' +
                  '      animationAuthor.fillAfter = true' + '\n\n' +
 
                  '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
-                 '    }' + '\n') : '\n') +
+                 '    }' + '\n\n') : '') +
 
                  '    frameLayout.addView(textViewAuthor)' : '') + '\n'
 
