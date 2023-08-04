@@ -13,6 +13,7 @@ menu.make({
   textSpeed: 50,
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
+  aboutText: 'This is our example visual novel, made by @ThePedroo',
   seekBar: {
     backgroundColor: 'F00000',
     progressColor: 'FFFFFF',

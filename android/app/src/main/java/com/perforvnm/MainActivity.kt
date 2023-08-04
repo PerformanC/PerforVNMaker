@@ -364,7 +364,8 @@ class MainActivity : ComponentActivity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.16.2-b.0 (code generator), 1.15.8-b.0 (generated code).")
+      append("1.16.2-b.0 (code generator), 1.15.8-b.0 (generated code).")
+      append("\n\n This is our example visual novel, made by @ThePedroo")
     }
     textView.textSize = 15f
     textView.setTextColor(0xFFFFFFFF.toInt())

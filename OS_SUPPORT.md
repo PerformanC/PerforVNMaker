@@ -50,7 +50,9 @@ The speech is the text that the characters say, and it adds more expression to t
 
 <= `v1.1.2-alpha`: Supported but with bugs (speech texts containing `"`, `'` or `\` are not supported)
 
-<= `v1.16.2-b.0 & v1.14.6-b.0`: Supported
+<= `v1.16.2-b.0 & v1.14.6-b.0`: Supported without author animation:
+
+<= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
 
 #### Sound effect
 
@@ -82,15 +84,19 @@ The start button is the button that starts the VN.
 
 <= `v1.0.0-alpha`: Supported
 
+<= `v1.1.2-alpha`: Supported with design changes
+
 #### About
 
 The About menu is the place where the player can see the information about the VN, like the name, the version, etc.
 
 ##### Version support
 
-<= `v1.0.2-alpha`: About without hyperlink support
+<= `v1.0.2-alpha`: Supported without hyperlink support & additional text support
 
-<= `v1.1.2-alpha`: About with hyperlink support
+<= `v1.1.2-alpha`: Supported without additional text support
+
+<= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
 
 #### Settings
 

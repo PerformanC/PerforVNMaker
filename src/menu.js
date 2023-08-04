@@ -350,7 +350,8 @@ function make(options) {
                     '          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
                     '        }' + '\n' +
                     '      }, length - "PerforVNM".length, length, 0)' + '\n' +
-                    '      append(" ' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
+                    '      append("' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
+                    (options.aboutText ? '      append("\\n\\n' + JSON.stringify(options.aboutText).slice(1, -1) + '")' + '\n' : '') +
                     '    }' + '\n' +
                     '    textView.textSize = 15f' + '\n' +
                     '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +

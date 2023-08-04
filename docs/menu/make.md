@@ -10,12 +10,14 @@ OBS: The background image and music must be in the `res/raw` folder.
 
 ```js
 menu.make({
+  textSpeed: 50,
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  aboutText: 'This is the about, welcome.',
   background: {
     image: 'menu',
     music: 'menu_music' // https://www.youtube.com/watch?v=DEhBqcbDHh4
   },
-  textColor: 'FFFFFF',
-  backTextColor: 'FFFFFF',
   footer: {
     color: '000000',
     textColor: 'FFFFFFF',
@@ -26,11 +28,13 @@ menu.make({
 
 ## Parameters
 
+- `textSpeed`: The default speed of the scene's speeches.
+- `textColor`: The color of the text in the menu.
+- `backTextColor`: The color of the text in the back button.
+- `aboutText`: The text that will be shown in the About menu.
 - `background`: The background of the menu. An object with the following properties:
   - `image`: The background image file name.
   - `music`: The background music file name.
-- `textColor`: The color of the text in the menu.
-- `backTextColor`: The color of the text in the back button.
 - `footer`: The footer of the menu. An object with the following properties:
   - `color`: The color of the footer.
   - `textColor`: The color of the text in the footer.

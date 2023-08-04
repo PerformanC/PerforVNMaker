@@ -161,12 +161,6 @@ function addScenario(scene, options) {
 }
 
 function addSpeech(scene, options) {
-  // if (!options?.author?.name) {
-  //   console.error(`ERROR: Speech author name not provided.\n- Scene name: ${scene.name}`)
-
-  //   process.exit(1)
-  // }
-
   if (options.author?.name && !options.author.textColor) {
     console.error(`ERROR: Speech author text color not provided.\n- Scene name: ${scene.name}`)
 
