@@ -38,12 +38,19 @@ firstScene = scene.addCharacter(firstScene, {
     side: 'center'
   },
   animation: {
-    side: 'left',
+    // side: 'left',
+    // duration: 1000,
+    // margins: {
+    //   side: 200,
+    //   top: 0
+    // }
+    type: 'scale',
     duration: 1000,
     margins: {
-      side: 200,
-      top: 0
-    }
+      top: 100
+    },
+    degrees: 360,
+    scale: 1.5
   }
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */

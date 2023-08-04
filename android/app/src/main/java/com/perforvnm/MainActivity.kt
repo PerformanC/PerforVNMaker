@@ -19,6 +19,7 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
+import android.view.animation.OvershootInterpolator
 import android.view.animation.AlphaAnimation
 import android.animation.Animator
 import android.animation.ValueAnimator
@@ -856,9 +857,10 @@ class MainActivity : ComponentActivity() {
 
       override fun onAnimationEnd(animation: Animation?) {
         imageView_Pedro.animate()
-          .translationX(200f)
-          .translationY(0f)
+          .scaleX(1.5f)
+          .scaleY(1.5f)
           .setDuration(1000)
+          .setInterpolator(LinearInterpolator())
           .start()
       }
 

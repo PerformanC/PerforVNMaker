@@ -59,6 +59,7 @@ function init(options) {
   'import android.view.WindowManager' + '\n' +
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
+  'import android.view.animation.OvershootInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +
   'import android.animation.Animator' + '\n' +
   'import android.animation.ValueAnimator' + '\n' +

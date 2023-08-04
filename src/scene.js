@@ -92,40 +92,109 @@ function addCharacter(scene, options) {
   }
 
   if (options.animation) {
-    if (!options.animation.side) {
-      console.error(`ERROR: Character animation side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (!options.animation.type) {
+      console.error(`ERROR: Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (!['center', 'left', 'right'].includes(options.animation.side)) {
-      console.error(`ERROR: Character animation side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(options.animation.type)) {
+      console.error(`ERROR: Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (options.animation.side != 'center' && options.animation.margins?.side == null) {
-      console.error(`ERROR: Character animation side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    switch (options.animation.type) {
+      case 'movement': {
+        if (!options.animation.side) {
+          console.error(`ERROR: Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
+          process.exit(1)
+        }
 
-    if (options.animation.side != 'center' && typeof options.animation.margins?.side != 'number') {
-      console.error(`ERROR: Character animation side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        if (!['center', 'left', 'right'].includes(options.animation.side)) {
+          console.error(`ERROR: Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
+          process.exit(1)
+        }
 
-    if (options.animation.side != 'center' && options.animation.margins.top == null) {
-      console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        if (options.animation.side != 'center' && options.animation.margins?.side == null) {
+          console.error(`ERROR: Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
+          process.exit(1)
+        }
 
-    if (options.animation.side != 'center' && typeof options.animation.margins?.top != 'number') {
-      console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        if (options.animation.side != 'center' && typeof options.animation.margins?.side != 'number') {
+          console.error(`ERROR: Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
+          process.exit(1)
+        }
+
+        if (options.animation.side != 'center' && options.animation.margins.top == null) {
+          console.error(`ERROR: Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        if (options.animation.side != 'center' && typeof options.animation.margins?.top != 'number') {
+          console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        break
+      }
+      case 'jump': {
+        if (options.animation.margins?.top == null) {
+          console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        if (typeof options.animation.margins?.top != 'number') {
+          console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        break
+      }
+      case 'fadeIn': {
+        break
+      }
+      case 'fadeOut': {
+        break
+      }
+      case 'rotate': {
+        if (options.animation.degrees == null) {
+          console.error(`ERROR: Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        if (typeof options.animation.degrees != 'number') {
+          console.error(`ERROR: Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        break
+      }
+      case 'scale': {
+        if (options.animation.scale == null) {
+          console.error(`ERROR: Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        if (typeof options.animation.scale != 'number') {
+          console.error(`ERROR: Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+          process.exit(1)
+        }
+
+        break
+      }
     }
 
     if (options.animation.duration == null) {
@@ -446,26 +515,69 @@ function finalize(scene, options) {
       
                      '      override fun onAnimationEnd(animation: Animation?) {' + '\n'
 
-        switch (character.animation.side) {
-          case 'center': {
-            sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                         '          .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
-                         '          .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
-                         '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                         '          .start()' + '\n'
-    
-            break
+        if (character.animation.type == 'movement') {
+          switch (character.animation.side) {
+            case 'center': {
+              sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                           '          .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
+                           '          .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
+                           '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                           '          .setInterpolator(LinearInterpolator())' + '\n' +
+                           '          .start()' + '\n'
+      
+              break
+            }
+            case 'left':
+            case 'right': {
+              sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                           '          .translationX(' + character.animation.margins.side + 'f)' + '\n' +
+                           '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                           '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                           '          .setInterpolator(LinearInterpolator())' + '\n' +
+                           '          .start()' + '\n'
+      
+              break
+            }
           }
-          case 'left':
-          case 'right': {
-            sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                         '          .translationX(' + character.animation.margins.side + 'f)' + '\n' +
-                         '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                         '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                         '          .start()' + '\n'
-    
-            break
-          }
+        } else if (character.animation.type == 'jump') {
+          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                       '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                       '          .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
+                       '          .setInterpolator(OvershootInterpolator())' + '\n' +
+                       '          .setListener(object : Animator.AnimatorListener {' + '\n' +
+                       '            override fun onAnimationStart(animation: Animator) {}' + '\n\n' + 
+              
+                       '            override fun onAnimationEnd(animation: Animator) {' + '\n' +
+                       '              imageView_' + character.name + '.animate()' + '\n' +
+                       '                .translationY(' + (character.position.side != 'center' ? character.position.margins.top : 0) + 'f)' + '\n' +
+                       '                .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
+                       '                .start()' + '\n' +
+                       '            }' + '\n\n' +
+              
+                       '            override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+              
+                       '            override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
+                       '          })' + '\n' +
+                       '          .start()' + '\n'
+        } else if (character.animation.type.startsWith('fade')) {
+          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                       '          .alpha(' + (character.animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
+                       '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                       '          .setInterpolator(LinearInterpolator())' + '\n' +
+                       '          .start()' + '\n'
+        } else if (character.animation.type == 'rotate') {
+          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                       '          .rotation(' + character.animation.degrees + 'f)' + '\n' +
+                       '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                       '          .setInterpolator(LinearInterpolator())' + '\n' +
+                       '          .start()' + '\n'
+        } else if (character.animation.type == 'scale') {
+          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                        '          .scaleX(' + character.animation.scale + 'f)' + '\n' +
+                        '          .scaleY(' + character.animation.scale + 'f)' + '\n' +
+                        '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                        '          .setInterpolator(LinearInterpolator())' + '\n' +
+                        '          .start()' + '\n'
         }
 
         sceneCode += '      }' + '\n\n' +
@@ -474,26 +586,69 @@ function finalize(scene, options) {
                      '    })' + '\n'
       }
     } else if (character.animation) {
-      switch (character.animation.side) {
-        case 'center': {
-          sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                       '      .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
-                       '      .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
-                       '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                       '      .start()' + '\n'
+      if (character.animation.type == 'movement') {
+        switch (character.animation.side) {
+          case 'center': {
+            sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                         '      .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
+                         '      .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
+                         '      .setDuration(' + character.animation.duration + ')' + '\n' +
+                         '      .setInterpolator(LinearInterpolator())' + '\n' +
+                         '      .start()' + '\n'
   
-          break
-        }
-        case 'left':
-        case 'right': {
-          sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                       '      .translationX(' + character.animation.margins.side + 'f)' + '\n' +
-                       '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                       '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                       '      .start()' + '\n'
+            break
+          }
+          case 'left':
+          case 'right': {
+            sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                         '      .translationX(' + character.animation.margins.side + 'f)' + '\n' +
+                         '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                         '      .setDuration(' + character.animation.duration + ')' + '\n' +
+                         '      .setInterpolator(LinearInterpolator())' + '\n' +
+                         '      .start()' + '\n'
   
-          break
+            break
+          }
         }
+      } else if (character.animation.type == 'jump') {
+        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                     '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                     '      .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
+                     '      .setInterpolator(OvershootInterpolator())' + '\n' +
+                     '      .setListener(object : Animator.AnimatorListener {' + '\n' +
+                     '        override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
+
+                     '        override fun onAnimationEnd(animation: Animator) {' + '\n' +
+                     '          imageView_' + character.name + '.animate()' + '\n' +
+                     '            .translationY(' + (character.position.side != 'center' ? character.position.margins.top : 0) + 'f)' + '\n' +
+                     '            .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
+                     '            .start()' + '\n' +
+                     '        }' + '\n\n' +
+
+                     '        override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+
+                     '        override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
+                     '      })' + '\n' +
+                     '      .start()' + '\n'
+      } else if (character.animation.type.startsWith('fade')) {
+        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                     '      .alpha(' + (character.animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
+                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
+                     '      .setInterpolator(LinearInterpolator())' + '\n' +
+                     '      .start()' + '\n'
+      } else if (character.animation.type == 'rotate') {
+        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                     '      .rotation(' + character.animation.degrees + 'f)' + '\n' +
+                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
+                     '      .setInterpolator(LinearInterpolator())' + '\n' +
+                     '      .start()' + '\n'
+      } else if (character.animation.type == 'scale') {
+        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
+                     '      .scaleX(' + character.animation.scale + 'f)' + '\n' +
+                     '      .scaleY(' + character.animation.scale + 'f)' + '\n' +
+                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
+                     '      .setInterpolator(LinearInterpolator())' + '\n' +
+                     '      .start()' + '\n'
       }
     }
   }
