@@ -66,8 +66,8 @@ secondScene = scene.addCharacter(secondScene, {
 secondScene = scene.addScenario(secondScene, { image: 'background_thanking' })
 secondScene = scene.addSpeech(secondScene, {
   author: {
-    // name: 'Pedro',
-    // textColor: 'FFFFFF',
+    name: 'Pedro',
+    textColor: 'FFFFFF',
     rectangle: {
       color: '000000',
       opacity: 0.6
@@ -98,25 +98,25 @@ thirdScene = scene.addCharacter(thirdScene, {
   }
 })
 thirdScene = scene.addScenario(thirdScene, { image: 'background_thanking' })
-thirdScene = scene.addSpeech(thirdScene, {
-  author: {
-    name: 'Pedro',
-    textColor: 'FFFFFF',
-    rectangle: {
-      color: '000000',
-      opacity: 0.6
-    }
-  },
-  text: {
-    content: '"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way."',
-    color: 'FFFFFF',
-    fontSize: 12,
-    rectangle: {
-      color: '000000',
-      opacity: 0.8
-    }
-  }
-})
+// thirdScene = scene.addSpeech(thirdScene, {
+//   author: {
+//     name: 'Pedro',
+//     textColor: 'FFFFFF',
+//     rectangle: {
+//       color: '000000',
+//       opacity: 0.6
+//     }
+//   },
+//   text: {
+//     content: '"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way."',
+//     color: 'FFFFFF',
+//     fontSize: 12,
+//     rectangle: {
+//       color: '000000',
+//       opacity: 0.8
+//     }
+//   }
+// })
 scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 coder.finalize() /* Finishes up the code */

@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.17.2-b.0',
-  generatedCodeVersion: '1.15.8-b.0',
+  codeGeneratorVersion: '1.18.2-b.0',
+  generatedCodeVersion: '1.16.8-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -165,7 +165,39 @@ function finalize() {
 
         const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
                      finishScene.join('\n') + '\n\n' +
-                     '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n' +
+
+                     (scene.speech && !nextScene.speech ? '      val animationRectangleSpeech = AlphaAnimation(' + scene.speech.text.rectangle.opacity + 'f, 0f)' + '\n' +
+                                                          '      animationRectangleSpeech.duration = 500' + '\n' +
+                                                          '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
+                                                          '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
+
+                                                          '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n\n' +
+
+                                                          '      val animationTextSpeech = AlphaAnimation(1f, 0f)' + '\n' +
+                                                          '      animationTextSpeech.duration = 500' + '\n' +
+                                                          '      animationTextSpeech.interpolator = LinearInterpolator()' + '\n' +
+                                                          '      animationTextSpeech.fillAfter = true' + '\n\n' +
+
+                                                          '      textViewSpeech.startAnimation(animationTextSpeech)' + '\n\n' +
+
+                                                          '      val animationAuthorSpeech = AlphaAnimation(' + scene.speech.author.rectangle.opacity + 'f, 0f)' + '\n' +
+                                                          '      animationAuthorSpeech.duration = 500' + '\n' +
+                                                          '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
+                                                          '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
+                                                          
+                                                          '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n' +
+
+                                                          (scene.speech.author?.name ? '      textViewAuthor.startAnimation(animationTextSpeech)' + '\n\n' : '') +
+
+                                                          '      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
+                                                          '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
+
+                                                          '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
+                                                          '          ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n' +
+                                                          '        }' + '\n\n' +
+
+                                                          '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
+                                                          '      })' + '\n' : '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n') +
                      '    }'
 
        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)

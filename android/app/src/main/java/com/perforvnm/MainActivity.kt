@@ -364,7 +364,7 @@ class MainActivity : ComponentActivity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append("1.16.2-b.0 (code generator), 1.15.8-b.0 (generated code).")
+      append("1.18.2-b.0 (code generator), 1.16.8-b.0 (generated code).")
       append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.textSize = 15f
@@ -1047,6 +1047,32 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleViewAuthor)
 
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.textSize = 20f
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(400, 0, 0, 200)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+    if (animate) {
+      val animationAuthor = AlphaAnimation(0f, 1f)
+      animationAuthor.duration = 1000
+      animationAuthor.interpolator = LinearInterpolator()
+      animationAuthor.fillAfter = true
+
+      textViewAuthor.startAnimation(animationAuthor)
+    }
+
+    frameLayout.addView(textViewAuthor)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.textSize = 10f
@@ -1119,11 +1145,42 @@ class MainActivity : ComponentActivity() {
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
       it.setOnClickListener(null)
 
-      scene3(true)
+      val animationRectangleSpeech = AlphaAnimation(0.8f, 0f)
+      animationRectangleSpeech.duration = 500
+      animationRectangleSpeech.interpolator = LinearInterpolator()
+      animationRectangleSpeech.fillAfter = true
+
+      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
+
+      val animationTextSpeech = AlphaAnimation(1f, 0f)
+      animationTextSpeech.duration = 500
+      animationTextSpeech.interpolator = LinearInterpolator()
+      animationTextSpeech.fillAfter = true
+
+      textViewSpeech.startAnimation(animationTextSpeech)
+
+      val animationAuthorSpeech = AlphaAnimation(0.6f, 0f)
+      animationAuthorSpeech.duration = 500
+      animationAuthorSpeech.interpolator = LinearInterpolator()
+      animationAuthorSpeech.fillAfter = true
+
+      rectangleViewAuthor.startAnimation(animationAuthorSpeech)
+
+      textViewAuthor.startAnimation(animationTextSpeech)
+
+      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {
+        override fun onAnimationStart(animation: Animation?) {}
+
+        override fun onAnimationEnd(animation: Animation?) {
+          scene3()
+        }
+
+        override fun onAnimationRepeat(animation: Animation?) {}
+      })
     }
   }
 
-  private fun scene3(animateAuthor: Boolean) {
+  private fun scene3() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -1149,84 +1206,6 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(imageView_Pedro)
 
-    val rectangleViewSpeech = RectangleView(this)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, 200)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.textSize = 12f
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, 0, 0, 80)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way.\""
-    var i = 0
-
-    handler.postDelayed(object : Runnable {
-      override fun run() {
-        if (i < speechText.length) {
-          textViewSpeech.text = speechText.substring(0, i + 1)
-          i++
-          handler.postDelayed(this, textSpeed)
-        }
-      }
-    }, textSpeed)
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.textSize = 20f
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(400, 0, 0, 200)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    if (animateAuthor) {
-      val animationAuthor = AlphaAnimation(0f, 1f)
-      animationAuthor.duration = 1000
-      animationAuthor.interpolator = LinearInterpolator()
-      animationAuthor.fillAfter = true
-
-      textViewAuthor.startAnimation(animationAuthor)
-    }
-
-    frameLayout.addView(textViewAuthor)
-
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.textSize = 10f
@@ -1244,8 +1223,6 @@ class MainActivity : ComponentActivity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      handler.removeCallbacksAndMessages(null)
-
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -1283,8 +1260,6 @@ class MainActivity : ComponentActivity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
-      handler.removeCallbacksAndMessages(null)
-
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       scene2(false)
