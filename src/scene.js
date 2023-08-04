@@ -27,7 +27,7 @@ function init(options) {
 
   console.log('Starting scene.. (Android)')
 
-  return { name: options.name, characters: [], background: null, speech: null, effect: null, music: null }
+  return { name: options.name, characters: [], background: null, speech: null, effect: null, music: null, transition: null }
 }
 
 function addCharacter(scene, options) {
@@ -91,39 +91,51 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
-  if (options.animateTo) {
-    if (!options.animateTo.side) {
-      console.error(`ERROR: Character animateTo side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+  if (options.animation) {
+    if (!options.animation.side) {
+      console.error(`ERROR: Character animation side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (!['center', 'left', 'right'].includes(options.animateTo.side)) {
-      console.error(`ERROR: Character animateTo side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (!['center', 'left', 'right'].includes(options.animation.side)) {
+      console.error(`ERROR: Character animation side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (options.animateTo.side != 'center' && options.animateTo.margins?.side == null) {
-      console.error(`ERROR: Character animateTo side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (options.animation.side != 'center' && options.animation.margins?.side == null) {
+      console.error(`ERROR: Character animation side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (options.animateTo.side != 'center' && typeof options.animateTo.margins?.side != 'number') {
-      console.error(`ERROR: Character animateTo side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (options.animation.side != 'center' && typeof options.animation.margins?.side != 'number') {
+      console.error(`ERROR: Character animation side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (options.animateTo.side != 'center' && options.animateTo.margins.top == null) {
-      console.error(`ERROR: Character animateTo top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (options.animation.side != 'center' && options.animation.margins.top == null) {
+      console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (options.animateTo.side != 'center' && typeof options.animateTo.margins?.top != 'number') {
-      console.error(`ERROR: Character animateTo top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    if (options.animation.side != 'center' && typeof options.animation.margins?.top != 'number') {
+      console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (options.animation.duration == null) {
+      console.error(`ERROR: Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (typeof options.animation.duration != 'number') {
+      console.error(`ERROR: Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
@@ -131,7 +143,7 @@ function addCharacter(scene, options) {
 
   console.log(`Adding character "${options.name}" for scene "${scene.name}".. (Android)`)
 
-  scene.characters.push({ name: options.name, image: options.image, position: options.position, animateTo: options.animateTo })
+  scene.characters.push({ name: options.name, image: options.image, position: options.position, animation: options.animation })
 
   console.log(`Character "${options.name}" added for scene "${scene.name}". (Android)`)
 
@@ -299,6 +311,28 @@ function addMusic(scene, options) {
   return scene
 }
 
+function addTransition(scene, options) {
+  if (!options?.duration) {
+    console.error(`ERROR: Scene transition duration not provided.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  if (typeof options.duration != 'number') {
+    console.error(`ERROR: Scene transition duration must be a number.\n- Scene name: ${scene.name}`)
+
+    process.exit(1)
+  }
+
+  console.log(`Adding transition for scene "${scene.name}".. (Android)`)
+
+  scene.transition = options
+
+  console.log(`Transition added for scene "${scene.name}". (Android)`)
+
+  return scene
+}
+
 function finalize(scene, options) {
   if (!options?.buttonsColor) {
     console.error(`ERROR: Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
@@ -325,6 +359,12 @@ function finalize(scene, options) {
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
+  if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
+    sceneCode += '    val animationFadeIn = AlphaAnimation(0f, 1f)' + '\n' +
+                 '    animationFadeIn.duration = ' + scene.transition.duration + '\n' +
+                 '    animationFadeIn.interpolator = LinearInterpolator()' + '\n' +
+                 '    animationFadeIn.fillAfter = true' + '\n\n'
+  }
 
   if (scene.background != '') {
     sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
@@ -332,6 +372,9 @@ function finalize(scene, options) {
                  '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                  '    frameLayout.addView(imageView_scenario)' + '\n\n'
+
+    if (scene.transition)
+      sceneCode += '    imageView_scenario.startAnimation(animationFadeIn)' + '\n\n'
   }
 
   for (let character of scene.characters) {
@@ -341,7 +384,7 @@ function finalize(scene, options) {
                      '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                      '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     (character.animateTo ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
+                     (character.animation ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
                      '      LayoutParams.WRAP_CONTENT' + '\n' +
                      '    )' + '\n\n' +
@@ -394,13 +437,49 @@ function finalize(scene, options) {
       }
     }
 
-    if (character.animateTo) {
-      switch (character.animateTo.side) {
+    if (scene.transition) {
+      sceneCode += '\n' + '    imageView_' + character.name + '.startAnimation(animationFadeIn)' + '\n'
+
+      if (character.animation) {
+        sceneCode += '\n' + '    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
+                     '      override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
+      
+                     '      override fun onAnimationEnd(animation: Animation?) {' + '\n'
+
+        switch (character.animation.side) {
+          case 'center': {
+            sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                         '          .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
+                         '          .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
+                         '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                         '          .start()' + '\n'
+    
+            break
+          }
+          case 'left':
+          case 'right': {
+            sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
+                         '          .translationX(' + character.animation.margins.side + 'f)' + '\n' +
+                         '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                         '          .setDuration(' + character.animation.duration + ')' + '\n' +
+                         '          .start()' + '\n'
+    
+            break
+          }
+        }
+
+        sceneCode += '      }' + '\n\n' +
+      
+                     '      override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
+                     '    })' + '\n'
+      }
+    } else if (character.animation) {
+      switch (character.animation.side) {
         case 'center': {
           sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
                        '      .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
                        '      .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
-                       '      .setDuration(1000)' + '\n' +
+                       '      .setDuration(' + character.animation.duration + ')' + '\n' +
                        '      .start()' + '\n'
   
           break
@@ -408,9 +487,9 @@ function finalize(scene, options) {
         case 'left':
         case 'right': {
           sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                       '      .translationX(' + character.animateTo.margins.side + '.toFloat())' + '\n' +
-                       '      .translationY(' + character.animateTo.margins.top + '.toFloat())' + '\n' +
-                       '      .setDuration(1000)' + '\n' +
+                       '      .translationX(' + character.animation.margins.side + 'f)' + '\n' +
+                       '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
+                       '      .setDuration(' + character.animation.duration + ')' + '\n' +
                        '      .start()' + '\n'
   
           break
@@ -772,5 +851,6 @@ export default {
   addSpeech,
   addSoundEffect,
   addMusic,
+  addTransition,
   finalize
 }

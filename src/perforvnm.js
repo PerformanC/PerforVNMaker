@@ -37,8 +37,9 @@ firstScene = scene.addCharacter(firstScene, {
   position: {
     side: 'center'
   },
-  animateTo: {
+  animation: {
     side: 'left',
+    duration: 1000,
     margins: {
       side: 200,
       top: 0
@@ -46,7 +47,8 @@ firstScene = scene.addCharacter(firstScene, {
   }
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
-firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 1000 })
+firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 1000 }) /* Adds a sound effect to the scene at second 1 */
+firstScene = scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
 scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 
 let secondScene = scene.init({ name: 'scene2' })

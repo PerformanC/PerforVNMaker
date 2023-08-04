@@ -365,7 +365,7 @@ class MainActivity : ComponentActivity() {
         }
       }, length - "PerforVNM".length, length, 0)
       append("1.16.2-b.0 (code generator), 1.15.8-b.0 (generated code).")
-      append("\n\n This is our example visual novel, made by @ThePedroo")
+      append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.textSize = 15f
     textView.setTextColor(0xFFFFFFFF.toInt())
@@ -821,11 +821,18 @@ class MainActivity : ComponentActivity() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
+    val animationFadeIn = AlphaAnimation(0f, 1f)
+    animationFadeIn.duration = 1000
+    animationFadeIn.interpolator = LinearInterpolator()
+    animationFadeIn.fillAfter = true
+
     val imageView_scenario = ImageView(this)
     imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
+
+    imageView_scenario.startAnimation(animationFadeIn)
 
     val imageView_Pedro = ImageView(this)
     imageView_Pedro.setImageResource(R.raw.pedro_staring)
@@ -842,11 +849,21 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(imageView_Pedro)
 
-    imageView_Pedro.animate()
-      .translationX(200.toFloat())
-      .translationY(0.toFloat())
-      .setDuration(1000)
-      .start()
+    imageView_Pedro.startAnimation(animationFadeIn)
+
+    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
+      override fun onAnimationStart(animation: Animation?) {}
+
+      override fun onAnimationEnd(animation: Animation?) {
+        imageView_Pedro.animate()
+          .translationX(200f)
+          .translationY(0f)
+          .setDuration(1000)
+          .start()
+      }
+
+      override fun onAnimationRepeat(animation: Animation?) {}
+    })
 
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
 

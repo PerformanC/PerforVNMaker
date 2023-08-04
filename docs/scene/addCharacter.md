@@ -19,8 +19,9 @@ scene.addCharacter(scene, {
       top: 0
     }
   },
-  animateTo: {
+  animation: {
     side: 'right',
+    duration: 1000
     margins: {
       side: 100,
       top: 0
@@ -39,8 +40,9 @@ scene.addCharacter(scene, {
   - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
     - `side`: The margin of the side of the character.
     - `top`: The margin of the top of the character.
-- `animateTo`: The animation of the character. An object with the following properties:
+- `animation`: The animation of the character. An object with the following properties:
   - `side`: The side of the character can be `left`, `right` or `center`.
+  - `duration`: The duration of the animation.
   - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
     - `side`: The margin of the side of the character.
     - `top`: The margin of the top of the character.

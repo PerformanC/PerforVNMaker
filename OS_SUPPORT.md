@@ -137,14 +137,14 @@ Spoiler (Not confirmed): We're planning to use JS, HTML and CSS to make the VN m
 This is the list of features that we're planning to add (or modify) to PerforVNM in the future.
 
 - [x] Scenes (Completed)
-- [x] Characters (Missing full animations)
-- [x] Animations (Partial, only character movement)
 - [x] Scenarios (Completed)
-- [x] Menu (Missing vertical footer)
 - [x] Speech (Completed)
 - [x] Music (Completed)
+- [x] Transitions (Completed)
+- [x] Characters (Missing full animations)
+- [x] Animations (Partial, only character movement)
+- [x] Menu (Missing vertical footer)
 - [x] Sound effects (Missing support for more than 1 sound effect)
-- [x] Transitions (Menu -> about/settings only)
 - [x] Settings (Misses some additional configurations)
 - [ ] Custom paths (High Priority)
 - [ ] Save/Load system (High Priority)
