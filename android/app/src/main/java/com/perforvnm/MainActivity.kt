@@ -147,11 +147,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
-    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)
 
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = footerFontSize
+    buttonStart.textSize = fontSizeFooter
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = footerFontSize
+    buttonAbout.textSize = fontSizeFooter
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -206,7 +206,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = footerFontSize
+    buttonSettings.textSize = fontSizeFooter
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -276,11 +276,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
-    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)
 
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = footerFontSize
+    buttonStart.textSize = fontSizeFooter
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -311,7 +311,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = footerFontSize
+    buttonAbout.textSize = fontSizeFooter
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -331,7 +331,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = footerFontSize
+    buttonSettings.textSize = fontSizeFooter
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -353,7 +353,7 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(buttonSettings)
 
-    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7.75f, resourceDisplayMetrics)
+    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
@@ -398,7 +398,7 @@ class MainActivity : ComponentActivity() {
       append("1.18.2-b.0 (code generator), 1.16.8-b.0 (generated code).")
       append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
-    textView.textSize = footerFontSize
+    textView.textSize = fontSizeFooter
     textView.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsText = LayoutParams(
@@ -468,11 +468,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
-    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)
 
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = footerFontSize
+    buttonStart.textSize = fontSizeFooter
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -503,7 +503,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = footerFontSize
+    buttonAbout.textSize = fontSizeFooter
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -527,7 +527,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = footerFontSize
+    buttonSettings.textSize = fontSizeFooter
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -545,7 +545,7 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(buttonSettings)
 
-    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7.75f, resourceDisplayMetrics)
+    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
@@ -580,7 +580,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewTextSpeed = TextView(this)
     textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
-    textViewTextSpeed.textSize = footerFontSize
+    textViewTextSpeed.textSize = fontSizeFooter
     textViewTextSpeed.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsText = LayoutParams(
@@ -657,7 +657,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewMusicVolume = TextView(this)
     textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"
-    textViewMusicVolume.textSize = footerFontSize
+    textViewMusicVolume.textSize = fontSizeFooter
     textViewMusicVolume.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextMusicVolume = LayoutParams(
@@ -728,7 +728,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewSEffectVolume = TextView(this)
     textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"
-    textViewSEffectVolume.textSize = footerFontSize
+    textViewSEffectVolume.textSize = fontSizeFooter
     textViewSEffectVolume.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextSEffectVolume = LayoutParams(
@@ -797,7 +797,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewSceneMusic = TextView(this)
     textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"
-    textViewSceneMusic.textSize = footerFontSize
+    textViewSceneMusic.textSize = fontSizeFooter
     textViewSceneMusic.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextSceneMusic = LayoutParams(
@@ -967,10 +967,10 @@ class MainActivity : ComponentActivity() {
       }
     }
 
-    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 3.5f, resourceDisplayMetrics)
 
     val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
+    buttonMenu.text = "Menu" + fontSizeButtons
     buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
@@ -1085,8 +1085,10 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleViewSpeech)
 
+    val fontSizeSpeech = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12f, resourceDisplayMetrics)
+
     val textViewSpeech = TextView(this)
-    textViewSpeech.textSize = 12f
+    textViewSpeech.textSize = fontSizeSpeech
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsSpeech = LayoutParams(
@@ -1141,9 +1143,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleViewAuthor)
 
+    val fontSizeAuthor = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)
+
     val textViewAuthor = TextView(this)
     textViewAuthor.text = "Pedro"
-    textViewAuthor.textSize = 20f
+    textViewAuthor.textSize = fontSizeAuthor
     textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsAuthor = LayoutParams(
@@ -1167,10 +1171,10 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(textViewAuthor)
 
-    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 3.5f, resourceDisplayMetrics)
 
     val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
+    buttonMenu.text = "Menu" + fontSizeButtons
     buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
@@ -1310,10 +1314,10 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(imageView_Pedro)
 
-    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 3.5f, resourceDisplayMetrics)
 
     val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
+    buttonMenu.text = "Menu" + fontSizeButtons
     buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
