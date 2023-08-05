@@ -13,7 +13,7 @@ Ensure that two sound effect doesn't play at the same time, or it *may* generate
 ## Syntax
 
 ```js
-scene.addSoundEffect(scene, [{ sound: 'menu_music', delay: 1000 }])
+scene.addSoundEffects(scene, [{ sound: 'menu_music', delay: 1000 }])
 ```
 
 ## Parameters
