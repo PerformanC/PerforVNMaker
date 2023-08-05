@@ -337,38 +337,49 @@ function addSpeech(scene, options) {
   return scene
 }
 
-function addSoundEffect(scene, options) {
-  if (!options?.sound) {
-    console.error(`ERROR: Sound effect sound not provided.\n- Scene name: ${scene.name}`)
+function addSoundEffects(scene, options) {
+  if (!Array.isArray(options)) {
+    console.error(`ERROR: Sound effects must be an array.\n- Scene name: ${scene.name}`)
 
     process.exit(1)
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.sound))) {
-    console.error(`ERROR: Sound effect sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
+  for (let sound of options) {
+    if (!sound?.sound) {
+      console.error(`ERROR: Sound effects sound not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
+      process.exit(1)
+    }
+
+    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound))) {
+      console.error(`ERROR: Sound effects sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
+
+      process.exit(1)
+    }
+
+    if (sound?.delay == null) {
+      console.error(`ERROR: Sound effects delay not provided.\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (typeof sound.delay != 'number') {
+      console.error(`ERROR: Sound effects delay must be a number.\n- Scene name: ${scene.name}`)
+
+      process.exit(1)
+    }
+
+    if (sound.delay != 0)
+      visualNovel.internalInfo.hasDelayedSoundEffect = true
   }
 
-  if (options?.delay == null) {
-    console.error(`ERROR: Sound effect delay not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (typeof options.delay != 'number') {
-    console.error(`ERROR: Sound effect delay must be a number.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  console.log(`Adding sound effect for scene "${scene.name}".. (Android)`)
+  console.log(`Adding sound effects for scene "${scene.name}".. (Android)`)
 
   scene.effect = options
 
   visualNovel.internalInfo.hasEffect = true
   
-  console.log(`Sound effect added for scene "${scene.name}". (Android)`)
+  console.log(`Sound effects added for scene "${scene.name}". (Android)`)
 
   return scene
 }
@@ -782,144 +793,98 @@ function finalize(scene, options) {
                  '    frameLayout.addView(textViewAuthor)' : '') + '\n'
   }
 
-  if (scene.music && !scene.effect) {
-    if (scene.music.delay == 0)
-      sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.music.music + ')' + '\n\n' +
+  if (scene.music || scene.effect) {
+    let finalCode = []
 
-                   '    if (mediaPlayer != null) {' + '\n' +
-                   '      mediaPlayer!!.start()' + '\n\n' +
+    if (scene.music) {
+      let SPACE = '    '
 
-                   '      mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n' +
+      if (scene.music.delay != 0) {
+        SPACE += '    '
 
-                   '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                   '        if (mediaPlayer != null) {' + '\n' +
-                   '          mediaPlayer!!.stop()' + '\n' +
-                   '          mediaPlayer!!.release()' + '\n' +
-                   '          mediaPlayer = null' + '\n' +
-                   '        }' + '\n' +
-                   '      }' + '\n' +
-                   '    }' + '\n'
+        sceneCode += '\n' + '    handler.postDelayed(object : Runnable {' + '\n' +
+                      '      override fun run() {' + '\n'
 
-    else sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.music.music + ')' + '\n\n' +
+        finalCode.push(
+          '      }' + '\n' +
+          '    }, ' + scene.music.delay + ')' + '\n'
+        )
+      } else {
+        sceneCode += '\n'
+      }
 
-                      '    if (mediaPlayer != null) handler.postDelayed(object : Runnable {' + '\n' +
-                      '      override fun run() {' + '\n' +
-                      '        mediaPlayer!!.start()' + '\n\n' +
+      sceneCode += SPACE + 'mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.music.music + ')' + '\n\n' +
 
-                      '        mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n\n' +
+                    SPACE + 'if (mediaPlayer != null) {' + '\n' +
+                    SPACE + '  mediaPlayer!!.start()' + '\n\n' +
 
-                      '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                      '          mediaPlayer!!.stop()' + '\n' +
-                      '          mediaPlayer!!.release()' + '\n' +
-                      '          mediaPlayer = null' + '\n' +
-                      '        }' + '\n' +
-                      '      }' + '\n' +
-                      '    }, ' + scene.music.delay + 'L)' + '\n'
-  } else if (scene.music && scene.effect) {
-    const codes = []
+                    SPACE + '  mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n\n' +
 
-    if (scene.music.delay == 0)
-      codes.push('    if (mediaPlayer!= null) {' + '\n\n' +
-      
-                 '      mediaPlayer!!.start()' + '\n\n' +
+                    SPACE + '  mediaPlayer!!.setOnCompletionListener {' + '\n' +
+                    SPACE + '    if (mediaPlayer != null) {' + '\n' +
+                    SPACE + '      mediaPlayer!!.stop()' + '\n' +
+                    SPACE + '      mediaPlayer!!.release()' + '\n' +
+                    SPACE + '      mediaPlayer = null' + '\n' +
+                    SPACE + '    }' + '\n' +
+                    SPACE + '  }' + '\n' +
+                    SPACE + '}' + '\n'
 
-                 '      mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n' +
+      if (finalCode.length != 0) {
+        finalCode.reverse()
 
-                 '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                 '        if (mediaPlayer != null) {' + '\n' +
-                 '          mediaPlayer!!.stop()' + '\n' +
-                 '          mediaPlayer!!.release()' + '\n' +
-                 '          mediaPlayer = null' + '\n' +
-                 '        }' + '\n' +
-                 '      }' + '\n' +
-                 '    }')
-    else codes.push('    if (mediaPlayer != null) handler.postDelayed(object : Runnable {' + '\n' +
-                    '      override fun run() {' + '\n' +
-                    '        mediaPlayer!!.start()' + '\n\n' +
+        sceneCode += finalCode.join('')
+      }
+    }
 
-                    '        mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n\n' +
+    if (finalCode.length != 0) {
+      finalCode.reverse()
 
-                    '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                    '          if (mediaPlayer != null) {' + '\n' +
-                    '            mediaPlayer!!.stop()' + '\n' +
-                    '            mediaPlayer!!.release()' + '\n' +
-                    '            mediaPlayer = null' + '\n' +
-                    '          }' + '\n' +
-                    '        }' + '\n' +
-                    '      }' + '\n' +
-                    '    }, ' + scene.music.delay + 'L)')
+      sceneCode += finalCode.join('')
+    }
 
-    if (scene.effect.delay == 0)
-      codes.push('    if (mediaPlayer2 != null) {' + '\n\n' +
-                 '      mediaPlayer2!!.start()' + '\n\n' +
+    if (scene.effect) for (let effect of scene.effect) {
+      let SPACE = '    '
 
-                 '      mediaPlayer2!!.setVolume(sEffectVolume, sEffectVolume)' + '\n' +
+      if (effect.delay != 0) {
+        SPACE += '    '
 
-                 '      mediaPlayer2!!.setOnCompletionListener {' + '\n' +
-                 '        if (mediaPlayer2 != null) {' + '\n' +
-                 '          mediaPlayer2!!.stop()' + '\n' +
-                 '          mediaPlayer2!!.release()' + '\n' +
-                 '          mediaPlayer2 = null' + '\n' +
-                 '        }' + '\n' +
-                 '      }' + '\n' +
-                 '    }')
-    else codes.push('    if (mediaPlayer2 != null) handler.postDelayed(object : Runnable {' + '\n' +
-                    '      override fun run() {' + '\n' +
-                    '        mediaPlayer2!!.start()' + '\n\n' +
+        sceneCode += '\n' + '    handler.postDelayed(object : Runnable {' + '\n' +
+                     '      override fun run() {' + '\n'
 
-                    '        mediaPlayer2!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
+        finalCode.push(
+          '      }' + '\n' +
+          '    }, ' + effect.delay + 'L)' + '\n'
+        )
+      } else {
+        sceneCode += '\n'
+      }
 
-                    '        mediaPlayer2!!.setOnCompletionListener {' + '\n' +
-                    '          if (mediaPlayer2 != null) {' + '\n' +
-                    '            mediaPlayer2!!.stop()' + '\n' +
-                    '            mediaPlayer2!!.release()' + '\n' +
-                    '            mediaPlayer2 = null' + '\n' +
-                    '          }' + '\n' +
-                    '        }' + '\n' +
-                    '      }' + '\n' +
-                    '    }, ' + scene.effect.delay + 'L)')
+      let mediaPlayerName = 'mediaPlayer'
+      if (scene.music) mediaPlayerName = 'mediaPlayer2'
 
-    sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.music.music + ')' + '\n\n' +
-                 '    mediaPlayer2 = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
+      sceneCode += SPACE + mediaPlayerName + ' = MediaPlayer.create(this@MainActivity, R.raw.' + effect.sound + ')' + '\n\n' +
+                   SPACE + 'if (' + mediaPlayerName + ' != null) {' + '\n' +
+                   SPACE + '  ' + mediaPlayerName + '!!.start()' + '\n\n' +
 
-                 codes.join('\n\n') + '\n'
+                   SPACE + '  ' + mediaPlayerName + '!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
 
-    visualNovel.internalInfo.needs2Players = true
-  } else if (!scene.music && scene.effect) {
-    if (scene.effect.delay == 0)
-      sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
+                   SPACE + '  ' + mediaPlayerName + '!!.setOnCompletionListener {' + '\n' +
+                   SPACE + '    if (' + mediaPlayerName + ' != null) {' + '\n' +
+                   SPACE + '      ' + mediaPlayerName + '!!.stop()' + '\n' +
+                   SPACE + '      ' + mediaPlayerName + '!!.release()' + '\n' +
+                   SPACE + '      ' + mediaPlayerName + ' = null' + '\n' +
+                   SPACE + '    }' + '\n' +
+                   SPACE + '  }' + '\n' +
+                   SPACE + '}' + '\n'
 
-                   '    if (mediaPlayer != null) {' + '\n' +
-                   '      mediaPlayer!!.start()' + '\n\n' +
+      if (finalCode.length != 0) {
+        finalCode.reverse()
+  
+        sceneCode += finalCode.join('')
 
-                   '      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
-
-                   '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                   '        if (mediaPlayer != null) {' + '\n' +
-                   '          mediaPlayer!!.stop()' + '\n' +
-                   '          mediaPlayer!!.release()' + '\n' +
-                   '          mediaPlayer = null' + '\n' +
-                   '        }' + '\n' +
-                   '      }' + '\n' +
-                   '    }' + '\n'
-
-    else sceneCode += '\n' + '    mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.effect.sound + ')' + '\n\n' +
-
-                      '    if (mediaPlayer != null) handler.postDelayed(object : Runnable {' + '\n' +
-                      '      override fun run() {' + '\n' +
-                      '        mediaPlayer!!.start()' + '\n\n' +
-
-                      '        mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
-
-                      '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                      '          if (mediaPlayer != null) {' + '\n' +
-                      '            mediaPlayer!!.stop()' + '\n' +
-                      '            mediaPlayer!!.release()' + '\n' +
-                      '            mediaPlayer = null' + '\n' +
-                      '          }' + '\n' +
-                      '        }' + '\n' +
-                      '      }' + '\n' +
-                      '    }, ' + scene.effect.delay + 'L)' + '\n'
+        finalCode = []
+      }
+    }
   }
 
   const finishScene = []
@@ -1010,7 +975,7 @@ export default {
   addCharacter,
   addScenario,
   addSpeech,
-  addSoundEffect,
+  addSoundEffects,
   addMusic,
   addTransition,
   finalize

@@ -56,7 +56,7 @@ firstScene = scene.addCharacter(firstScene, {
   }]
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
-firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 1000 }) /* Adds a sound effect to the scene at second 1 */
+firstScene = scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
 firstScene = scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
 scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 

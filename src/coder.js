@@ -230,7 +230,7 @@ function finalize() {
   }
 
   let addHeaders = ''
-  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
+  if (visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)

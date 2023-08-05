@@ -737,7 +737,6 @@ class MainActivity : ComponentActivity() {
 
           editor.putFloat("sEffectVolume", sEffectVolume)
           editor.apply()
-
         }
       }
 
@@ -900,23 +899,21 @@ class MainActivity : ComponentActivity() {
       override fun onAnimationRepeat(animation: Animation?) {}
     })
 
-    mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
 
-    if (mediaPlayer != null) handler.postDelayed(object : Runnable {
-      override fun run() {
-        mediaPlayer!!.start()
+    if (mediaPlayer != null) {
+      mediaPlayer!!.start()
 
-        mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
+      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
 
-        mediaPlayer!!.setOnCompletionListener {
-          if (mediaPlayer != null) {
-            mediaPlayer!!.stop()
-            mediaPlayer!!.release()
-            mediaPlayer = null
-          }
+      mediaPlayer!!.setOnCompletionListener {
+        if (mediaPlayer != null) {
+          mediaPlayer!!.stop()
+          mediaPlayer!!.release()
+          mediaPlayer = null
         }
       }
-    }, 1000L)
+    }
 
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"

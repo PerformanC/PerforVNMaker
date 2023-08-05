@@ -68,11 +68,17 @@ The speech is the text that the characters say, and it adds more expression to t
 
 The sound effect is the sound that can represent the sound of a door opening, a car passing by, etc. They are important for the immersion of the player into the game's story.
 
+##### Warning
+
+Ensure that two sound effect doesn't play at the same time, or it *may* generate audio bugs.
+
 ##### Version support
 
-<= `v1.5.3-alpha`: Supported but with bugs
+<= `v1.5.3-alpha`: Supported but with bugs and limited to 1 sound effect per scene
 
-<= `v1.16.1-b.0 & v1.14.4-b.0`: Supported
+<= `v1.16.1-b.0 & v1.14.4-b.0`: Supported but limited to 1 sound effect per scene
+
+<= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
 
 #### Music
 
@@ -153,8 +159,8 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Transitions (Completed)
 - [x] Characters (Completed)
 - [x] Animations (Completed)
+- [x] Sound effects (Completed)
 - [x] Menu (Missing vertical footer)
-- [x] Sound effects (Missing support for more than 1 sound effect)
 - [x] Settings (Misses some additional configurations)
 - [ ] Custom paths (High Priority)
 - [ ] Save/Load system (High Priority)

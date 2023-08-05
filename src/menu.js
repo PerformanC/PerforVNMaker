@@ -715,7 +715,7 @@ function make(options) {
                     '          sEffectVolume = progress.toFloat() / 100' + '\n\n' +
 
                     '          editor.putFloat("sEffectVolume", sEffectVolume)' + '\n' +
-                    '          editor.apply()' + '\n\n' +
+                    '          editor.apply()' + '\n' +
                     '        }' + '\n' +
                     '      }' + '\n\n' +
 
