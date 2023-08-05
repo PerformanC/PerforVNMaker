@@ -54,10 +54,6 @@ Please honor us with your feedback, and we will honor you with our best work.
 
 So, feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ) to create a post in `#feedback`.
 
-## Contribute to the project
-
-This project is made by few people, so if you want to contribute, you can do it by making a pull request, and if you want to work on the project, you can contact me on Discord: @pedro.js
-
 ## License
 
 PeforVNM is licensed under PerformanC's License, which is a modified version of the MIT License, focusing on the protection of the source code and the rights of the PerformanC team over the source code.

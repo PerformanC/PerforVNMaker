@@ -1,5 +1,5 @@
 ---
-name: Issue template
+name: Issue
 about: Report an issue.
 assignees: ''
 ---
