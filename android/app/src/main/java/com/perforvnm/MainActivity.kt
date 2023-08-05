@@ -135,7 +135,11 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
+    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()
+
+    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)
     layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParams
@@ -143,9 +147,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
+    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = 15f
+    buttonStart.textSize = footerFontSize
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -154,8 +160,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()
+    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(300, 0, 50, -10)
+    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -173,7 +182,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = 15f
+    buttonAbout.textSize = footerFontSize
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -182,8 +191,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(550, 0, 0, -10)
+    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -195,7 +206,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = 15f
+    buttonSettings.textSize = footerFontSize
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -204,8 +215,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(800, 0, 0, -10)
+    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -251,7 +264,11 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
+    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()
+
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -259,9 +276,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
+    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = 15f
+    buttonStart.textSize = footerFontSize
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -270,8 +289,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()
+    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(300, 0, 0, -10)
+    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -289,7 +311,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = 15f
+    buttonAbout.textSize = footerFontSize
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -298,8 +320,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(550, 0, 0, -10)
+    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -307,7 +331,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = 15f
+    buttonSettings.textSize = footerFontSize
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -316,8 +340,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(800, 0, 0, -10)
+    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -327,9 +353,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(buttonSettings)
 
+    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7.75f, resourceDisplayMetrics)
+
     val buttonBack = Button(this)
     buttonBack.text = "Back"
-    buttonBack.textSize = 20f
+    buttonBack.textSize = fontSizeBack
     buttonBack.setTextColor(0xFFFFFFFF.toInt())
     buttonBack.background = null
 
@@ -338,8 +366,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(250, 0, 0, 0)
+    layoutParamsBack.setMargins(leftDpBack, 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -368,7 +398,7 @@ class MainActivity : ComponentActivity() {
       append("1.18.2-b.0 (code generator), 1.16.8-b.0 (generated code).")
       append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
-    textView.textSize = 15f
+    textView.textSize = footerFontSize
     textView.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsText = LayoutParams(
@@ -376,8 +406,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpText = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()
+    val topDpText = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()
+
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(300, 200, 0, 0)
+    layoutParamsText.setMargins(leftDpText, topDpText, 0, 0)
 
     textView.layoutParams = layoutParamsText
     textView.startAnimation(animationTexts)
@@ -423,7 +456,11 @@ class MainActivity : ComponentActivity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
+    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()
+
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -431,9 +468,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(rectangleView)
 
+    val footerFontSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.75f, resourceDisplayMetrics)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
-    buttonStart.textSize = 15f
+    buttonStart.textSize = footerFontSize
     buttonStart.setTextColor(0xFFFFFFFFF.toInt())
     buttonStart.background = null
 
@@ -442,8 +481,11 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()
+    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(300, 0, 0, -10)
+    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -461,7 +503,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonAbout = Button(this)
     buttonAbout.text = "About"
-    buttonAbout.textSize = 15f
+    buttonAbout.textSize = footerFontSize
     buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
     buttonAbout.background = null
 
@@ -470,8 +512,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(550, 0, 0, -10)
+    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -483,7 +527,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonSettings = Button(this)
     buttonSettings.text = "Settings"
-    buttonSettings.textSize = 15f
+    buttonSettings.textSize = footerFontSize
     buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
     buttonSettings.background = null
 
@@ -492,16 +536,20 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(800, 0, 0, -10)
+    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
     frameLayout.addView(buttonSettings)
 
+    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 7.75f, resourceDisplayMetrics)
+
     val buttonBack = Button(this)
     buttonBack.text = "Back"
-    buttonBack.textSize = 20f
+    buttonBack.textSize = fontSizeBack
     buttonBack.setTextColor(0xFFFFFFFF.toInt())
     buttonBack.background = null
 
@@ -510,8 +558,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(250, 0, 0, 0)
+    layoutParamsBack.setMargins(leftDpBack, 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -530,7 +580,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewTextSpeed = TextView(this)
     textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
-    textViewTextSpeed.textSize = 15f
+    textViewTextSpeed.textSize = footerFontSize
     textViewTextSpeed.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsText = LayoutParams(
@@ -538,10 +588,8 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val resourceDisplayMetrics = getResources().getDisplayMetrics()
-
     val leftDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()
-    val topDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()
+    val topDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()
 
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
     layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)
@@ -568,13 +616,15 @@ class MainActivity : ComponentActivity() {
 
     seekBarTextSpeed.thumbOffset = 0
 
+    val heightDpSeekBars = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190.5f, resourceDisplayMetrics).toInt()
+
     val layoutParamsSeekBar = LayoutParams(
-      500,
+      heightDpSeekBars,
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()
-    val topDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()
+    val leftDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190.5f, resourceDisplayMetrics).toInt()
+    val topDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 99.25f, resourceDisplayMetrics).toInt()
 
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)
@@ -607,7 +657,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewMusicVolume = TextView(this)
     textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"
-    textViewMusicVolume.textSize = 15f
+    textViewMusicVolume.textSize = footerFontSize
     textViewMusicVolume.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextMusicVolume = LayoutParams(
@@ -616,7 +666,7 @@ class MainActivity : ComponentActivity() {
     )
 
     val leftDpRightTexts = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()
-    val topDpTextMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()
+    val topDpTextMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()
 
     layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)
@@ -644,7 +694,7 @@ class MainActivity : ComponentActivity() {
     seekBarMusicVolume.thumbOffset = 0
 
     val layoutParamsSeekBarMusicVolume = LayoutParams(
-      500,
+      heightDpSeekBars,
       LayoutParams.WRAP_CONTENT
     )
 
@@ -678,7 +728,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewSEffectVolume = TextView(this)
     textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"
-    textViewSEffectVolume.textSize = 15f
+    textViewSEffectVolume.textSize = footerFontSize
     textViewSEffectVolume.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextSEffectVolume = LayoutParams(
@@ -714,7 +764,7 @@ class MainActivity : ComponentActivity() {
     seekBarSEffectVolume.thumbOffset = 0
 
     val layoutParamsSeekBarSEffectVolume = LayoutParams(
-      500,
+      heightDpSeekBars,
       LayoutParams.WRAP_CONTENT
     )
 
@@ -747,7 +797,7 @@ class MainActivity : ComponentActivity() {
 
     val textViewSceneMusic = TextView(this)
     textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"
-    textViewSceneMusic.textSize = 15f
+    textViewSceneMusic.textSize = footerFontSize
     textViewSceneMusic.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsTextSceneMusic = LayoutParams(
@@ -783,7 +833,7 @@ class MainActivity : ComponentActivity() {
     seekBarSceneMusic.thumbOffset = 0
 
     val layoutParamsSeekBarSceneMusic = LayoutParams(
-      500,
+      heightDpSeekBars,
       LayoutParams.WRAP_CONTENT
     )
 
@@ -821,6 +871,8 @@ class MainActivity : ComponentActivity() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
     val animationFadeIn = AlphaAnimation(0f, 1f)
     animationFadeIn.duration = 1000
     animationFadeIn.interpolator = LinearInterpolator()
@@ -856,7 +908,7 @@ class MainActivity : ComponentActivity() {
 
       override fun onAnimationEnd(animation: Animation?) {
         imageView_Pedro.animate()
-          .translationY(-100f)
+          .translationY(-10f)
           .setDuration(500)
           .setInterpolator(OvershootInterpolator())
           .setListener(object : Animator.AnimatorListener {
@@ -874,7 +926,7 @@ class MainActivity : ComponentActivity() {
                     handler.postDelayed(object : Runnable {
                       override fun run() {
                         imageView_Pedro.animate()
-                          .translationX(200f)
+                          .translationX(20f)
                           .translationY(0f)
                           .setDuration(1000)
                           .setInterpolator(LinearInterpolator())
@@ -915,9 +967,11 @@ class MainActivity : ComponentActivity() {
       }
     }
 
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
-    buttonMenu.textSize = 10f
+    buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
 
@@ -926,8 +980,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+   val leftDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 19f, resourceDisplayMetrics).toInt()
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(50, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -980,6 +1036,8 @@ class MainActivity : ComponentActivity() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
     val imageView_scenario = ImageView(this)
     imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -995,8 +1053,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDp_Pedro = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, resourceDisplayMetrics).toInt()
+
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(200, 0, 0, 0)
+    layoutParams_Pedro.setMargins(leftDp_Pedro, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -1004,7 +1064,9 @@ class MainActivity : ComponentActivity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, 200)
+    val bottomDpRectangles = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()
+
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1061,7 +1123,7 @@ class MainActivity : ComponentActivity() {
 
     val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
     rectangleViewAuthor.setColor(0xFF000000.toInt())
@@ -1090,7 +1152,7 @@ class MainActivity : ComponentActivity() {
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(400, 0, 0, 200)
+    layoutParamsAuthor.setMargins(400, 0, 0, bottomDpRectangles)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -1105,9 +1167,11 @@ class MainActivity : ComponentActivity() {
 
     frameLayout.addView(textViewAuthor)
 
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
-    buttonMenu.textSize = 10f
+    buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
 
@@ -1116,8 +1180,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+   val leftDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 19f, resourceDisplayMetrics).toInt()
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(50, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1146,7 +1212,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
-    buttonBack.textSize = 10f
+    buttonBack.textSize = fontSizeButtons
     buttonBack.setTextColor(0xFFFFFFFF.toInt())
     buttonBack.background = null
 
@@ -1155,8 +1221,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val topDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(50, 80, 0, 0)
+    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1216,6 +1284,8 @@ class MainActivity : ComponentActivity() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
+    val resourceDisplayMetrics = getResources().getDisplayMetrics()
+
     val imageView_scenario = ImageView(this)
     imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -1231,16 +1301,20 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDp_Pedro = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, resourceDisplayMetrics).toInt()
+
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(200, 0, 0, 0)
+    layoutParams_Pedro.setMargins(leftDp_Pedro, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
     frameLayout.addView(imageView_Pedro)
 
+    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3.75f, resourceDisplayMetrics)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
-    buttonMenu.textSize = 10f
+    buttonMenu.textSize = fontSizeButtons
     buttonMenu.setTextColor(0xFFFFFFFF.toInt())
     buttonMenu.background = null
 
@@ -1249,8 +1323,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+   val leftDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 19f, resourceDisplayMetrics).toInt()
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(50, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1277,7 +1353,7 @@ class MainActivity : ComponentActivity() {
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
-    buttonBack.textSize = 10f
+    buttonBack.textSize = fontSizeButtons
     buttonBack.setTextColor(0xFFFFFFFF.toInt())
     buttonBack.background = null
 
@@ -1286,8 +1362,10 @@ class MainActivity : ComponentActivity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val topDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30.5f, resourceDisplayMetrics).toInt()
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(50, 80, 0, 0)
+    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
