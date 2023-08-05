@@ -947,7 +947,7 @@ class MainActivity : ComponentActivity() {
       if (mediaPlayer != null) {
         mediaPlayer!!.start()
 
-        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
         mediaPlayer!!.setVolume(volume, volume)
 
         mediaPlayer!!.setOnCompletionListener {
@@ -1131,7 +1131,7 @@ class MainActivity : ComponentActivity() {
       if (mediaPlayer != null) {
         mediaPlayer!!.start()
 
-        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
         mediaPlayer!!.setVolume(volume, volume)
 
         mediaPlayer!!.setOnCompletionListener {
@@ -1262,7 +1262,7 @@ class MainActivity : ComponentActivity() {
       if (mediaPlayer != null) {
         mediaPlayer!!.start()
 
-        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
         mediaPlayer!!.setVolume(volume, volume)
 
         mediaPlayer!!.setOnCompletionListener {

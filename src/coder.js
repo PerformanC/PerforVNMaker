@@ -302,7 +302,7 @@ function finalize() {
                          '      if (mediaPlayer != null) {' + '\n' +
                          '        mediaPlayer!!.start()' + '\n\n' +
 
-                         '        val volume = getSharedPreferences("PerforVNM", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)' + '\n' +
+                         '        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)' + '\n' +
                          '        mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
 
                          '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
