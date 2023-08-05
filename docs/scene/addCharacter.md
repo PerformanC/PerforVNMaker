@@ -19,7 +19,7 @@ scene.addCharacter(scene, {
       top: 0
     }
   },
-  animation: {
+  animations: [{
     type: 'movement',
     side: 'right',
     duration: 1000
@@ -27,7 +27,7 @@ scene.addCharacter(scene, {
       side: 100,
       top: 0
     }
-  }
+  }]
 })
 ```
 
@@ -41,7 +41,7 @@ scene.addCharacter(scene, {
   - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
     - `side`: The margin of the side of the character.
     - `top`: The margin of the top of the character.
-- `animation`: The animation of the character. An object with the following properties:
+- `animations`: The animation of the character. An array with objects with the following properties:
   - `type`: The type of the animation can be `movement`, `jump`, `fadeIn`, `fadeOut`, `rotate`, `scale`. (all animations)
   - `duration`: The duration of the animation. (all animations)
   - `side`: The side of the character can be `left`, `right` or `center`. (movement)

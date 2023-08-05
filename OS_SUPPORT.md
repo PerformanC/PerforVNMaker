@@ -30,13 +30,13 @@ The characters are overlaid on the scenario, and they can be moved around the sc
 
 OBS: Versions below `v1.5.3` must have the character image saved on the `drawable` folder, and versions above `v1.5.3` must have the character image saved on the `raw` folder.
 
-##### Character animations
+##### Animations
 
 The character animations are the animations that the characters can do, like `moving`, `jumping`, etc.
 
 ###### Version support
 
-<= `v1.15.0-b.0 & 1.12.2-b.0`: Supported but limited to `movement` animation only.
+<= `v1.15.0-b.0 & 1.12.2-b.0`: Supported but limited to `movement` animation and 1 animation per character only
 
 <= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
 
