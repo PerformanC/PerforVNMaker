@@ -91,128 +91,151 @@ function addCharacter(scene, options) {
     process.exit(1)
   }
 
-  if (options.animation) {
-    if (!options.animation.type) {
-      console.error(`ERROR: Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+  if (options.animations) {
+    if (!Array.isArray(options.animations)) {
+      console.error(`ERROR: Character animations must be an array.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       process.exit(1)
     }
 
-    if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(options.animation.type)) {
-      console.error(`ERROR: Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    for (let animation of options.animations) {
+      if (!animation.type) {
+        console.error(`ERROR: Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
-
-    switch (options.animation.type) {
-      case 'movement': {
-        if (!options.animation.side) {
-          console.error(`ERROR: Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        if (!['center', 'left', 'right'].includes(options.animation.side)) {
-          console.error(`ERROR: Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        if (options.animation.side != 'center' && options.animation.margins?.side == null) {
-          console.error(`ERROR: Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        if (options.animation.side != 'center' && typeof options.animation.margins?.side != 'number') {
-          console.error(`ERROR: Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        if (options.animation.side != 'center' && options.animation.margins.top == null) {
-          console.error(`ERROR: Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        if (options.animation.side != 'center' && typeof options.animation.margins?.top != 'number') {
-          console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        break
+        process.exit(1)
       }
-      case 'jump': {
-        if (options.animation.margins?.top == null) {
-          console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-          process.exit(1)
-        }
+      if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(animation.type)) {
+        console.error(`ERROR: Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        if (typeof options.animation.margins?.top != 'number') {
-          console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        break
+        process.exit(1)
       }
-      case 'fadeIn': {
-        break
-      }
-      case 'fadeOut': {
-        break
-      }
-      case 'rotate': {
-        if (options.animation.degrees == null) {
-          console.error(`ERROR: Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-          process.exit(1)
+      switch (animation.type) {
+        case 'movement': {
+          if (!animation.side) {
+            console.error(`ERROR: Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (!['center', 'left', 'right'].includes(animation.side)) {
+            console.error(`ERROR: Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (animation.side != 'center' && animation.margins?.side == null) {
+            console.error(`ERROR: Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (animation.side != 'center' && typeof animation.margins?.side != 'number') {
+            console.error(`ERROR: Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (animation.side != 'center' && animation.margins.top == null) {
+            console.error(`ERROR: Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (animation.side != 'center' && typeof animation.margins?.top != 'number') {
+            console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          break
         }
+        case 'jump': {
+          if (animation.margins?.top == null) {
+            console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        if (typeof options.animation.degrees != 'number') {
-          console.error(`ERROR: Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            process.exit(1)
+          }
 
-          process.exit(1)
+          if (typeof animation.margins?.top != 'number') {
+            console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          break
         }
+        case 'fadeIn': {
+          break
+        }
+        case 'fadeOut': {
+          break
+        }
+        case 'rotate': {
+          if (animation.degrees == null) {
+            console.error(`ERROR: Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        break
+            process.exit(1)
+          }
+
+          if (typeof animation.degrees != 'number') {
+            console.error(`ERROR: Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          break
+        }
+        case 'scale': {
+          if (animation.scale == null) {
+            console.error(`ERROR: Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          if (typeof animation.scale != 'number') {
+            console.error(`ERROR: Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+            process.exit(1)
+          }
+
+          break
+        }
       }
-      case 'scale': {
-        if (options.animation.scale == null) {
-          console.error(`ERROR: Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-          process.exit(1)
-        }
+      if (animation.duration == null) {
+        console.error(`ERROR: Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        if (typeof options.animation.scale != 'number') {
-          console.error(`ERROR: Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-          process.exit(1)
-        }
-
-        break
+        process.exit(1)
       }
-    }
 
-    if (options.animation.duration == null) {
-      console.error(`ERROR: Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      if (typeof animation.duration != 'number') {
+        console.error(`ERROR: Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
+        process.exit(1)
+      }
 
-    if (typeof options.animation.duration != 'number') {
-      console.error(`ERROR: Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      if (animation.delay == null) {
+        console.error(`ERROR: Character animation delay not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
+        process.exit(1)
+      }
+
+      if (typeof animation.delay != 'number') {
+        console.error(`ERROR: Character animation delay must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+
+        process.exit(1)
+      }
+
+      if (animation.delay != 0)
+        visualNovel.internalInfo.hasDelayedAnimation = true
     }
   }
 
   console.log(`Adding character "${options.name}" for scene "${scene.name}".. (Android)`)
 
-  scene.characters.push({ name: options.name, image: options.image, position: options.position, animation: options.animation })
+  scene.characters.push({ name: options.name, image: options.image, position: options.position, animations: options.animations })
 
   console.log(`Character "${options.name}" added for scene "${scene.name}". (Android)`)
 
@@ -307,6 +330,8 @@ function addSpeech(scene, options) {
   scene.speech = options
   scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
 
+  visualNovel.internalInfo.hasSpeech = true
+
   console.log(`Speech added for scene "${scene.name}". (Android)`)
 
   return scene
@@ -340,6 +365,8 @@ function addSoundEffect(scene, options) {
   console.log(`Adding sound effect for scene "${scene.name}".. (Android)`)
 
   scene.effect = options
+
+  visualNovel.internalInfo.hasEffect = true
   
   console.log(`Sound effect added for scene "${scene.name}". (Android)`)
 
@@ -374,6 +401,8 @@ function addMusic(scene, options) {
   console.log(`Adding music for scene "${scene.name}".. (Android)`)
 
   scene.music = options
+
+  visualNovel.internalInfo.hasSceneMusic = true
 
   console.log(`Music added for scene "${scene.name}". (Android)`)
 
@@ -450,206 +479,191 @@ function finalize(scene, options) {
     switch (character.position.side) {
       case 'center': {
         sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     (character.animation ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n' +
+                    (character.animations ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
 
-                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n\n' +
+                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n\n' +
                       
-                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' : '') +
+                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' : '') +
 
-                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
+                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
       case 'left': {
         sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n' +
+                    '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
 
-                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
-                     '    layoutParams_' + character.name + '.setMargins(' + character.position.margins.side + ', ' + character.position.margins.top + ', 0, 0)' + '\n\n' +
+                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
+                    '    layoutParams_' + character.name + '.setMargins(' + character.position.margins.side + ', ' + character.position.margins.top + ', 0, 0)' + '\n\n' +
 
-                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
+                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
 
-                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
+                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
       case 'right': {
         sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
+                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
-                     '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n' +
+                    '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                    '      LayoutParams.WRAP_CONTENT' + '\n' +
+                    '    )' + '\n\n' +
 
-                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
-                     '    layoutParams_' + character.name + '.setMargins(0, ' + character.position.margins.top + ', ' + character.position.margins.side + ', 0)' + '\n\n' +
+                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
+                    '    layoutParams_' + character.name + '.setMargins(0, ' + character.position.margins.top + ', ' + character.position.margins.side + ', 0)' + '\n\n' +
 
-                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
+                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
 
-                     '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
+                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
 
         break
       }
     }
 
+    let SPACE = '    '
+    const finalCode = []
+
     if (scene.transition) {
-      sceneCode += '\n' + '    imageView_' + character.name + '.startAnimation(animationFadeIn)' + '\n'
+      SPACE += '    '
 
-      if (character.animation) {
-        sceneCode += '\n' + '    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
-                     '      override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
-      
-                     '      override fun onAnimationEnd(animation: Animation?) {' + '\n'
+      sceneCode += '\n' + '    imageView_' + character.name + '.startAnimation(animationFadeIn)' + '\n\n' +
 
-        if (character.animation.type == 'movement') {
-          switch (character.animation.side) {
-            case 'center': {
-              sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                           '          .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
-                           '          .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
-                           '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                           '          .setInterpolator(LinearInterpolator())' + '\n' +
-                           '          .start()' + '\n'
-      
-              break
-            }
-            case 'left':
-            case 'right': {
-              sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                           '          .translationX(' + character.animation.margins.side + 'f)' + '\n' +
-                           '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                           '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                           '          .setInterpolator(LinearInterpolator())' + '\n' +
-                           '          .start()' + '\n'
-      
-              break
-            }
-          }
-        } else if (character.animation.type == 'jump') {
-          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                       '          .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                       '          .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
-                       '          .setInterpolator(OvershootInterpolator())' + '\n' +
-                       '          .setListener(object : Animator.AnimatorListener {' + '\n' +
-                       '            override fun onAnimationStart(animation: Animator) {}' + '\n\n' + 
-              
-                       '            override fun onAnimationEnd(animation: Animator) {' + '\n' +
-                       '              imageView_' + character.name + '.animate()' + '\n' +
-                       '                .translationY(' + (character.position.side != 'center' ? character.position.margins.top : 0) + 'f)' + '\n' +
-                       '                .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
-                       '                .start()' + '\n' +
-                       '            }' + '\n\n' +
-              
-                       '            override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
-              
-                       '            override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
-                       '          })' + '\n' +
-                       '          .start()' + '\n'
-        } else if (character.animation.type.startsWith('fade')) {
-          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                       '          .alpha(' + (character.animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
-                       '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                       '          .setInterpolator(LinearInterpolator())' + '\n' +
-                       '          .start()' + '\n'
-        } else if (character.animation.type == 'rotate') {
-          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                       '          .rotation(' + character.animation.degrees + 'f)' + '\n' +
-                       '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                       '          .setInterpolator(LinearInterpolator())' + '\n' +
-                       '          .start()' + '\n'
-        } else if (character.animation.type == 'scale') {
-          sceneCode += '        imageView_' + character.name + '.animate()' + '\n' +
-                        '          .scaleX(' + character.animation.scale + 'f)' + '\n' +
-                        '          .scaleY(' + character.animation.scale + 'f)' + '\n' +
-                        '          .setDuration(' + character.animation.duration + ')' + '\n' +
-                        '          .setInterpolator(LinearInterpolator())' + '\n' +
-                        '          .start()' + '\n'
-        }
+                   '    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
+                   '      override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
 
-        sceneCode += '      }' + '\n\n' +
-      
-                     '      override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
-                     '    })' + '\n'
+                   '      override fun onAnimationEnd(animation: Animation?) {' + '\n'
+
+      finalCode.push(
+        '      }' + '\n\n' +
+
+        '      override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
+        '    })' + '\n'
+      )
+    }
+    
+    let i = 0
+    
+    if (character.animations) for (let animation of character.animations) {
+      if (animation.delay != 0) {
+        sceneCode += SPACE + 'handler.postDelayed(object : Runnable {' + '\n' +
+                     SPACE + '  override fun run() {' + '\n'
+
+        finalCode.push(
+          SPACE + '  }' + '\n' +
+          SPACE + '}, ' + animation.delay + ')' + '\n'
+        )
+
+        SPACE += '    '
       }
-    } else if (character.animation) {
-      if (character.animation.type == 'movement') {
-        switch (character.animation.side) {
-          case 'center': {
-            sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                         '      .translationX(((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat())' + '\n' +
-                         '      .translationY(((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat())' + '\n' +
-                         '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                         '      .setInterpolator(LinearInterpolator())' + '\n' +
-                         '      .start()' + '\n'
-  
-            break
-          }
-          case 'left':
-          case 'right': {
-            sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                         '      .translationX(' + character.animation.margins.side + 'f)' + '\n' +
-                         '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                         '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                         '      .setInterpolator(LinearInterpolator())' + '\n' +
-                         '      .start()' + '\n'
-  
-            break
-          }
+
+      switch (animation.type) {
+        case 'movement': {
+          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '  .translationX(' + (animation.side == 'center' ? '((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat()' : animation.margins.side) + 'f)' + '\n' +
+                       SPACE + '  .translationY(' + (animation.side == 'center' ? '((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat()' : animation.margins.top) + 'f)' + '\n' +
+                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
+                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
+
+          break
         }
-      } else if (character.animation.type == 'jump') {
-        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                     '      .translationY(' + character.animation.margins.top + 'f)' + '\n' +
-                     '      .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
-                     '      .setInterpolator(OvershootInterpolator())' + '\n' +
-                     '      .setListener(object : Animator.AnimatorListener {' + '\n' +
-                     '        override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
+        case 'jump': {
+          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '  .translationY(' + animation.margins.top + 'f)' + '\n' +
+                       SPACE + '  .setDuration(' + animation.duration / 2 + ')' + '\n' +
+                       SPACE + '  .setInterpolator(OvershootInterpolator())' + '\n' +
+                       SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
+                       SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
 
-                     '        override fun onAnimationEnd(animation: Animator) {' + '\n' +
-                     '          imageView_' + character.name + '.animate()' + '\n' +
-                     '            .translationY(' + (character.position.side != 'center' ? character.position.margins.top : 0) + 'f)' + '\n' +
-                     '            .setDuration(' + character.animation.duration / 2 + ')' + '\n' +
-                     '            .start()' + '\n' +
-                     '        }' + '\n\n' +
+                       SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n' +
+                       SPACE + '      imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '        .translationY(0f)' + '\n' +
+                       SPACE + '        .setDuration(' + animation.duration / 2 + ')' + '\n' +
+                       SPACE + '        .setInterpolator(OvershootInterpolator())' + '\n'
 
-                     '        override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+          finalCode.push(
+            SPACE + '    }' + '\n\n' +
 
-                     '        override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
-                     '      })' + '\n' +
-                     '      .start()' + '\n'
-      } else if (character.animation.type.startsWith('fade')) {
-        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                     '      .alpha(' + (character.animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
-                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                     '      .setInterpolator(LinearInterpolator())' + '\n' +
-                     '      .start()' + '\n'
-      } else if (character.animation.type == 'rotate') {
-        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                     '      .rotation(' + character.animation.degrees + 'f)' + '\n' +
-                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                     '      .setInterpolator(LinearInterpolator())' + '\n' +
-                     '      .start()' + '\n'
-      } else if (character.animation.type == 'scale') {
-        sceneCode += '\n' + '    imageView_' + character.name + '.animate()' + '\n' +
-                     '      .scaleX(' + character.animation.scale + 'f)' + '\n' +
-                     '      .scaleY(' + character.animation.scale + 'f)' + '\n' +
-                     '      .setDuration(' + character.animation.duration + ')' + '\n' +
-                     '      .setInterpolator(LinearInterpolator())' + '\n' +
-                     '      .start()' + '\n'
+            SPACE + '    override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+
+            SPACE + '    override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
+            SPACE + '  })' + '\n'
+          )
+
+          SPACE += '      '
+
+          break
+        }
+        case 'fadeIn':
+        case 'fadeOut': {
+          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '  .alpha(' + (animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
+                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
+                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
+
+          break
+        }
+        case 'rotate': {
+          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '  .rotation(' + animation.degrees + 'f)' + '\n' +
+                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
+                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
+
+          break
+        }
+        case 'scale': {
+          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
+                       SPACE + '  .scaleX(' + animation.scale + 'f)' + '\n' +
+                       SPACE + '  .scaleY(' + animation.scale + 'f)' + '\n' +
+                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
+                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
+
+          break
+        }
       }
+
+      if (character.animations.length - 1 == i) {
+        sceneCode += SPACE + '  .start()' + '\n'
+      } else {
+        sceneCode += SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
+                     SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
+
+                     SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n'
+
+        finalCode.push(
+          SPACE + '    }' + '\n\n' +
+
+          SPACE + '    override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+
+          SPACE + '    override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
+          SPACE + '  })' + '\n' +
+          SPACE + '  .start()' + '\n'
+        )
+
+        SPACE += '      '
+      }
+
+      i++
+    }
+
+    if (finalCode.length != 0) {
+      finalCode.reverse()
+
+      sceneCode += finalCode.join('')
     }
   }
 
@@ -766,8 +780,6 @@ function finalize(scene, options) {
                  '    }' + '\n\n') : '') +
 
                  '    frameLayout.addView(textViewAuthor)' : '') + '\n'
-
-    visualNovel.internalInfo.hasSpeech = true
   }
 
   if (scene.music && !scene.effect) {
@@ -803,8 +815,6 @@ function finalize(scene, options) {
                       '        }' + '\n' +
                       '      }' + '\n' +
                       '    }, ' + scene.music.delay + 'L)' + '\n'
-
-    visualNovel.internalInfo.hasSceneMusic = true
   } else if (scene.music && scene.effect) {
     const codes = []
 
@@ -874,8 +884,6 @@ function finalize(scene, options) {
 
                  codes.join('\n\n') + '\n'
 
-    visualNovel.internalInfo.hasSceneMusic = true
-    visualNovel.internalInfo.hasEffect = true
     visualNovel.internalInfo.needs2Players = true
   } else if (!scene.music && scene.effect) {
     if (scene.effect.delay == 0)
@@ -912,8 +920,6 @@ function finalize(scene, options) {
                       '        }' + '\n' +
                       '      }' + '\n' +
                       '    }, ' + scene.effect.delay + 'L)' + '\n'
-
-    visualNovel.internalInfo.hasEffect = true
   }
 
   const finishScene = []

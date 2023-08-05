@@ -37,21 +37,23 @@ firstScene = scene.addCharacter(firstScene, {
   position: {
     side: 'center'
   },
-  animation: {
-    // side: 'left',
-    // duration: 1000,
-    // margins: {
-    //   side: 200,
-    //   top: 0
-    // }
-    type: 'scale',
+  animations: [{
+    type: 'jump',
+    delay: 0,
     duration: 1000,
     margins: {
-      top: 100
+      top: -100
     },
-    degrees: 360,
-    scale: 1.5
-  }
+  }, {
+    side: 'right',
+    duration: 1000,
+    margins: {
+      side: 200,
+      top: 0
+    },
+    type: 'movement',
+    delay: 1000,
+  }]
 }) /* Adds a character to the scene */
 firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
 firstScene = scene.addSoundEffect(firstScene, { sound: 'menu_music', delay: 1000 }) /* Adds a sound effect to the scene at second 1 */

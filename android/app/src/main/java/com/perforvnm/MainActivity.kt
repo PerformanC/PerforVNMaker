@@ -857,11 +857,44 @@ class MainActivity : ComponentActivity() {
 
       override fun onAnimationEnd(animation: Animation?) {
         imageView_Pedro.animate()
-          .scaleX(1.5f)
-          .scaleY(1.5f)
-          .setDuration(1000)
-          .setInterpolator(LinearInterpolator())
-          .start()
+          .translationY(-100f)
+          .setDuration(500)
+          .setInterpolator(OvershootInterpolator())
+          .setListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {}
+
+            override fun onAnimationEnd(animation: Animator) {
+              imageView_Pedro.animate()
+                .translationY(0f)
+                .setDuration(500)
+                .setInterpolator(OvershootInterpolator())
+                .setListener(object : Animator.AnimatorListener {
+                  override fun onAnimationStart(animation: Animator) {}
+
+                  override fun onAnimationEnd(animation: Animator) {
+                    handler.postDelayed(object : Runnable {
+                      override fun run() {
+                        imageView_Pedro.animate()
+                          .translationX(200f)
+                          .translationY(0f)
+                          .setDuration(1000)
+                          .setInterpolator(LinearInterpolator())
+                          .start()
+                      }
+                    }, 1000)
+                  }
+
+                  override fun onAnimationCancel(animation: Animator) {}
+
+                  override fun onAnimationRepeat(animation: Animator) {}
+                })
+                .start()
+            }
+
+            override fun onAnimationCancel(animation: Animator) {}
+
+            override fun onAnimationRepeat(animation: Animator) {}
+          })
       }
 
       override fun onAnimationRepeat(animation: Animation?) {}
