@@ -466,9 +466,7 @@ function finalize(scene, options) {
 
   let sceneCode = '  private fun ' + scene.name + '(' + functionParams.join(', ') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
-                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
-
-                  '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n'
+                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
   if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
     sceneCode += '    val animationFadeIn = AlphaAnimation(0f, 1f)' + '\n' +

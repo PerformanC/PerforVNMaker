@@ -82,24 +82,24 @@ function make(options) {
   console.log('Starting VN, coding menu.. (Android)')
 
   const mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n' +
-                   (options.background.music ? '      mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n\n' +
+                   (options.background.music ? '    mediaPlayer = MediaPlayer.create(this, R.raw.' + options.background.music + ')' + '\n\n' +
 
-                   '      if (mediaPlayer != null) {' + '\n' +
-                   '        mediaPlayer!!.start()' + '\n\n' +
+                   '    if (mediaPlayer != null) {' + '\n' +
+                   '      mediaPlayer!!.start()' + '\n\n' +
 
-                   '        val volume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n' +
-                   '        mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
+                   '      val volume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n' +
+                   '      mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
                   
-                   '        mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                   '          mediaPlayer!!.start()' + '\n' +
-                   '        }' + '\n' +
-                   '      }' + '\n\n' : '') +
+                   '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
+                   '        mediaPlayer!!.start()' + '\n' +
+                   '      }' + '\n' +
+                   '    }' + '\n\n' : '') +
 
-                   '      textSpeed = sharedPreferences.getLong("textSpeed", ' + options.textSpeed + 'L)' + '\n\n' +
+                   '    textSpeed = sharedPreferences.getLong("textSpeed", ' + options.textSpeed + 'L)' + '\n\n' +
 
-                   '      sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)' + '\n\n' +
+                   '    sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)' + '\n\n' +
 
-                   '      menu()'
+                   '    menu()'
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
 
@@ -114,8 +114,6 @@ function make(options) {
                    '    frameLayout.addView(imageView)' + '\n\n' +
 
                    '    val rectangleView = RectangleView(this)' + '\n\n' +
-
-                   '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
 
                    '    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
@@ -171,7 +169,7 @@ function make(options) {
 
                    '    val buttonSettings = Button(this)' + '\n' +
                    '    buttonSettings.text = "Settings"' + '\n' +
-                   '    buttonSetting.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
+                   '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonSettings.background = null' + '\n\n' +
 
@@ -247,8 +245,6 @@ function make(options) {
                     '    }' + '\n\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
-
-                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
  
                     '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
@@ -420,8 +416,6 @@ function make(options) {
                     '    }' + '\n\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
-
-                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
  
                     '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
@@ -547,7 +541,7 @@ function make(options) {
                     '    seekBarTextSpeed.max = 100' + '\n' +
                     '    seekBarTextSpeed.progress = textSpeed.toInt()' + '\n\n' +
 
-                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
                     '      seekBarTextSpeed.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
                     '      seekBarTextSpeed.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
                     '    } else {' + '\n' +
@@ -624,7 +618,7 @@ function make(options) {
                     '    seekBarMusicVolume.max = 100' + '\n' +
                     '    seekBarMusicVolume.progress = (musicVolume * 100).toInt()' + '\n\n' +
 
-                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
                     '      seekBarMusicVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
                     '      seekBarMusicVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
                     '    } else {' + '\n' +
@@ -694,7 +688,7 @@ function make(options) {
                     '    seekBarSEffectVolume.max = 100' + '\n' +
                     '    seekBarSEffectVolume.progress = (sEffectVolume * 100).toInt()' + '\n\n' +
 
-                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
                     '      seekBarSEffectVolume.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
                     '      seekBarSEffectVolume.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
                     '    } else {' + '\n' +
@@ -763,7 +757,7 @@ function make(options) {
                     '    seekBarSceneMusic.max = 100' + '\n' +
                     '    seekBarSceneMusic.progress = (sceneMusicVolume * 100).toInt()' + '\n\n' +
 
-                    '    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
+                    '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {' + '\n' +
                     '      seekBarSceneMusic.progressDrawable = resources.getDrawable(R.drawable.custom_seekbar_progress, null)' + '\n' +
                     '      seekBarSceneMusic.thumb = resources.getDrawable(R.drawable.custom_seekbar_thumb, null)' + '\n' +
                     '    } else {' + '\n' +
