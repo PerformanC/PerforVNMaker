@@ -127,11 +127,9 @@ function make(options) {
 
                    '    frameLayout.addView(rectangleView)' + '\n\n' +
 
-                   '    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)' + '\n\n' +
-
                    '    val buttonStart = Button(this)' + '\n' +
                    '    buttonStart.text = "Start"' + '\n' +
-                   '    buttonStart.textSize = fontSizeFooter' + '\n' +
+                   '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonStart.background = null' + '\n\n' +
 
@@ -154,7 +152,7 @@ function make(options) {
 
                    '    val buttonAbout = Button(this)' + '\n' +
                    '    buttonAbout.text = "About"' + '\n' +
-                   '    buttonAbout.textSize = fontSizeFooter' + '\n' +
+                   '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonAbout.background = null' + '\n\n' +
 
@@ -178,7 +176,7 @@ function make(options) {
 
                    '    val buttonSettings = Button(this)' + '\n' +
                    '    buttonSettings.text = "Settings"' + '\n' +
-                   '    buttonSettings.textSize = fontSizeFooter' + '\n' +
+                   '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonSettings.background = null' + '\n\n' +
 
@@ -269,11 +267,9 @@ function make(options) {
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
-                    '    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)' + '\n\n' +
-
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
-                    '    buttonStart.textSize = fontSizeFooter' + '\n' +
+                    '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
@@ -296,7 +292,7 @@ function make(options) {
 
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
-                    '    buttonAbout.textSize = fontSizeFooter' + '\n' +
+                    '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
@@ -316,7 +312,7 @@ function make(options) {
 
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
-                    '    buttonSettings.textSize = fontSizeFooter' + '\n' +
+                    '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
@@ -338,11 +334,9 @@ function make(options) {
 
                     '    frameLayout.addView(buttonSettings)' + '\n\n' +
 
-                    '    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)' + '\n\n' +
-
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
-                    '    buttonBack.textSize = fontSizeBack' + '\n' +
+                    '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)' + '\n' +
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
@@ -380,10 +374,10 @@ function make(options) {
                     '          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
                     '        }' + '\n' +
                     '      }, length - "PerforVNM".length, length, 0)' + '\n' +
-                    '      append("' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
+                    '      append(" ' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
                     (options.aboutText ? '      append("\\n\\n' + JSON.stringify(options.aboutText).slice(1, -1) + '")' + '\n' : '') +
                     '    }' + '\n' +
-                    '    textView.textSize = fontSizeFooter' + '\n' +
+                    '    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)' + '\n' +
                     '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText = LayoutParams(' + '\n' +
@@ -455,11 +449,9 @@ function make(options) {
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
-                    '    val fontSizeFooter = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 5.5f, resourceDisplayMetrics)' + '\n\n' +
-
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
-                    '    buttonStart.textSize = fontSizeFooter' + '\n' +
+                    '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
@@ -482,7 +474,7 @@ function make(options) {
 
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
-                    '    buttonAbout.textSize = fontSizeFooter' + '\n' +
+                    '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
@@ -506,7 +498,7 @@ function make(options) {
 
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
-                    '    buttonSettings.textSize = fontSizeFooter' + '\n' +
+                    '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
@@ -524,11 +516,9 @@ function make(options) {
 
                     '    frameLayout.addView(buttonSettings)' + '\n\n' +
 
-                    '    val fontSizeBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)' + '\n\n' +
-
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
-                    '    buttonBack.textSize = fontSizeBack' + '\n' +
+                    '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)' + '\n' +
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
@@ -559,7 +549,7 @@ function make(options) {
 
                     '    val textViewTextSpeed = TextView(this)' + '\n' +
                     '    textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"' + '\n' +
-                    '    textViewTextSpeed.textSize = fontSizeFooter' + '\n' +
+                    '    textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewTextSpeed.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText = LayoutParams(' + '\n' +
@@ -636,7 +626,7 @@ function make(options) {
 
                     '    val textViewMusicVolume = TextView(this)' + '\n' +
                     '    textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewMusicVolume.textSize = fontSizeFooter' + '\n' +
+                    '    textViewMusicVolume.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewMusicVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextMusicVolume = LayoutParams(' + '\n' +
@@ -707,7 +697,7 @@ function make(options) {
 
                     '    val textViewSEffectVolume = TextView(this)' + '\n' +
                     '    textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewSEffectVolume.textSize = fontSizeFooter' + '\n' +
+                    '    textViewSEffectVolume.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewSEffectVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextSEffectVolume = LayoutParams(' + '\n' +
@@ -776,7 +766,7 @@ function make(options) {
 
                     '    val textViewSceneMusic = TextView(this)' + '\n' +
                     '    textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewSceneMusic.textSize = fontSizeFooter' + '\n' +
+                    '    textViewSceneMusic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewSceneMusic.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextSceneMusic = LayoutParams(' + '\n' +
@@ -872,7 +862,7 @@ function make(options) {
     path: 'drawable/custom_seekbar_thumb.xml',
     content: '<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">' + '\n' +
              '  <solid android:color="#' + options.seekBar.thumbColor + '" />' + '\n' +
-             '  <size android:width="7dp" android:height="14dp" />' + '\n' +
+             '  <size android:width="7dp" android:height="18dp" />' + '\n' +
              '</shape>'
   })
   

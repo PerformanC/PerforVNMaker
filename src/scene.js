@@ -720,10 +720,8 @@ function finalize(scene, options) {
 
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
-                 '    val fontSizeSpeech = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, ' + scene.speech.text.fontSize + 'f, resourceDisplayMetrics)' + '\n\n' +
-
                  '    val textViewSpeech = TextView(this)' + '\n' +
-                 '    textViewSpeech.textSize = fontSizeSpeech' + '\n' +
+                 '    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_SP, ' + scene.speech.text.fontSize + 'f)' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsSpeech = LayoutParams(' + '\n' +
@@ -788,11 +786,9 @@ function finalize(scene, options) {
 
                  '    frameLayout.addView(rectangleViewAuthor)' +
 
-                 (scene.speech.author.name ? '\n\n' + '    val fontSizeAuthor = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 7f, resourceDisplayMetrics)' + '\n\n' +
-
-                 '    val textViewAuthor = TextView(this)' + '\n' +
+                 (scene.speech.author.name ? '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
                  '    textViewAuthor.text = "' + scene.speech.author.name + '"' + '\n' +
-                 '    textViewAuthor.textSize = fontSizeAuthor' + '\n' +
+                 '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)' + '\n' +
                  '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsAuthor = LayoutParams(' + '\n' +
@@ -940,11 +936,9 @@ function finalize(scene, options) {
 
   finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
 
-  sceneCode += '\n' + '    val fontSizeButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 3.5f, resourceDisplayMetrics)' + '\n\n' +
-
-               '    val buttonMenu = Button(this)' + '\n' +
-               '    buttonMenu.text = "Menu" + fontSizeButtons' + '\n' +
-               '    buttonMenu.textSize = fontSizeButtons' + '\n' +
+  sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
+               '    buttonMenu.text = "Menu"' + '\n' +
+               '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
                '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
@@ -969,7 +963,7 @@ function finalize(scene, options) {
 
                (visualNovel.scenes.length != 0 ? '    val buttonBack = Button(this)' + '\n' +
                '    buttonBack.text = "Back"' + '\n' +
-               '    buttonBack.textSize = fontSizeButtons' + '\n' +
+               '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
                '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
                '    buttonBack.background = null' + '\n\n' +
 
