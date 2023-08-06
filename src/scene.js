@@ -466,7 +466,9 @@ function finalize(scene, options) {
 
   let sceneCode = '  private fun ' + scene.name + '(' + functionParams.join(', ') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
-                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
+                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
+
+                  '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n'
 
   if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
     sceneCode += '    val animationFadeIn = AlphaAnimation(0f, 1f)' + '\n' +
@@ -506,7 +508,40 @@ function finalize(scene, options) {
 
         break
       }
+      case 'right':
       case 'left': {
+        let dpiFunctions = ''
+        if (character.position.side == 'left') {
+          if (character.position.margins.side != 0) {
+            dpiFunctions += '    val leftDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.side + 'f, resourceDisplayMetrics).toInt()' + '\n'
+          }
+        } else {
+          if (character.position.margins.side != 0) {
+            dpiFunctions += '    val rightDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.side + 'f, resourceDisplayMetrics).toInt()' + '\n'
+          }
+        }
+
+        if (character.position.margins.top != 0) {
+          dpiFunctions += '    val topDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.top + 'f, resourceDisplayMetrics).toInt()' + '\n'
+        }
+
+        dpiFunctions += '\n'
+
+        let layoutParams = '    layoutParams_' + character.name + '.setMargins('
+        if (character.position.margins.side != 0) {
+          layoutParams += character.position.side + 'Dp_' + character.name + ', '
+        } else {
+          layoutParams += '0, '
+        }
+
+        if (character.position.margins.top != 0) {
+          layoutParams += 'topDp_' + character.name
+        } else {
+          layoutParams += '0'
+        }
+
+        layoutParams += ', 0, 0)'
+
         sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
                     '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
                     '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
@@ -516,27 +551,10 @@ function finalize(scene, options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
-                    '    layoutParams_' + character.name + '.setMargins(' + character.position.margins.side + ', ' + character.position.margins.top + ', 0, 0)' + '\n\n' +
-
-                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
-
-                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
-
-        break
-      }
-      case 'right': {
-        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
-
-                    '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
+                    dpiFunctions +
 
                     '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
-                    '    layoutParams_' + character.name + '.setMargins(0, ' + character.position.margins.top + ', ' + character.position.margins.side + ', 0)' + '\n\n' +
+                    layoutParams + '\n\n' +
 
                     '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
 
@@ -681,7 +699,9 @@ function finalize(scene, options) {
   if (scene.speech) {
     sceneCode += '\n' + '    val rectangleViewSpeech = RectangleView(this)' + '\n\n' +
 
-                 '    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, 200)' + '\n' +
+                 '    val bottomDpRectangles = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
+                 '    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)' + '\n' +
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                  '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
@@ -701,7 +721,7 @@ function finalize(scene, options) {
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
                  '    val textViewSpeech = TextView(this)' + '\n' +
-                 '    textViewSpeech.textSize = ' + scene.speech.text.fontSize + 'f' + '\n' +
+                 '    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_SP, ' + scene.speech.text.fontSize + 'f)' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsSpeech = LayoutParams(' + '\n' +
@@ -748,7 +768,7 @@ function finalize(scene, options) {
 
                  '    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)' + '\n' +
                  '    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
-                 '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, 200)' + '\n\n' +
+                 '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)' + '\n\n' +
 
                  '    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor' + '\n' +
                  (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech ? '    rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' : '') +
@@ -768,7 +788,7 @@ function finalize(scene, options) {
 
                  (scene.speech.author.name ? '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
                  '    textViewAuthor.text = "' + scene.speech.author.name + '"' + '\n' +
-                 '    textViewAuthor.textSize = 20f' + '\n' +
+                 '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)' + '\n' +
                  '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsAuthor = LayoutParams(' + '\n' +
@@ -777,7 +797,7 @@ function finalize(scene, options) {
                  '    )' + '\n\n' +
 
                  '    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                 '    layoutParamsAuthor.setMargins(400, 0, 0, 200)' + '\n\n' +
+                 '    layoutParamsAuthor.setMargins(400, 0, 0, bottomDpRectangles)' + '\n\n' +
 
                  '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
 
@@ -918,7 +938,7 @@ function finalize(scene, options) {
 
   sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
-               '    buttonMenu.textSize = 10f' + '\n' +
+               '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
                '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
@@ -927,8 +947,10 @@ function finalize(scene, options) {
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
 
+               '   val leftDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 19f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
-               '    layoutParamsMenu.setMargins(50, 0, 0, 0)' + '\n\n' +
+               '    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)' + '\n\n' +
 
                '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
 
@@ -941,7 +963,7 @@ function finalize(scene, options) {
 
                (visualNovel.scenes.length != 0 ? '    val buttonBack = Button(this)' + '\n' +
                '    buttonBack.text = "Back"' + '\n' +
-               '    buttonBack.textSize = 10f' + '\n' +
+               '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
                '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
                '    buttonBack.background = null' + '\n\n' +
 
@@ -950,8 +972,10 @@ function finalize(scene, options) {
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
 
+               '    val topDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-               '    layoutParamsBack.setMargins(50, 80, 0, 0)' + '\n\n' +
+               '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +
 
                '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 

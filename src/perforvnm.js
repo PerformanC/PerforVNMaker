@@ -42,13 +42,13 @@ firstScene = scene.addCharacter(firstScene, {
     delay: 0,
     duration: 1000,
     margins: {
-      top: -100
+      top: -10
     },
   }, {
     side: 'right',
     duration: 1000,
     margins: {
-      side: 200,
+      side: 20,
       top: 0
     },
     type: 'movement',
@@ -67,7 +67,7 @@ secondScene = scene.addCharacter(secondScene, {
   position: {
     side: 'left',
     margins: {
-      side: 200,
+      side: 20,
       top: 0
     }
   }
@@ -101,7 +101,7 @@ thirdScene = scene.addCharacter(thirdScene, {
   position: {
     side: 'left',
     margins: {
-      side: 200,
+      side: 20,
       top: 0
     }
   }

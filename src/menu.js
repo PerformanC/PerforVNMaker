@@ -115,7 +115,11 @@ function make(options) {
 
                    '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                   '    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                   '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
+
+                   '    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
+                   '    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
  
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
@@ -125,7 +129,7 @@ function make(options) {
 
                    '    val buttonStart = Button(this)' + '\n' +
                    '    buttonStart.text = "Start"' + '\n' +
-                   '    buttonStart.textSize = 15f' + '\n' +
+                   '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonStart.background = null' + '\n\n' +
 
@@ -134,8 +138,11 @@ function make(options) {
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
 
+                   '    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()' + '\n' +
+                   '    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                    '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsStart.setMargins(300, 0, 50, -10)' + '\n\n' +
+                   '    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)' + '\n\n' +
 
                    '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
@@ -145,7 +152,7 @@ function make(options) {
 
                    '    val buttonAbout = Button(this)' + '\n' +
                    '    buttonAbout.text = "About"' + '\n' +
-                   '    buttonAbout.textSize = 15f' + '\n' +
+                   '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonAbout.background = null' + '\n\n' +
 
@@ -154,8 +161,10 @@ function make(options) {
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
 
+                   '    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                    '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
+                   '    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)' + '\n\n' +
 
                    '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
@@ -167,7 +176,7 @@ function make(options) {
 
                    '    val buttonSettings = Button(this)' + '\n' +
                    '    buttonSettings.text = "Settings"' + '\n' +
-                   '    buttonSettings.textSize = 15f' + '\n' +
+                   '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                    '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                    '    buttonSettings.background = null' + '\n\n' +
 
@@ -176,8 +185,10 @@ function make(options) {
                    '      LayoutParams.WRAP_CONTENT' + '\n' +
                    '    )' + '\n\n' +
 
+                   '    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                    '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+                   '    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)' + '\n\n' +
 
                    '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
 
@@ -244,7 +255,11 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
+
+                    '    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+ 
+                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -254,7 +269,7 @@ function make(options) {
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
-                    '    buttonStart.textSize = 15f' + '\n' +
+                    '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
@@ -263,8 +278,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()' + '\n\n' +
+ 
                     '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsStart.setMargins(300, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
@@ -274,7 +292,7 @@ function make(options) {
 
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
-                    '    buttonAbout.textSize = 15f' + '\n' +
+                    '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
@@ -283,8 +301,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
@@ -292,7 +312,7 @@ function make(options) {
 
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
-                    '    buttonSettings.textSize = 15f' + '\n' +
+                    '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
@@ -301,8 +321,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
 
@@ -314,7 +336,7 @@ function make(options) {
 
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
-                    '    buttonBack.textSize = 20f' + '\n' +
+                    '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)' + '\n' +
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
@@ -323,8 +345,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsBack.setMargins(250, 0, 0, 0)' + '\n\n' +
+                    '    layoutParamsBack.setMargins(leftDpBack, 0, 0, 0)' + '\n\n' +
 
                     '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
@@ -350,10 +374,10 @@ function make(options) {
                     '          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("' + PerforVNM.repository + '")))' + '\n' +
                     '        }' + '\n' +
                     '      }, length - "PerforVNM".length, length, 0)' + '\n' +
-                    '      append("' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
+                    '      append(" ' + PerforVNM.codeGeneratorVersion + ' (code generator), ' + PerforVNM.generatedCodeVersion + ' (generated code).")' + '\n' +
                     (options.aboutText ? '      append("\\n\\n' + JSON.stringify(options.aboutText).slice(1, -1) + '")' + '\n' : '') +
                     '    }' + '\n' +
-                    '    textView.textSize = 15f' + '\n' +
+                    '    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)' + '\n' +
                     '    textView.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText = LayoutParams(' + '\n' +
@@ -361,8 +385,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpText = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpText = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsText.setMargins(300, 200, 0, 0)' + '\n\n' +
+                    '    layoutParamsText.setMargins(leftDpText, topDpText, 0, 0)' + '\n\n' +
 
                     '    textView.layoutParams = layoutParamsText' + '\n' +
                     '    textView.startAnimation(animationTexts)' + '\n\n' +
@@ -410,7 +437,11 @@ function make(options) {
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
 
-                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, (displayMetrics.heightPixels * 0.09259259259).toInt())' + '\n' +
+                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
+
+                    '    val heightDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 38.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+ 
+                    '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, heightDp)' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
@@ -420,7 +451,7 @@ function make(options) {
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
-                    '    buttonStart.textSize = 15f' + '\n' +
+                    '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonStart.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
@@ -429,8 +460,11 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpStart = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 114.5f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val bottomDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, -4f, resourceDisplayMetrics).toInt()' + '\n\n' +
+ 
                     '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsStart.setMargins(300, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsStart.setMargins(leftDpStart, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonStart.layoutParams = layoutParamsStart' + '\n\n' +
 
@@ -440,7 +474,7 @@ function make(options) {
 
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
-                    '    buttonAbout.textSize = 15f' + '\n' +
+                    '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonAbout.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
@@ -449,8 +483,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpAbout = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 209.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsAbout.setMargins(550, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsAbout.setMargins(leftDpAbout, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonAbout.layoutParams = layoutParamsAbout' + '\n\n' +
 
@@ -462,7 +498,7 @@ function make(options) {
 
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
-                    '    buttonSettings.textSize = 15f' + '\n' +
+                    '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    buttonSettings.setTextColor(0xFF' + options.footer.textColor + '.toInt())' + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
@@ -471,8 +507,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpSettings = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 304f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                    '    layoutParamsSettings.setMargins(800, 0, 0, -10)' + '\n\n' +
+                    '    layoutParamsSettings.setMargins(leftDpSettings, 0, 0, bottomDpButtons)' + '\n\n' +
 
                     '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
 
@@ -480,7 +518,7 @@ function make(options) {
 
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
-                    '    buttonBack.textSize = 20f' + '\n' +
+                    '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)' + '\n' +
                     '    buttonBack.setTextColor(0xFF' + options.backTextColor + '.toInt())' + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
@@ -489,8 +527,10 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val leftDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 95.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '    layoutParamsBack.setMargins(250, 0, 0, 0)' + '\n\n' +
+                    '    layoutParamsBack.setMargins(leftDpBack, 0, 0, 0)' + '\n\n' +
 
                     '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
 
@@ -509,7 +549,7 @@ function make(options) {
 
                     '    val textViewTextSpeed = TextView(this)' + '\n' +
                     '    textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"' + '\n' +
-                    '    textViewTextSpeed.textSize = 15f' + '\n' +
+                    '    textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewTextSpeed.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsText = LayoutParams(' + '\n' +
@@ -517,10 +557,8 @@ function make(options) {
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n' +
-
                     '    val leftDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 204f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpTextSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)' + '\n\n' +
@@ -547,13 +585,15 @@ function make(options) {
 
                     '    seekBarTextSpeed.thumbOffset = 0' + '\n\n' +
 
+                    '    val heightDpSeekBars = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+
                     '    val layoutParamsSeekBar = LayoutParams(' + '\n' +
-                    '      500,' + '\n' +
+                    '      heightDpSeekBars,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
-                    '    val leftDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 188f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val leftDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 190.5f, resourceDisplayMetrics).toInt()' + '\n' +
+                    '    val topDpSeekBarSpeed = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 99.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)' + '\n\n' +
@@ -586,7 +626,7 @@ function make(options) {
 
                     '    val textViewMusicVolume = TextView(this)' + '\n' +
                     '    textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewMusicVolume.textSize = 15f' + '\n' +
+                    '    textViewMusicVolume.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewMusicVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextMusicVolume = LayoutParams(' + '\n' +
@@ -595,7 +635,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    val leftDpRightTexts = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 591f, resourceDisplayMetrics).toInt()' + '\n' +
-                    '    val topDpTextMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 77f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                    '    val topDpTextMusicVolume = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
 
                     '    layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START' + '\n' +
                     '    layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)' + '\n\n' +
@@ -623,7 +663,7 @@ function make(options) {
                     '    seekBarMusicVolume.thumbOffset = 0' + '\n\n' +
 
                     '    val layoutParamsSeekBarMusicVolume = LayoutParams(' + '\n' +
-                    '      500,' + '\n' +
+                    '      heightDpSeekBars,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
@@ -657,7 +697,7 @@ function make(options) {
 
                     '    val textViewSEffectVolume = TextView(this)' + '\n' +
                     '    textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewSEffectVolume.textSize = 15f' + '\n' +
+                    '    textViewSEffectVolume.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewSEffectVolume.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextSEffectVolume = LayoutParams(' + '\n' +
@@ -693,7 +733,7 @@ function make(options) {
                     '    seekBarSEffectVolume.thumbOffset = 0' + '\n\n' +
 
                     '    val layoutParamsSeekBarSEffectVolume = LayoutParams(' + '\n' +
-                    '      500,' + '\n' +
+                    '      heightDpSeekBars,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
@@ -726,7 +766,7 @@ function make(options) {
 
                     '    val textViewSceneMusic = TextView(this)' + '\n' +
                     '    textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"' + '\n' +
-                    '    textViewSceneMusic.textSize = 15f' + '\n' +
+                    '    textViewSceneMusic.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)' + '\n' +
                     '    textViewSceneMusic.setTextColor(0xFF' + options.textColor + '.toInt())' + '\n\n' +
 
                     '    val layoutParamsTextSceneMusic = LayoutParams(' + '\n' +
@@ -762,7 +802,7 @@ function make(options) {
                     '    seekBarSceneMusic.thumbOffset = 0' + '\n\n' +
 
                     '    val layoutParamsSeekBarSceneMusic = LayoutParams(' + '\n' +
-                    '      500,' + '\n' +
+                    '      heightDpSeekBars,' + '\n' +
                     '      LayoutParams.WRAP_CONTENT' + '\n' +
                     '    )' + '\n\n' +
 
@@ -822,7 +862,7 @@ function make(options) {
     path: 'drawable/custom_seekbar_thumb.xml',
     content: '<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">' + '\n' +
              '  <solid android:color="#' + options.seekBar.thumbColor + '" />' + '\n' +
-             '  <size android:width="7dp" android:height="14dp" />' + '\n' +
+             '  <size android:width="7dp" android:height="18dp" />' + '\n' +
              '</shape>'
   })
   
