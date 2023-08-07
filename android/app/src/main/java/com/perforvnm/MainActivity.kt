@@ -1018,7 +1018,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))
+    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
 
     val layoutParamsSpeech = LayoutParams(
@@ -1026,8 +1026,8 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, 0, 0, 80)
+    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -1084,7 +1084,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(400, 0, 0, bottomDpRectangles)
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 

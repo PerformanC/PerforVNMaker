@@ -721,8 +721,8 @@ function finalize(scene, options) {
                  '      LayoutParams.WRAP_CONTENT' + '\n' +
                  '    )' + '\n\n' +
                   
-                 '    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
-                 '    layoutParamsSpeech.setMargins(0, 0, 0, 80)' + '\n\n' +
+                 '    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL' + '\n' +
+                 '    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)' + '\n\n' +
 
                  '    textViewSpeech.layoutParams = layoutParamsSpeech' + '\n\n' +
 
@@ -789,7 +789,7 @@ function finalize(scene, options) {
                  '    )' + '\n\n' +
 
                  '    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                 '    layoutParamsAuthor.setMargins(400, 0, 0, bottomDpRectangles)' + '\n\n' +
+                 '    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)' + '\n\n' +
 
                  '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
 
