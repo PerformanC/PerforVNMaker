@@ -152,7 +152,6 @@ class MainActivity : Activity() {
       }
 
       scene1()
-
     }
 
     frameLayout.addView(buttonStart)
@@ -191,7 +190,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._234sdp), 0, 0, bottomDpButtons)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -293,7 +292,6 @@ class MainActivity : Activity() {
       }
 
       scene1()
-
     }
 
     frameLayout.addView(buttonStart)
@@ -493,7 +491,6 @@ class MainActivity : Activity() {
       }
 
       scene1()
-
     }
 
     frameLayout.addView(buttonStart)
@@ -945,7 +942,6 @@ class MainActivity : Activity() {
       }
 
       scene1()
-
     }
 
     frameLayout.addView(buttonStart)

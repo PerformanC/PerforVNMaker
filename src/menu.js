@@ -182,7 +182,7 @@ function make(options) {
                    '    )' + '\n\n' +
 
                    '    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                   '    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._234sdp), 0, 0, bottomDpButtons)' + '\n\n' +
+                   '    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)' + '\n\n' +
 
                    '    buttonSettings.layoutParams = layoutParamsSettings' + '\n\n' +
 

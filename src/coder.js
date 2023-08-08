@@ -229,7 +229,7 @@ function finalize() {
                   '      }' + '\n\n'
     }
 
-    menuCode += `      ${visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' + '\n' : '      // No scenes created.'}` + '\n' +
+    menuCode += `      ${visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' : '      // No scenes created.'}` + '\n' +
                 '    }'
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
