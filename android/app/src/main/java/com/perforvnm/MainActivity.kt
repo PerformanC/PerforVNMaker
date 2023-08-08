@@ -1,5 +1,8 @@
 package com.perforvnm
 
+import java.io.InputStreamReader
+import org.json.JSONArray
+
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -9,6 +12,7 @@ import android.util.TypedValue
 import android.media.MediaPlayer
 import android.widget.TextView
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.Button
@@ -148,6 +152,7 @@ class MainActivity : Activity() {
       }
 
       scene1()
+
     }
 
     frameLayout.addView(buttonStart)
@@ -164,7 +169,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._160sdp), 0, 0, bottomDpButtons)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -186,7 +191,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._234sdp), 0, 0, bottomDpButtons)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -195,6 +200,28 @@ class MainActivity : Activity() {
     }
 
     frameLayout.addView(buttonSettings)
+
+    val buttonSaves = Button(this)
+    buttonSaves.text = "Saves"
+    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonSaves.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSaves.background = null
+
+    val layoutParamsSaves = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+
+    buttonSaves.layoutParams = layoutParamsSaves
+
+    buttonSaves.setOnClickListener {
+      saves(true)
+    }
+
+    frameLayout.addView(buttonSaves)
 
     setContentView(frameLayout)
   }
@@ -266,6 +293,7 @@ class MainActivity : Activity() {
       }
 
       scene1()
+
     }
 
     frameLayout.addView(buttonStart)
@@ -282,7 +310,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._160sdp), 0, 0, bottomDpButtons)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -309,6 +337,28 @@ class MainActivity : Activity() {
     }
 
     frameLayout.addView(buttonSettings)
+
+    val buttonSaves = Button(this)
+    buttonSaves.text = "Saves"
+    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonSaves.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSaves.background = null
+
+    val layoutParamsSaves = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+
+    buttonSaves.layoutParams = layoutParamsSaves
+
+    buttonSaves.setOnClickListener {
+      saves(false)
+    }
+
+    frameLayout.addView(buttonSaves)
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
@@ -443,6 +493,7 @@ class MainActivity : Activity() {
       }
 
       scene1()
+
     }
 
     frameLayout.addView(buttonStart)
@@ -459,7 +510,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._160sdp), 0, 0, bottomDpButtons)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -486,6 +537,28 @@ class MainActivity : Activity() {
     buttonSettings.layoutParams = layoutParamsSettings
 
     frameLayout.addView(buttonSettings)
+
+    val buttonSaves = Button(this)
+    buttonSaves.text = "Saves"
+    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonSaves.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSaves.background = null
+
+    val layoutParamsSaves = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+
+    buttonSaves.layoutParams = layoutParamsSaves
+
+    buttonSaves.setOnClickListener {
+      saves(false)
+    }
+
+    frameLayout.addView(buttonSaves)
 
     val buttonBack = Button(this)
     buttonBack.text = "Back"
@@ -805,6 +878,226 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
+  private fun saves(animate: Boolean) {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView = ImageView(this)
+    imageView.setImageResource(R.raw.menu)
+    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView)
+
+    val rectangleGrayView = RectangleView(this)
+
+    val layoutParamsGrayRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+    layoutParamsGrayRectangle.gravity = Gravity.CENTER
+
+    rectangleGrayView.layoutParams = layoutParamsGrayRectangle
+    rectangleGrayView.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleGrayView)
+
+    if (animate) {
+      val animationRectangleGray = AlphaAnimation(0f, 0.8f)
+      animationRectangleGray.duration = 500
+      animationRectangleGray.interpolator = LinearInterpolator()
+      animationRectangleGray.fillAfter = true
+
+      rectangleGrayView.startAnimation(animationRectangleGray)
+    } else {
+      rectangleGrayView.setAlpha(0.8f)
+    }
+
+    val rectangleView = RectangleView(this)
+
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
+    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleView.layoutParams = layoutParamsRectangle
+    rectangleView.setAlpha(0.8f)
+
+    frameLayout.addView(rectangleView)
+
+    val buttonStart = Button(this)
+    buttonStart.text = "Start"
+    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonStart.setTextColor(0xFFFFFFFFF.toInt())
+    buttonStart.background = null
+
+    val layoutParamsStart = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
+
+    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)
+
+    buttonStart.layoutParams = layoutParamsStart
+
+    buttonStart.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      scene1()
+
+    }
+
+    frameLayout.addView(buttonStart)
+
+    val buttonAbout = Button(this)
+    buttonAbout.text = "About"
+    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonAbout.setTextColor(0xFFFFFFFFF.toInt())
+    buttonAbout.background = null
+
+    val layoutParamsAbout = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
+
+    buttonAbout.layoutParams = layoutParamsAbout
+
+    buttonAbout.setOnClickListener {
+      about(false)
+    }
+
+    frameLayout.addView(buttonAbout)
+
+    val buttonSettings = Button(this)
+    buttonSettings.text = "Settings"
+    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonSettings.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSettings.background = null
+
+    val layoutParamsSettings = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+
+    buttonSettings.layoutParams = layoutParamsSettings
+
+    buttonSettings.setOnClickListener {
+      settings(false)
+    }
+
+    frameLayout.addView(buttonSettings)
+
+    val buttonSaves = Button(this)
+    buttonSaves.text = "Saves"
+    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    buttonSaves.setTextColor(0xFFFFFFFFF.toInt())
+    buttonSaves.background = null
+
+    val layoutParamsSaves = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+
+    buttonSaves.layoutParams = layoutParamsSaves
+
+    frameLayout.addView(buttonSaves)
+
+    val buttonBack = Button(this)
+    buttonBack.text = "Back"
+    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))
+    buttonBack.setTextColor(0xFFFFFFFF.toInt())
+    buttonBack.background = null
+
+    val layoutParamsBack = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
+
+    buttonBack.layoutParams = layoutParamsBack
+
+    val animationTexts = AlphaAnimation(0f, 1f)
+    animationTexts.duration = 500
+    animationTexts.interpolator = LinearInterpolator()
+    animationTexts.fillAfter = true
+
+    buttonBack.startAnimation(animationTexts)
+
+    buttonBack.setOnClickListener {
+      menu()
+    }
+
+    frameLayout.addView(buttonBack)
+
+    val scrollView = ScrollView(this)
+
+    scrollView.layoutParams = LayoutParams(
+      LayoutParams.MATCH_PARENT,
+      LayoutParams.MATCH_PARENT
+    )
+
+    val inputStream = openFileInput("saves.json")
+    val text = inputStream.bufferedReader().use { it.readText() }
+    inputStream.close()
+
+    val saves = JSONArray(text)
+
+    for (i in 0 until saves.length()) {
+      val buttonData = saves.getJSONObject(i)
+
+      val buttonLoad = Button(this)
+      buttonLoad.text = "Load: " + buttonData.getString("scene")
+      buttonLoad.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonLoad.setTextColor(0xFFFFFFFFF.toInt())
+      buttonLoad.background = null
+
+      val layoutParamsLoad = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        LayoutParams.WRAP_CONTENT
+      )
+
+      val leftDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp)
+      val topDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._50sdp)
+
+      layoutParamsLoad.gravity = Gravity.TOP or Gravity.START
+      layoutParamsLoad.setMargins(leftDpLoad, topDpLoad, 0, 0)
+
+      buttonLoad.layoutParams = layoutParamsLoad
+
+      buttonLoad.setOnClickListener {
+        if (mediaPlayer != null) {
+          mediaPlayer!!.stop()
+          mediaPlayer!!.release()
+          mediaPlayer = null
+        }
+
+        when (buttonData.getString("scene")) {
+          "scene1" -> scene1()
+          "scene2" -> scene2(true)
+          "scene3" -> scene3()
+        }
+      }
+
+      scrollView.addView(buttonLoad)
+    }
+
+    frameLayout.addView(scrollView)
+
+    setContentView(frameLayout)
+  }
+
   private fun scene1() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
@@ -1067,7 +1360,7 @@ class MainActivity : Activity() {
       animationRectangleAuthor.fillAfter = true
 
       rectangleViewAuthor.startAnimation(animationRectangleAuthor)
-    } else { 
+    } else {
       rectangleViewAuthor.setAlpha(0.6f)
     }
 

@@ -461,23 +461,22 @@ function finalize(scene, options) {
 
   if (visualNovel.scenes.length == 0 && scene.speech) functionParams.push('animate: Boolean')
   if (visualNovel.scenes.length != 0 && !visualNovel.scenes[visualNovel.scenes.length - 1].speech) functionParams.push('animate: Boolean')
-
   if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) functionParams.push('animateAuthor: Boolean')
 
-  let sceneCode = '  private fun ' + scene.name + '(' + functionParams.join(', ') + ') {' + '\n' +
+  let sceneCode = `  private fun ${scene.name}(${functionParams.join(', ')}) {` + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
   if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
     sceneCode += '    val animationFadeIn = AlphaAnimation(0f, 1f)' + '\n' +
-                 '    animationFadeIn.duration = ' + scene.transition.duration + '\n' +
+                 `    animationFadeIn.duration = ${scene.transition.duration}` + '\n' +
                  '    animationFadeIn.interpolator = LinearInterpolator()' + '\n' +
                  '    animationFadeIn.fillAfter = true' + '\n\n'
   }
 
   if (scene.background != '') {
     sceneCode += '    val imageView_scenario = ImageView(this)' + '\n' +
-                 '    imageView_scenario.setImageResource(R.raw.' + scene.background + ')' + '\n' +
+                 `    imageView_scenario.setImageResource(R.raw.${scene.background})` + '\n' +
                  '    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                  '    frameLayout.addView(imageView_scenario)' + '\n\n'
@@ -489,20 +488,22 @@ function finalize(scene, options) {
   for (let character of scene.characters) {
     switch (character.position.side) {
       case 'center': {
-        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+        sceneCode += `    val imageView_${character.name} = ImageView(this)` + '\n' +
+                     `    imageView_${character.name}.setImageResource(R.raw.${character.image})` + '\n' +
+                     `    imageView_${character.name}.scaleType = ImageView.ScaleType.FIT_CENTER` + '\n\n'
 
-                    (character.animations ? '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
+        if (character.animations) {
+          sceneCode += `    val layoutParams_${character.name} = LayoutParams(` + '\n' +
+                        '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                        '      LayoutParams.WRAP_CONTENT' + '\n' +
+                        '    )' + '\n\n' +
 
-                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n\n' +
-                      
-                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' : '') +
+                        `    layoutParams_${character.name}.gravity = Gravity.CENTER` + '\n\n' +
 
-                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
+                        `    imageView_${character.name}.layoutParams = layoutParams_${character.name}` + '\n\n'
+        }
+
+        sceneCode += `    frameLayout.addView(imageView_${character.name})` + '\n'
 
         break
       }
@@ -510,47 +511,47 @@ function finalize(scene, options) {
       case 'left': {
         let dpiFunctions = ''
         if (character.position.margins.side != 0) {
-          dpiFunctions += '    val ' + character.position.side + 'Dp_' + character.name + ' = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._' + character.position.margins.side + 'sdp)' + '\n'
+          dpiFunctions += `    val ${character.position.side}Dp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.side}sdp)` + '\n'
         }
 
         if (character.position.margins.top != 0) {
-          dpiFunctions += '    val topDp_' + character.name + ' = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._' + character.position.margins.top + 'sdp)' + '\n'
+          dpiFunctions += `    val topDp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.top}sdp)` + '\n'
         }
 
         dpiFunctions += '\n'
 
-        let layoutParams = '    layoutParams_' + character.name + '.setMargins('
+        let layoutParams = `    layoutParams_${character.name}.setMargins(`
         if (character.position.margins.side != 0) {
-          layoutParams += character.position.side + 'Dp_' + character.name + ', '
+          layoutParams += `${character.position.side}Dp_${character.name}, `
         } else {
           layoutParams += '0, '
         }
 
         if (character.position.margins.top != 0) {
-          layoutParams += 'topDp_' + character.name
+          layoutParams += `topDp_${character.name}`
         } else {
           layoutParams += '0'
         }
 
         layoutParams += ', 0, 0)'
 
-        sceneCode += '    val imageView_' + character.name + ' = ImageView(this)' + '\n' +
-                    '    imageView_' + character.name + '.setImageResource(R.raw.' + character.image + ')' + '\n' +
-                    '    imageView_' + character.name + '.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
+        sceneCode += `    val imageView_${character.name} = ImageView(this)` + '\n' +
+                     `    imageView_${character.name}.setImageResource(R.raw.${character.image})` + '\n' +
+                     `    imageView_${character.name}.scaleType = ImageView.ScaleType.FIT_CENTER` + '\n\n' +
 
-                    '    val layoutParams_' + character.name + ' = LayoutParams(' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '      LayoutParams.WRAP_CONTENT' + '\n' +
-                    '    )' + '\n\n' +
+                     `    val layoutParams_${character.name} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n' +
 
-                    dpiFunctions +
+                     dpiFunctions +
 
-                    '    layoutParams_' + character.name + '.gravity = Gravity.CENTER' + '\n' +
-                    layoutParams + '\n\n' +
+                     `    layoutParams_${character.name}.gravity = Gravity.CENTER` + '\n' +
+                     layoutParams + '\n\n' +
 
-                    '    imageView_' + character.name + '.layoutParams = layoutParams_' + character.name + '\n\n' +
+                     `    imageView_${character.name}.layoutParams = layoutParams_${character.name}` + '\n\n' +
 
-                    '    frameLayout.addView(imageView_' + character.name + ')' + '\n'
+                     `    frameLayout.addView(imageView_${character.name})` + '\n'
 
         break
       }
@@ -562,7 +563,7 @@ function finalize(scene, options) {
     if (scene.transition) {
       SPACE += '    '
 
-      sceneCode += '\n' + '    imageView_' + character.name + '.startAnimation(animationFadeIn)' + '\n\n' +
+      sceneCode += '\n' + `    imageView_${character.name}.startAnimation(animationFadeIn)` + '\n\n' +
 
                    '    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
                    '      override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
@@ -586,75 +587,67 @@ function finalize(scene, options) {
 
         finalCode.push(
           SPACE + '  }' + '\n' +
-          SPACE + '}, ' + animation.delay + ')' + '\n'
+          SPACE + `}, ${animation.delay})` + '\n'
         )
 
         SPACE += '    '
       }
 
-      switch (animation.type) {
-        case 'movement': {
-          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '  .translationX(' + (animation.side == 'center' ? '((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat()' : animation.margins.side) + 'f)' + '\n' +
-                       SPACE + '  .translationY(' + (animation.side == 'center' ? '((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat()' : animation.margins.top) + 'f)' + '\n' +
-                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
-                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
+      if (animation.type == 'jump') {
+        sceneCode += SPACE + `imageView_${character.name}.animate()` + '\n' +
+                    SPACE + `  .translationY(${animation.margins.top}f)` + '\n' +
+                    SPACE + `  .setDuration(${animation.duration / 2})` + '\n' +
+                    SPACE + '  .setInterpolator(OvershootInterpolator())' + '\n' +
+                    SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
+                    SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
 
-          break
+                    SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n' +
+                    SPACE + `      imageView_${character.name}.animate()` + '\n' +
+                    SPACE + '        .translationY(0f)' + '\n' +
+                    SPACE + `        .setDuration(${animation.duration / 2})` + '\n' +
+                    SPACE + '        .setInterpolator(OvershootInterpolator())' + '\n'
+
+        finalCode.push(
+          SPACE + '    }' + '\n\n' +
+
+          SPACE + '    override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
+
+          SPACE + '    override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
+          SPACE + '  })' + '\n'
+        )
+
+        SPACE += '      '
+      } else {
+        sceneCode += SPACE + `imageView_${character.name}.animate()` + '\n'
+
+        switch (animation.type) {
+          case 'movement': {
+            sceneCode += SPACE + `  .translationX(${(animation.side == 'center' ? '((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat()' : animation.margins.side)}f)` + '\n' +
+                         SPACE + `  .translationY(${(animation.side == 'center' ? '((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat()' : animation.margins.top)}f)` + '\n'
+
+            break
+          }
+          case 'fadeIn':
+          case 'fadeOut': {
+            sceneCode += SPACE + `  .alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)` + '\n'
+
+            break
+          }
+          case 'rotate': {
+            sceneCode += SPACE + `  .rotation(${animation.degrees}f)` + '\n'
+
+            break
+          }
+          case 'scale': {
+            sceneCode += SPACE + `  .scaleX(${animation.scale}f)` + '\n' +
+                         SPACE + `  .scaleY(${animation.scale}f)` + '\n'
+
+            break
+          }
         }
-        case 'jump': {
-          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '  .translationY(' + animation.margins.top + 'f)' + '\n' +
-                       SPACE + '  .setDuration(' + animation.duration / 2 + ')' + '\n' +
-                       SPACE + '  .setInterpolator(OvershootInterpolator())' + '\n' +
-                       SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
-                       SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
 
-                       SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n' +
-                       SPACE + '      imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '        .translationY(0f)' + '\n' +
-                       SPACE + '        .setDuration(' + animation.duration / 2 + ')' + '\n' +
-                       SPACE + '        .setInterpolator(OvershootInterpolator())' + '\n'
-
-          finalCode.push(
-            SPACE + '    }' + '\n\n' +
-
-            SPACE + '    override fun onAnimationCancel(animation: Animator) {}' + '\n\n' +
-
-            SPACE + '    override fun onAnimationRepeat(animation: Animator) {}' + '\n' +
-            SPACE + '  })' + '\n'
-          )
-
-          SPACE += '      '
-
-          break
-        }
-        case 'fadeIn':
-        case 'fadeOut': {
-          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '  .alpha(' + (animation.type == 'fadeIn' ? 1 : 0) + 'f)' + '\n' +
-                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
-                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
-
-          break
-        }
-        case 'rotate': {
-          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '  .rotation(' + animation.degrees + 'f)' + '\n' +
-                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
-                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
-
-          break
-        }
-        case 'scale': {
-          sceneCode += SPACE + 'imageView_' + character.name + '.animate()' + '\n' +
-                       SPACE + '  .scaleX(' + animation.scale + 'f)' + '\n' +
-                       SPACE + '  .scaleY(' + animation.scale + 'f)' + '\n' +
-                       SPACE + '  .setDuration(' + animation.duration + ')' + '\n' +
-                       SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
-
-          break
-        }
+        sceneCode += SPACE + `  .setDuration(${animation.duration})` + '\n' +
+                     SPACE + '  .setInterpolator(LinearInterpolator())' + '\n'
       }
 
       if (character.animations.length - 1 == i) {
@@ -696,25 +689,34 @@ function finalize(scene, options) {
                  '    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)' + '\n' +
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
-                 '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n' +
-                 (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech ? '    rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' : '') +
-                 '    rectangleViewSpeech.setColor(0xFF' + scene.speech.text.rectangle.color + '.toInt())' + '\n' +
-                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('\n    if (animate) {' + '\n' +
-                 '      val animationRectangleSpeech = AlphaAnimation(0f, ' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
-                 '      animationRectangleSpeech.duration = 1000'  + '\n' +
-                 '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
-                 '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
-             
-                 '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n' +
-                 '    } else {' + '\n' +
-                 '      rectangleViewSpeech.setAlpha(' + scene.speech.text.rectangle.opacity + 'f)' + '\n' +
-                 '    }' + '\n\n') : '\n') +
+                 '    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech' + '\n'
 
-                 '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
+    if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+      sceneCode += `    rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)` + '\n'
+    }
+    
+    sceneCode += `    rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())` + '\n'
+
+    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+      sceneCode +=  '\n' + '    if (animate) {' + '\n' +
+                    `      val animationRectangleSpeech = AlphaAnimation(0f, ${scene.speech.text.rectangle.opacity}f)` + '\n' +
+                    '      animationRectangleSpeech.duration = 1000'  + '\n' +
+                    '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
+  
+                    '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n' +
+                    '    } else {' + '\n' +
+                    `      rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)` + '\n' +
+                    '    }' + '\n\n'
+    } else {
+      sceneCode += '\n'
+    }
+
+    sceneCode += '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
                  '    val textViewSpeech = TextView(this)' + '\n' +
-                 '    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._' + scene.speech.text.fontSize + 'ssp))' + '\n' +
-                 '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
+                 `    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${scene.speech.text.fontSize}ssp))` + '\n' +
+                 `    textViewSpeech.setTextColor(0xFF${scene.speech.text.color}.toInt())` + '\n\n' +
 
                  '    val layoutParamsSpeech = LayoutParams(' + '\n' +
                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -726,35 +728,39 @@ function finalize(scene, options) {
 
                  '    textViewSpeech.layoutParams = layoutParamsSpeech' + '\n\n' +
 
-                 '    var speechText = "' + scene.speech.text.content + '"' + '\n' +
+                 `    var speechText = "${scene.speech.text.content}"` + '\n'
 
-                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('\n    if (animate) {' + '\n' + 
-                 '      var i = 0' + '\n\n' +
+    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+      sceneCode += '\n' + '    if (animate) {' + '\n' + 
+                   '      var i = 0' + '\n\n' +
 
-                 '      handler.postDelayed(object : Runnable {' + '\n' +
-                 '        override fun run() {' + '\n' +
-                 '          if (i < speechText.length) {' + '\n' +
-                 '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
-                 '            i++' + '\n' +
-                 '            handler.postDelayed(this, textSpeed)' + '\n' +
-                 '          }' + '\n' +
-                 '        }' + '\n' +
-                 '      }, textSpeed)' + '\n' +
-                 '    } else {' + '\n' +
-                 '      textViewSpeech.text = speechText' + '\n' +
-                 '    }' + '\n\n') : '    var i = 0' + '\n\n' +
+                   '      handler.postDelayed(object : Runnable {' + '\n' +
+                   '        override fun run() {' + '\n' +
+                   '          if (i < speechText.length) {' + '\n' +
+                   '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                   '            i++' + '\n' +
+                   '            handler.postDelayed(this, textSpeed)' + '\n' +
+                   '          }' + '\n' +
+                   '        }' + '\n' +
+                   '      }, textSpeed)' + '\n' +
+                   '    } else {' + '\n' +
+                   '      textViewSpeech.text = speechText' + '\n' +
+                   '    }' + '\n\n'
+     } else {
+      sceneCode += '    var i = 0' + '\n\n' +
 
-                 '    handler.postDelayed(object : Runnable {' + '\n' +
-                 '      override fun run() {' + '\n' +
-                 '        if (i < speechText.length) {' + '\n' +
-                 '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
-                 '          i++' + '\n' +
-                 '          handler.postDelayed(this, textSpeed)' + '\n' +
-                 '        }' + '\n' +
-                 '      }' + '\n' +
-                 '    }, textSpeed)' + '\n\n') +
+                   '    handler.postDelayed(object : Runnable {' + '\n' +
+                   '      override fun run() {' + '\n' +
+                   '        if (i < speechText.length) {' + '\n' +
+                   '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                   '          i++' + '\n' +
+                   '          handler.postDelayed(this, textSpeed)' + '\n' +
+                   '        }' + '\n' +
+                   '      }' + '\n' +
+                   '    }, textSpeed)' + '\n\n'
+    }
 
-                 '    frameLayout.addView(textViewSpeech)' + '\n\n' +
+    sceneCode += '    frameLayout.addView(textViewSpeech)' + '\n\n' +
 
                  '    val rectangleViewAuthor = RectangleView(this)' + '\n\n' +
 
@@ -762,47 +768,73 @@ function finalize(scene, options) {
                  '    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
                  '    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)' + '\n\n' +
 
-                 '    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor' + '\n' +
-                 (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech ? '    rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' : '') +
-                 '    rectangleViewAuthor.setColor(0xFF' + scene.speech.author.rectangle.color + '.toInt())' + '\n\n' +
-                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech ? ('    if (animate) {' + '\n' +
-                 '      val animationRectangleAuthor = AlphaAnimation(0f, ' + scene.speech.author.rectangle.opacity + 'f)' + '\n' +
-                 '      animationRectangleAuthor.duration = 1000'  + '\n' +
-                 '      animationRectangleAuthor.interpolator = LinearInterpolator()' + '\n' +
-                 '      animationRectangleAuthor.fillAfter = true' + '\n\n' +
+                 '    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor' + '\n'
+
+    if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+      sceneCode += `    rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)` + '\n'
+    }
+
+    sceneCode += `    rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())` + '\n\n'
+
+    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+      sceneCode += '    if (animate) {' + '\n' +
+                   `      val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)` + '\n' +
+                   '      animationRectangleAuthor.duration = 1000' + '\n' +
+                   '      animationRectangleAuthor.interpolator = LinearInterpolator()' + '\n' +
+                   '      animationRectangleAuthor.fillAfter = true' + '\n\n' +
              
-                 '      rectangleViewAuthor.startAnimation(animationRectangleAuthor)' + '\n' +
-                 '    } else { ' + '\n' +
-                 '      rectangleViewAuthor.setAlpha(' + scene.speech.author.rectangle.opacity + 'f)' + '\n' + 
-                 '    }' + '\n\n') : '') +
+                   '      rectangleViewAuthor.startAnimation(animationRectangleAuthor)' + '\n' +
+                   '    } else {' + '\n' +
+                   `      rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)` + '\n' + 
+                   '    }' + '\n\n'
+    }
 
-                 '    frameLayout.addView(rectangleViewAuthor)' +
+    sceneCode += '    frameLayout.addView(rectangleViewAuthor)'
 
-                 (scene.speech.author.name ? '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
-                 '    textViewAuthor.text = "' + scene.speech.author.name + '"' + '\n' +
-                 '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                 '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
+    if (scene.speech.author.name) {
+      sceneCode += '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
+                   `    textViewAuthor.text = "${scene.speech.author.name}"` + '\n' +
+                   '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
+                   `    textViewAuthor.setTextColor(0xFF${scene.speech.author.textColor}.toInt())` + '\n\n' +
 
-                 '    val layoutParamsAuthor = LayoutParams(' + '\n' +
-                 '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                 '      LayoutParams.WRAP_CONTENT' + '\n' +
-                 '    )' + '\n\n' +
+                   '    val layoutParamsAuthor = LayoutParams(' + '\n' +
+                   '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                   '      LayoutParams.WRAP_CONTENT' + '\n' +
+                   '    )' + '\n\n' +
 
-                 '    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                 '    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)' + '\n\n' +
+                   '    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
+                   '    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)' + '\n\n' +
 
-                 '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
+                   '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n'
 
-                 (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech || (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) ? ('    ' + (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name ? 'if (animateAuthor) {' : 'if (animate) {') + '\n' + 
-                 '      val animationAuthor = AlphaAnimation(0f, 1f)' + '\n' +
-                 '      animationAuthor.duration = 1000'  + '\n' +
-                 '      animationAuthor.interpolator = LinearInterpolator()' + '\n' +
-                 '      animationAuthor.fillAfter = true' + '\n\n' +
+                  if (
+                    visualNovel.scenes.length == 0 ||
+                    !visualNovel.scenes[visualNovel.scenes.length - 1].speech ||
+                    (visualNovel.scenes.length != 0 &&
+                      scene.speech?.author?.name &&
+                      visualNovel.scenes[visualNovel.scenes.length - 1].speech &&
+                      !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name)
+                    ) {
+                      if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) {
+                        sceneCode += '    if (animateAuthor) {'
+                      } else {
+                        sceneCode += '    if (animate) {'
+                      }
 
-                 '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
-                 '    }' + '\n\n') : '') +
+                      sceneCode += '\n' + '      val animationAuthor = AlphaAnimation(0f, 1f)' + '\n' +
+                                   '      animationAuthor.duration = 1000'  + '\n' +
+                                   '      animationAuthor.interpolator = LinearInterpolator()' + '\n' +
+                                   '      animationAuthor.fillAfter = true' + '\n\n' +
 
-                 '    frameLayout.addView(textViewAuthor)' : '') + '\n'
+                                   '      textViewAuthor.startAnimation(animationAuthor)' + '\n' +
+                                   '    }' + '\n\n'
+                    }
+
+
+      sceneCode += '    frameLayout.addView(textViewAuthor)'
+    }
+    
+    sceneCode += '\n'
   }
 
   if (scene.music || scene.effect) {
@@ -819,13 +851,13 @@ function finalize(scene, options) {
 
         finalCode.push(
           '      }' + '\n' +
-          '    }, ' + scene.music.delay + ')' + '\n'
+          `    }, ${scene.music.delay})` + '\n'
         )
       } else {
         sceneCode += '\n'
       }
 
-      sceneCode += SPACE + 'mediaPlayer = MediaPlayer.create(this, R.raw.' + scene.music.music + ')' + '\n\n' +
+      sceneCode += SPACE + `mediaPlayer = MediaPlayer.create(this, R.raw.${scene.music.music})` + '\n\n' +
 
                     SPACE + 'if (mediaPlayer != null) {' + '\n' +
                     SPACE + '  mediaPlayer!!.start()' + '\n\n' +
@@ -845,13 +877,9 @@ function finalize(scene, options) {
         finalCode.reverse()
 
         sceneCode += finalCode.join('')
+
+        finalCode = []
       }
-    }
-
-    if (finalCode.length != 0) {
-      finalCode.reverse()
-
-      sceneCode += finalCode.join('')
     }
 
     if (scene.effect) for (let effect of scene.effect) {
@@ -865,7 +893,7 @@ function finalize(scene, options) {
 
         finalCode.push(
           '      }' + '\n' +
-          '    }, ' + effect.delay + 'L)' + '\n'
+          `    }, ${effect.delay}L)` + '\n'
         )
       } else {
         sceneCode += '\n'
@@ -874,17 +902,17 @@ function finalize(scene, options) {
       let mediaPlayerName = 'mediaPlayer'
       if (scene.music) mediaPlayerName = 'mediaPlayer2'
 
-      sceneCode += SPACE + mediaPlayerName + ' = MediaPlayer.create(this@MainActivity, R.raw.' + effect.sound + ')' + '\n\n' +
-                   SPACE + 'if (' + mediaPlayerName + ' != null) {' + '\n' +
-                   SPACE + '  ' + mediaPlayerName + '!!.start()' + '\n\n' +
+      sceneCode += SPACE + `${mediaPlayerName} = MediaPlayer.create(this@MainActivity, R.raw.${effect.sound})` + '\n\n' +
+                   SPACE + `if (${mediaPlayerName} != null) {` + '\n' +
+                   SPACE + `  ${mediaPlayerName}!!.start()` + '\n\n' +
 
-                   SPACE + '  ' + mediaPlayerName + '!!.setVolume(sEffectVolume, sEffectVolume)' + '\n\n' +
+                   SPACE + `  ${mediaPlayerName}!!.setVolume(sEffectVolume, sEffectVolume)` + '\n\n' +
 
-                   SPACE + '  ' + mediaPlayerName + '!!.setOnCompletionListener {' + '\n' +
-                   SPACE + '    if (' + mediaPlayerName + ' != null) {' + '\n' +
-                   SPACE + '      ' + mediaPlayerName + '!!.stop()' + '\n' +
-                   SPACE + '      ' + mediaPlayerName + '!!.release()' + '\n' +
-                   SPACE + '      ' + mediaPlayerName + ' = null' + '\n' +
+                   SPACE + `  ${mediaPlayerName}!!.setOnCompletionListener {` + '\n' +
+                   SPACE + `    if (${mediaPlayerName} != null) {` + '\n' +
+                   SPACE + `      ${mediaPlayerName}!!.stop()` + '\n' +
+                   SPACE + `      ${mediaPlayerName}!!.release()` + '\n' +
+                   SPACE + `      ${mediaPlayerName} = null` + '\n' +
                    SPACE + '    }' + '\n' +
                    SPACE + '  }' + '\n' +
                    SPACE + '}' + '\n'
@@ -893,8 +921,6 @@ function finalize(scene, options) {
         finalCode.reverse()
   
         sceneCode += finalCode.join('')
-
-        finalCode = []
       }
     }
   }
@@ -931,7 +957,7 @@ function finalize(scene, options) {
   sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
                '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-               '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
+               `    buttonMenu.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
                '    val layoutParamsMenu = LayoutParams(' + '\n' +
@@ -944,41 +970,54 @@ function finalize(scene, options) {
                '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
                '    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)' + '\n\n' +
 
-               '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n' +
+               '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n'
 
-               (finishScene.length != 0 ? '    buttonMenu.setOnClickListener {' + '\n' + finishScene.join('\n\n') + '\n' + '__PERFORVNM_START_MUSIC__' + '\n\n'  : '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n') +
+  if (finishScene.length != 0) {
+    sceneCode += '    buttonMenu.setOnClickListener {' + '\n' +
+                 finishScene.join('\n\n') + '\n' +
 
-               '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
+                 '__PERFORVNM_START_MUSIC__' + '\n\n'
+  } else {
+    sceneCode += '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n'
+  }
+
+  sceneCode += '      ' + (visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__') + '\n' +
                '    }' + '\n\n' +
 
-               '    frameLayout.addView(buttonMenu)' + '\n\n' +
+               '    frameLayout.addView(buttonMenu)' + '\n\n'
+  if (visualNovel.scenes.length != 0) {
+    sceneCode += '    val buttonBack = Button(this)' + '\n' +
+                  '    buttonBack.text = "Back"' + '\n' +
+                  '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+                  `    buttonBack.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                  '    buttonBack.background = null' + '\n\n' +
 
-               (visualNovel.scenes.length != 0 ? '    val buttonBack = Button(this)' + '\n' +
-               '    buttonBack.text = "Back"' + '\n' +
-               '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-               '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
-               '    buttonBack.background = null' + '\n\n' +
+                  '    val layoutParamsBack = LayoutParams(' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT' + '\n' +
+                  '    )' + '\n\n' +
 
-               '    val layoutParamsBack = LayoutParams(' + '\n' +
-               '      LayoutParams.WRAP_CONTENT,' + '\n' +
-               '      LayoutParams.WRAP_CONTENT' + '\n' +
-               '    )' + '\n\n' +
+                  '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)' + '\n\n' +
 
-               '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)' + '\n\n' +
+                  '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                  '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +
 
-               '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-               '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +
+                  '    buttonBack.layoutParams = layoutParamsBack' + '\n\n'
 
-               '    buttonBack.layoutParams = layoutParamsBack' + '\n\n' +
+    if (finishScene.length != 0) {
+      sceneCode += '    buttonBack.setOnClickListener {' + '\n' +
+                   finishScene.join('\n\n') + '\n\n'
+    } else {
+      sceneCode += '    buttonBack.setOnClickListener {\n'
+    }
 
-               (finishScene.length != 0 ? '    buttonBack.setOnClickListener {' + '\n' + finishScene.join('\n\n') + '\n\n'  : '    buttonBack.setOnClickListener {' + '\n' ) +
+      sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n' +
+                   '    }' + '\n\n' +
 
-               '      ' + visualNovel.scenes[visualNovel.scenes.length - 1].name + '(' + (visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' ) + ')' + '\n' +
-               '    }' + '\n\n' +
-
-               '    frameLayout.addView(buttonBack)' + '\n\n' : '') +
+                    '    frameLayout.addView(buttonBack)' + '\n\n'
+  }
   
-               '    setContentView(frameLayout)__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__' + '\n' +
+  sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
                '  }'
 
   visualNovel.scenes.push({ ...scene, code: sceneCode })
