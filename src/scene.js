@@ -466,9 +466,7 @@ function finalize(scene, options) {
 
   let sceneCode = '  private fun ' + scene.name + '(' + functionParams.join(', ') + ') {' + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
-                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
-
-                  '    val resourceDisplayMetrics = getResources().getDisplayMetrics()' + '\n\n'
+                  '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
   if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
     sceneCode += '    val animationFadeIn = AlphaAnimation(0f, 1f)' + '\n' +
@@ -511,18 +509,12 @@ function finalize(scene, options) {
       case 'right':
       case 'left': {
         let dpiFunctions = ''
-        if (character.position.side == 'left') {
-          if (character.position.margins.side != 0) {
-            dpiFunctions += '    val leftDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.side + 'f, resourceDisplayMetrics).toInt()' + '\n'
-          }
-        } else {
-          if (character.position.margins.side != 0) {
-            dpiFunctions += '    val rightDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.side + 'f, resourceDisplayMetrics).toInt()' + '\n'
-          }
+        if (character.position.margins.side != 0) {
+          dpiFunctions += '    val ' + character.position.side + 'Dp_' + character.name + ' = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._' + character.position.margins.side + 'sdp)' + '\n'
         }
 
         if (character.position.margins.top != 0) {
-          dpiFunctions += '    val topDp_' + character.name + ' = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, ' + character.position.margins.top + 'f, resourceDisplayMetrics).toInt()' + '\n'
+          dpiFunctions += '    val topDp_' + character.name + ' = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._' + character.position.margins.top + 'sdp)' + '\n'
         }
 
         dpiFunctions += '\n'
@@ -699,7 +691,7 @@ function finalize(scene, options) {
   if (scene.speech) {
     sceneCode += '\n' + '    val rectangleViewSpeech = RectangleView(this)' + '\n\n' +
 
-                 '    val bottomDpRectangles = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 76.25f, resourceDisplayMetrics).toInt()' + '\n\n' +
+                 '    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)' + '\n\n' +
 
                  '    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)' + '\n' +
                  '    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
@@ -721,7 +713,7 @@ function finalize(scene, options) {
                  '    frameLayout.addView(rectangleViewSpeech)' + '\n\n' +
 
                  '    val textViewSpeech = TextView(this)' + '\n' +
-                 '    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_SP, ' + scene.speech.text.fontSize + 'f)' + '\n' +
+                 '    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._' + scene.speech.text.fontSize + 'ssp))' + '\n' +
                  '    textViewSpeech.setTextColor(0xFF' + scene.speech.text.color + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsSpeech = LayoutParams(' + '\n' +
@@ -729,8 +721,8 @@ function finalize(scene, options) {
                  '      LayoutParams.WRAP_CONTENT' + '\n' +
                  '    )' + '\n\n' +
                   
-                 '    layoutParamsSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n' +
-                 '    layoutParamsSpeech.setMargins(0, 0, 0, 80)' + '\n\n' +
+                 '    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL' + '\n' +
+                 '    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)' + '\n\n' +
 
                  '    textViewSpeech.layoutParams = layoutParamsSpeech' + '\n\n' +
 
@@ -788,7 +780,7 @@ function finalize(scene, options) {
 
                  (scene.speech.author.name ? '\n\n' + '    val textViewAuthor = TextView(this)' + '\n' +
                  '    textViewAuthor.text = "' + scene.speech.author.name + '"' + '\n' +
-                 '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)' + '\n' +
+                 '    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
                  '    textViewAuthor.setTextColor(0xFF' + scene.speech.author.textColor + '.toInt())' + '\n\n' +
 
                  '    val layoutParamsAuthor = LayoutParams(' + '\n' +
@@ -797,7 +789,7 @@ function finalize(scene, options) {
                  '    )' + '\n\n' +
 
                  '    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
-                 '    layoutParamsAuthor.setMargins(400, 0, 0, bottomDpRectangles)' + '\n\n' +
+                 '    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)' + '\n\n' +
 
                  '    textViewAuthor.layoutParams = layoutParamsAuthor' + '\n\n' +
 
@@ -938,7 +930,7 @@ function finalize(scene, options) {
 
   sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
-               '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
+               '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
                '    buttonMenu.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
@@ -947,7 +939,7 @@ function finalize(scene, options) {
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
 
-               '   val leftDpButtons = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 19f, resourceDisplayMetrics).toInt()' + '\n\n' +
+               '    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)' + '\n\n' +
 
                '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
                '    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)' + '\n\n' +
@@ -963,7 +955,7 @@ function finalize(scene, options) {
 
                (visualNovel.scenes.length != 0 ? '    val buttonBack = Button(this)' + '\n' +
                '    buttonBack.text = "Back"' + '\n' +
-               '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)' + '\n' +
+               '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
                '    buttonBack.setTextColor(0xFF' + options.buttonsColor + '.toInt())' + '\n' + 
                '    buttonBack.background = null' + '\n\n' +
 
@@ -972,7 +964,7 @@ function finalize(scene, options) {
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
 
-               '    val topDpBack = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30.5f, resourceDisplayMetrics).toInt()' + '\n\n' +
+               '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)' + '\n\n' +
 
                '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
                '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +

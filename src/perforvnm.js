@@ -85,7 +85,7 @@ secondScene = scene.addSpeech(secondScene, {
   text: {
     content: '"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM."',
     color: 'FFFFFF',
-    fontSize: 12,
+    fontSize: 9,
     rectangle: {
       color: '000000',
       opacity: 0.8

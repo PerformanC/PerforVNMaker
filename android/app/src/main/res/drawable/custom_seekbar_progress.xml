@@ -2,14 +2,14 @@
   <item android:id="@android:id/background">
     <shape android:shape="rectangle">
       <solid android:color="#F00000" />
-      <size android:height="14dp" />
+      <size android:height="@dimen/_13sdp" />
     </shape>
   </item>
   <item android:id="@android:id/progress">
     <clip>
       <shape android:shape="rectangle">
         <solid android:color="#FFFFFF" />
-        <size android:height="14dp" />
+        <size android:height="@dimen/_13sdp" />
       </shape>
     </clip>
   </item>

@@ -44,7 +44,7 @@ function init(options) {
   'import android.os.Bundle' + '\n' +
   'import android.os.Handler' + '\n' +
   'import android.os.Looper' + '\n' +
-  'import android.util.DisplayMetrics' + '\n' +
+  'import android.app.Activity' + '\n' +
   'import android.util.TypedValue' + '\n' +
   'import android.media.MediaPlayer' + '\n' +
   'import android.widget.TextView' + '\n' +
@@ -55,41 +55,26 @@ function init(options) {
   'import android.widget.SeekBar' + '\n' +
   'import android.view.View' + '\n' +
   'import android.view.Gravity' + '\n' +
-  'import android.view.WindowInsets' + '\n' +
-  'import android.view.WindowManager' + '\n' +
   'import android.view.animation.Animation' + '\n' +
   'import android.view.animation.LinearInterpolator' + '\n' +
   'import android.view.animation.OvershootInterpolator' + '\n' +
   'import android.view.animation.AlphaAnimation' + '\n' +
   'import android.animation.Animator' + '\n' +
-  'import android.animation.ValueAnimator' + '\n' +
   'import android.text.TextUtils' + '\n' +
   'import android.text.SpannableStringBuilder' + '\n' +
   'import android.text.style.ClickableSpan' + '\n' +
   'import android.text.method.LinkMovementMethod' + '\n' +
-  'import android.graphics.PorterDuff' + '\n' +
   'import android.graphics.Paint' + '\n' +
   'import android.graphics.Canvas' + '\n' +
   'import android.content.Context' + '\n' +
-  'import android.content.SharedPreferences' + '\n' +
-  'import androidx.activity.ComponentActivity' + '\n' +
-  'import androidx.activity.compose.setContent' + '\n\n' +
+  'import android.content.SharedPreferences' + '\n\n' +
 
-  'class MainActivity : ComponentActivity() {__PERFORVNM_HEADER__' + '\n' +
+  'class MainActivity : Activity() {__PERFORVNM_HEADER__' + '\n' +
   '  override fun onCreate(savedInstanceState: Bundle?) {' + '\n' +
   '    super.onCreate(savedInstanceState)' + '\n\n' +
 
-  '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)' + '\n' +
-  '      window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' + '\n\n' +
-
   '    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {' + '\n' +
-  '      window.setDecorFitsSystemWindows(false)' + '\n\n' +
-
-  '      window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())' + '\n\n' +
-
-  '      val windowMetrics = windowManager.currentWindowMetrics' + '\n' +
-  '      displayMetrics.widthPixels = windowMetrics.bounds.width()' + '\n' +
-  '      displayMetrics.heightPixels = windowMetrics.bounds.height()' + '\n' +
+  '      window.setDecorFitsSystemWindows(false)' + '\n' +
   '    } else {' + '\n' +
   '      @Suppress("DEPRECATION")' + '\n' +
   '      window.decorView.systemUiVisibility = (' + '\n' +
@@ -100,15 +85,10 @@ function init(options) {
   '        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE' + '\n' +
   '        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN' + '\n' +
   '        or View.SYSTEM_UI_FLAG_LOW_PROFILE' + '\n' +
-  '      )' + '\n\n' +
-
-  '      @Suppress("DEPRECATION")' + '\n' +
-  '      windowManager.defaultDisplay.getMetrics(displayMetrics)' + '\n' +
+  '      )' + '\n' +
   '    }' + '\n\n' +
 
-  '    setContent {' + '\n' +
-  '      __PERFORVNM_MENU__' + '\n' +
-  '    }' + '\n' +
+  '    __PERFORVNM_MENU__' + '\n' +
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
   '}' + '\n' +
   '__PERFORVNM_CLASSES__'
@@ -244,9 +224,6 @@ function finalize() {
 
   if (visualNovel.internalInfo.needs2Players)
     addHeaders += '  private var mediaPlayer2: MediaPlayer? = null' + '\n'
-
-  if (visualNovel.menu || visualNovel.scenes.length != 0)
-    addHeaders += '  private val displayMetrics = DisplayMetrics()' + '\n'
 
   if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
     addHeaders += (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
