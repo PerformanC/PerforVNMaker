@@ -1069,42 +1069,55 @@ function make(options) {
                     '      LayoutParams.MATCH_PARENT' + '\n' +
                     '    )' + '\n\n' +
 
+                    '    val frameLayoutScenes = FrameLayout(this)' + '\n\n' +
+
                     '    val inputStream = openFileInput("saves.json")' + '\n' +
                     '    val text = inputStream.bufferedReader().use { it.readText() }' + '\n' +
                     '    inputStream.close()' + '\n\n' +
 
                     '    val saves = JSONArray(text)' + '\n\n' +
+                    
+                    '    var leftDp = 100' + '\n' +
+                    '    var topDp = 50' + '\n\n' +
 
                     '    for (i in 0 until saves.length()) {' + '\n' +
                     '      val buttonData = saves.getJSONObject(i)' + '\n\n' +
 
-                    '      val buttonLoad = Button(this)' + '\n' +
-                    '      buttonLoad.text = "Load: " + buttonData.getString("scene")' + '\n' +
-                    '      buttonLoad.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    '      buttonLoad.setTextColor(0xFFFFFFFFF.toInt())' + '\n' +
-                    '      buttonLoad.background = null' + '\n\n' +
+                    '      val rectangleScene = RectangleView(this)' + '\n' +
+                    '      rectangleScene.setColor(0xFF230000.toInt())' + '\n\n' +
 
-                    '      val layoutParamsLoad = LayoutParams(' + '\n' +
-                    '        LayoutParams.WRAP_CONTENT,' + '\n' +
-                    '        LayoutParams.WRAP_CONTENT' + '\n' +
+                    '      val layoutParamsRectangleScene = LayoutParams(' + '\n' +
+                    '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),' + '\n' +
+                    '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)' + '\n' +
                     '      )' + '\n\n' +
 
-                    '      val leftDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp)' + '\n' +
-                    '      val topDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._50sdp)' + '\n\n' +
+                    '      if (i != 0) {' + '\n' +
+                    '        if (i % 4 == 0) {' + '\n' +
+                    '          leftDp = 100' + '\n' +
+                    '          topDp += 100' + '\n' +
+                    '        } else {' + '\n' +
+                    '          leftDp += 133' + '\n' +
+                    '        }' + '\n' +
+                    '      }' + '\n\n' +
 
-                    '      layoutParamsLoad.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '      layoutParamsLoad.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
+                    '      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))' + '\n' +
+                    '      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))' + '\n\n' +
 
-                    '      buttonLoad.layoutParams = layoutParamsLoad' + '\n\n' +
+                    '      layoutParamsRectangleScene.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '      layoutParamsRectangleScene.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
 
-                    '      buttonLoad.setOnClickListener {' + '\n' +
+                    '      rectangleScene.layoutParams = layoutParamsRectangleScene' + '\n\n' +
+
+                    '      rectangleScene.setOnClickListener {' + '\n' +
                     '        __PERFORVNM_RELEASE_MEDIA_PLAYER__' + '\n\n' +
 
                     '        __PERFORVNM_SWITCHES__' + '\n' +
                     '      }' + '\n\n' +
 
-                    '      scrollView.addView(buttonLoad)' + '\n' +
+                    '      frameLayoutScenes.addView(rectangleScene)' + '\n' +
                     '    }' + '\n\n' +
+
+                    '    scrollView.addView(frameLayoutScenes)' + '\n\n' +
 
                     '    frameLayout.addView(scrollView)' + '\n\n' +
 

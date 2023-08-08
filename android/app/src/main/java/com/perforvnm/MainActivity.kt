@@ -1048,35 +1048,46 @@ class MainActivity : Activity() {
       LayoutParams.MATCH_PARENT
     )
 
+    val frameLayoutScenes = FrameLayout(this)
+
     val inputStream = openFileInput("saves.json")
     val text = inputStream.bufferedReader().use { it.readText() }
     inputStream.close()
 
     val saves = JSONArray(text)
 
+    var leftDp = 100
+    var topDp = 50
+
     for (i in 0 until saves.length()) {
       val buttonData = saves.getJSONObject(i)
 
-      val buttonLoad = Button(this)
-      buttonLoad.text = "Load: " + buttonData.getString("scene")
-      buttonLoad.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-      buttonLoad.setTextColor(0xFFFFFFFFF.toInt())
-      buttonLoad.background = null
+      val rectangleScene = RectangleView(this)
+      rectangleScene.setColor(0xFF230000.toInt())
 
-      val layoutParamsLoad = LayoutParams(
-        LayoutParams.WRAP_CONTENT,
-        LayoutParams.WRAP_CONTENT
+      val layoutParamsRectangleScene = LayoutParams(
+        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
+        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
       )
 
-      val leftDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp)
-      val topDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._50sdp)
+      if (i != 0) {
+        if (i % 4 == 0) {
+          leftDp = 100
+          topDp += 100
+        } else {
+          leftDp += 133
+        }
+      }
 
-      layoutParamsLoad.gravity = Gravity.TOP or Gravity.START
-      layoutParamsLoad.setMargins(leftDpLoad, topDpLoad, 0, 0)
+      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))
+      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))
 
-      buttonLoad.layoutParams = layoutParamsLoad
+      layoutParamsRectangleScene.gravity = Gravity.TOP or Gravity.START
+      layoutParamsRectangleScene.setMargins(leftDpLoad, topDpLoad, 0, 0)
 
-      buttonLoad.setOnClickListener {
+      rectangleScene.layoutParams = layoutParamsRectangleScene
+
+      rectangleScene.setOnClickListener {
         if (mediaPlayer != null) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
@@ -1090,8 +1101,10 @@ class MainActivity : Activity() {
         }
       }
 
-      scrollView.addView(buttonLoad)
+      frameLayoutScenes.addView(rectangleScene)
     }
+
+    scrollView.addView(frameLayoutScenes)
 
     frameLayout.addView(scrollView)
 
