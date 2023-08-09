@@ -201,10 +201,58 @@ function finalize() {
         code += '    }'
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
-      } else {  
+
+        const functionParams2 = []
+        if (scene.speech) functionParams2.push('animate: Boolean')
+        if (scene.speech?.author?.name && nextScene.speech && !nextScene.speech?.author?.name) functionParams2.push('animateAuthor: Boolean')
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.join(', '))
+
+        if (scene.speech) {
+          const speechHandler = '\n' + '    if (animate) {' + '\n' +
+                                '      var i = 0' + '\n\n' +
+                                
+                                '      handler.postDelayed(object : Runnable {' + '\n' +
+                                '        override fun run() {' + '\n' +
+                                '          if (i < speechText.length) {' + '\n' +
+                                '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                                '            i++' + '\n' +
+                                '            handler.postDelayed(this, textSpeed)' + '\n' +
+                                '          }' + '\n' +
+                                '        }' + '\n' +
+                                '      }, textSpeed)' + '\n' +
+                                '    } else {' + '\n' +
+                                '      textViewSpeech.text = speechText' + '\n' +
+                                '    }' + '\n'
+
+          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+        }
+      } else {
+        const oldScene = visualNovel.scenes[i - 1]
+
         switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${scene.speech ? 'true' : ''})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
+
+        const functionParams = []
+        if (scene.speech) functionParams.push('animate: Boolean')
+        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) functionParams.push('animateAuthor: Boolean')
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.join(', '))
+
+        if (scene.speech) {
+          const speechHandler = '\n' + '    handler.postDelayed(object : Runnable {' + '\n' +
+                                '      override fun run() {' + '\n' +
+                                '        if (i < speechText.length) {' + '\n' +
+                                '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                                '          i++' + '\n' +
+                                '          handler.postDelayed(this, textSpeed)' + '\n' +
+                                '        }' + '\n' +
+                                '      }' + '\n' +
+                                '    }, textSpeed)' + '\n'
+
+          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+        }
       }
 
       scenesCode.push('\n\n' + scene.code)
@@ -252,7 +300,7 @@ function finalize() {
   }
 
   let addHeaders = ''
-  if (visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
+  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)

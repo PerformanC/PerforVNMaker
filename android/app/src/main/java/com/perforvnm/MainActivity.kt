@@ -1138,56 +1138,45 @@ class MainActivity : Activity() {
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
     frameLayout.addView(imageView_Pedro)
+    imageView_Pedro.animate()
+      .translationY(-10f)
+      .setDuration(500)
+      .setInterpolator(OvershootInterpolator())
+      .setListener(object : Animator.AnimatorListener {
+        override fun onAnimationStart(animation: Animator) {}
 
-    imageView_Pedro.startAnimation(animationFadeIn)
+        override fun onAnimationEnd(animation: Animator) {
+          imageView_Pedro.animate()
+            .translationY(0f)
+            .setDuration(500)
+            .setInterpolator(OvershootInterpolator())
+            .setListener(object : Animator.AnimatorListener {
+              override fun onAnimationStart(animation: Animator) {}
 
-    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
-      override fun onAnimationStart(animation: Animation?) {}
-
-      override fun onAnimationEnd(animation: Animation?) {
-        imageView_Pedro.animate()
-          .translationY(-10f)
-          .setDuration(500)
-          .setInterpolator(OvershootInterpolator())
-          .setListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {}
-
-            override fun onAnimationEnd(animation: Animator) {
-              imageView_Pedro.animate()
-                .translationY(0f)
-                .setDuration(500)
-                .setInterpolator(OvershootInterpolator())
-                .setListener(object : Animator.AnimatorListener {
-                  override fun onAnimationStart(animation: Animator) {}
-
-                  override fun onAnimationEnd(animation: Animator) {
-                    handler.postDelayed(object : Runnable {
-                      override fun run() {
-                        imageView_Pedro.animate()
-                          .translationX(20f)
-                          .translationY(0f)
-                          .setDuration(1000)
-                          .setInterpolator(LinearInterpolator())
-                          .start()
-                      }
-                    }, 1000)
+              override fun onAnimationEnd(animation: Animator) {
+                handler.postDelayed(object : Runnable {
+                  override fun run() {
+                    imageView_Pedro.animate()
+                      .translationX(20f)
+                      .translationY(0f)
+                      .setDuration(1000)
+                      .setInterpolator(LinearInterpolator())
+                      .start()
                   }
+                }, 1000)
+              }
 
-                  override fun onAnimationCancel(animation: Animator) {}
+              override fun onAnimationCancel(animation: Animator) {}
 
-                  override fun onAnimationRepeat(animation: Animator) {}
-                })
-                .start()
-            }
+              override fun onAnimationRepeat(animation: Animator) {}
+            })
+            .start()
+        }
 
-            override fun onAnimationCancel(animation: Animator) {}
+        override fun onAnimationCancel(animation: Animator) {}
 
-            override fun onAnimationRepeat(animation: Animator) {}
-          })
-      }
-
-      override fun onAnimationRepeat(animation: Animation?) {}
-    })
+        override fun onAnimationRepeat(animation: Animator) {}
+      })
 
     mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
 
@@ -1334,7 +1323,6 @@ class MainActivity : Activity() {
     textViewSpeech.layoutParams = layoutParamsSpeech
 
     var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-
     if (animate) {
       var i = 0
 

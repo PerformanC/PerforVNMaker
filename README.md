@@ -4,105 +4,69 @@ High-performance Visual Novel Maker with code generation technology.
 
 ## Project status
 
-This project is usable for *small* VNs, but due to the leak of `save / load` system, it's not recommended to use it for big VNs.
+PerforVNM even though the fast development, leaks a few features that are essential for big VNs, but if you're making a small VN, we'll provide the best technologies for you.
 
-Due to the fast development of Perfor, we highly believe that this project can be already used as of now, but shouldn't be released as a stable version.
+OBS: Remember to always update PerforVNM.
 
-## Using Perfor?
+## Using PerforVNM?
 
-In case you made, plans to, or are making a VN with PerforVNM, please contact us at either our email `performancorg@gmail.com` or in [our Discord server](https://discord.gg/uPveNfTuCJ), we would love to hear your feedback, feature requests and to work on your side to a better experience.
+To provide the best experience for developers, our users' feedbacks are essential, so whenever you use or test our software, please give us feedback, so we can improve our software.
 
-And thank you for using PerforVNM.
+Please refer to the [Discord Server & Feedback](#discord-server--feedback) section to know how to give us feedback.
 
 ## Feature support
 
-You can read the [OS support](OS_SUPPORT.md) file to see the features supported by PerforVNM for each OS.
+[OS support](OS_SUPPORT.md) file will give you all the information about the OSes and features supported by PerforVNM.
 
 ## Usage
 
 ### Minimum requirements
 
-We as of now, don't have a minimum requirement for PerforVNM, but we recommend having NodeJS `v16.6.0`+, but it will probably work with older versions.
+Since `ES6` is used, the minimum requirement for NodeJS is `v13` and above, and the minimum requirement for Android is `Android 4.0` and above.
+
+We're working on making this requirement even lower.
 
 ### API usage
 
-PerforVNM was made to be used by independent artists, with no ability of coding, so it has a pretty simple API, and it's pretty easy to use.
+PerforVNM is made mainly to be used by independent artists & studios, and coding is not their main skill, so we provide an easy and self-explanatory API.
 
-You can either check [our documentation](docs/) or [our test file](src/perforvnm.js) to see how to use the API.
-
-
-
-PerforVNM follows the idea of `code once, run everywhere`, so the usage will be pretty simple, and without worries about *future* cross-platform problems.
-
-PerforVNM is a library, and you should use it directly from the source code, so you can have the latest version of it.
-
-You can take a look at the usage of the Perfor API in the [PerforVNM API documentation](docs/) folder.
+To take a look at the functions available, you can take a look at [our hand-made documentation](docs/), and as an example, you can take a look at [our test file](src/perforvnm.js).
 
 ### Code generation
 
-PerforVNM is a code generator, so it will generate code for you, and you can use it to build your app.
+PerforVNM generated native code, which makes it a code generator, allowing the best performance even compared to hand-made VNs.
 
-To generate the code, you'll need to use the `node .` command and it will generate the code for you.
+It works by saving the information about the required scenes in a global variable and each `.finalize` generates optimized code.
 
-After that, you can build the code, and you'll have your app.
-
-### Building the code
-
-OBS: Android example.
-
-After generating the output code, you'll only need to build the app.
-
-WARNING: The process of building may require more resources, so we recommend you have at least 8GB of RAM and a good CPU.
-
-To build the code, you'll need to have Android Studio installed, and you'll need to have the Android SDK installed.
-
-You'll need to set up the Android SDK in the `local.properties` file (in the Android folder) with the following content:
-
-```text
-sdk.dir = /path/to/Sdk
-```
-
-After that, you're ready to build the code, which can be easily done with the help of `gradlew`:
-
-```cmd
-./gradlew assembleRelease
-```
-
-or
-
-```cmd
-./gradlew assembleDebug
-```
-
-After that, you'll have your APK file in either `app/build/outputs/apk/release` or `app/build/outputs/apk/debug` folder.
+To that, you can simply run `node .` and it will generate the code for you.
 
 ## Code generation vs Engine
 
-A big different between PerforVNM and other Visual Novel Makers is that PerforVNM is a code generator *for* visual novels, not an engine itself.
-
-We must follow PerformanC's philosophy, and using an engine, such as Skia, would be against our philosophy, due to a few reasons:
+A big difference between PerforVNM and other Visual Novel Makers is that PerforVNM is a code generator *for* visual novels, not an engine itself.
 
 ### Resource usage
 
-PerforVNM is highly optimized to use the least amount of resources, and using an engine causes extra overhead that we don't want.
+A big advantage of code generation (without many dependencies) is that it produces a very lightweight code, and is independent of any engine.
 
-Engines are packed into the APK, and they take up a lot of space, and they use a lot of resources, and we don't want that. (The latest version of PerforVNM generates 1.8MB APKs on release mode, against 50MB+ of engines)
+With an APK of 1.8MB, we are the lightest VN Maker, and we're working on making it even lighter even with more features.
 
 ### Portability
 
-Unfair to compare engines with PerforVNM, Perfor is new, and engines are old, but we're working on making PerforVNM as portable as possible, and we're working on making PerforVNM as powerful as engines (in terms of creating VN apps).
+While we're a new VNMs and are only available on Android 4.0+, we plan to make it available on as many OSes as possible, and we're working on that.
 
-But in the end, PerforVNM can be easily modified by us, creating sources to generate code for new OSes, differently from engines, which takes a lot of time to be ported to new OSes.
+Engines are surely more portable since they support more OSes.
+
+Remember: Code quality > Portability
 
 ### Technology improvement
 
-Engines, compared to PerforVNM, will always have a disadvantage in terms of technology, because we use a more powerful technology, that allows us to create more powerful apps, and we can easily improve our technology, while engines can't easily do that.
+We use the best technology available, and the best techniques to make the best code possible, and we're always improving our code generation technology. Compared to engines, which have tons of legacy code, and are not optimized for the best performance...
 
-### Not haters, helpers
+### Not haters, but not lovers (goals)
 
-We don't hate engines, but we, PerformanC, want a better world where we won't need high-end devices to run basic apps, and we want to help the world to achieve that goal, and we believe that PerforVNM is a step toward that goal.
+We don't hate engines, we love who made them, making technology even more accessible, but we think that they sometimes choose the wrong path, and that's why we're here.
 
-PerforVNM is not like other PerformanC software, with the support of the VN community, we can change the world, not by simply making VNs lighter, but by seeing that anything can run anywhere fastly.
+The PerformanC organization creates fast and lightweight software, without many magic tricks, to allow people to make their software more accessible, and to make the best software possible.
 
 ## Discord Server & Feedback
 

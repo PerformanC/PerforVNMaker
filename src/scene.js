@@ -457,13 +457,7 @@ function finalize(scene, options) {
 
   console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
 
-  const functionParams = []
-
-  if (visualNovel.scenes.length == 0 && scene.speech) functionParams.push('animate: Boolean')
-  if (visualNovel.scenes.length != 0 && !visualNovel.scenes[visualNovel.scenes.length - 1].speech) functionParams.push('animate: Boolean')
-  if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) functionParams.push('animateAuthor: Boolean')
-
-  let sceneCode = `  private fun ${scene.name}(${functionParams.join(', ')}) {` + '\n' +
+  let sceneCode = `  private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {` + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
 
@@ -560,7 +554,7 @@ function finalize(scene, options) {
     let SPACE = '    '
     const finalCode = []
 
-    if (scene.transition) {
+    if (scene.animations) {
       SPACE += '    '
 
       sceneCode += '\n' + `    imageView_${character.name}.startAnimation(animationFadeIn)` + '\n\n' +
@@ -728,39 +722,8 @@ function finalize(scene, options) {
 
                  '    textViewSpeech.layoutParams = layoutParamsSpeech' + '\n\n' +
 
-                 `    var speechText = "${scene.speech.text.content}"` + '\n'
-
-    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
-      sceneCode += '\n' + '    if (animate) {' + '\n' + 
-                   '      var i = 0' + '\n\n' +
-
-                   '      handler.postDelayed(object : Runnable {' + '\n' +
-                   '        override fun run() {' + '\n' +
-                   '          if (i < speechText.length) {' + '\n' +
-                   '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
-                   '            i++' + '\n' +
-                   '            handler.postDelayed(this, textSpeed)' + '\n' +
-                   '          }' + '\n' +
-                   '        }' + '\n' +
-                   '      }, textSpeed)' + '\n' +
-                   '    } else {' + '\n' +
-                   '      textViewSpeech.text = speechText' + '\n' +
-                   '    }' + '\n\n'
-     } else {
-      sceneCode += '    var i = 0' + '\n\n' +
-
-                   '    handler.postDelayed(object : Runnable {' + '\n' +
-                   '      override fun run() {' + '\n' +
-                   '        if (i < speechText.length) {' + '\n' +
-                   '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
-                   '          i++' + '\n' +
-                   '          handler.postDelayed(this, textSpeed)' + '\n' +
-                   '        }' + '\n' +
-                   '      }' + '\n' +
-                   '    }, textSpeed)' + '\n\n'
-    }
-
-    sceneCode += '    frameLayout.addView(textViewSpeech)' + '\n\n' +
+                 `    var speechText = "${scene.speech.text.content}"__PERFORVNM_SPEECH_HANDLER__` + '\n' +
+                 '    frameLayout.addView(textViewSpeech)' + '\n\n' +
 
                  '    val rectangleViewAuthor = RectangleView(this)' + '\n\n' +
 
