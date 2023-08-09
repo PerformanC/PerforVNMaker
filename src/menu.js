@@ -3,81 +3,45 @@ import fs from 'fs'
 import helper from './helper.js'
 
 function make(options) {
-  if (!options.textColor) {
-    console.error('ERROR: Menu text color not provided.')
+  if (!options.textColor)
+    throw new Error('Menu text color not provided.')
 
-    process.exit(1)
-  }
+  if (!options.backTextColor)
+    throw new Error('Menu "back" text color not provided.')
 
-  if (!options.backTextColor) {
-    console.error('ERROR: Menu "back" text color not provided.')
+  if (!options.textSpeed)
+    throw new Error('(Menu config) Scenes text speed not provided.')
 
-    process.exit(1)
-  }
+  if (!options.seekBar?.backgroundColor)
+    throw new Error('Seek bar background color not provided.')
 
-  if (!options.textSpeed) {
-    console.error('ERROR: (Menu config) Scenes text speed not provided.')
+  if (!options.seekBar.progressColor)
+    throw new Error('Seek bar progress color not provided.')
 
-    process.exit(1)
-  }
+  if (!options.seekBar.thumbColor)
+    throw new Error('Seek bar thumb color not provided.')
 
-  if (!options.seekBar?.backgroundColor) {
-    console.error('ERROR: Seek bar background color not provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.seekBar.progressColor) {
-    console.error('ERROR: Seek bar progress color not provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.seekBar.thumbColor) {
-    console.error('ERROR: Seek bar thumb color not provided.')
-
-    process.exit(1)
-  }
-
-  if (!options?.background?.image) {
-    console.error('ERROR: Menu background image not provided.')
-
-    process.exit(1)
-  }
+  if (!options?.background?.image)
+    throw new Error('Menu background image not provided.')
 
   if (options.background.music) {
-    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music))) {
-      console.error(`ERROR: Menu background music not found.`)
-  
-      process.exit(1)
-    }
+    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
+      throw new Error(`Menu background music not found.`)
 
     visualNovel.internalInfo.menuMusic = true
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image))) {
-    console.error('ERROR: Menu background image not found.')
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
+    throw new Error('Menu background image not found.')
 
-    process.exit(1)
-  }
+  if (!options.footer?.color)
+    throw new Error('Menu footer color not provided.')
 
-  if (!options.footer?.color) {
-    console.error('ERROR: Menu footer color not provided.')
+  if (!options.footer.textColor)
+    throw new Error('Menu text color not provided.')
 
-    process.exit(1)
-  }
-
-  if (!options.footer.textColor) {
-    console.error('ERROR: Menu text color not provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.footer.opacity) {
-    console.error('ERROR: Menu footer opacity not provided.')
-
-    process.exit(1)
-  }
+  if (!options.footer.opacity)
+    throw new Error('Menu footer opacity not provided.')
 
   console.log('Starting VN, coding menu.. (Android)')
 
@@ -91,7 +55,7 @@ function make(options) {
 
                 '      val volume = sharedPreferences.getFloat("musicVolume", 1f)' + '\n' +
                 '      mediaPlayer!!.setVolume(volume, volume)' + '\n\n' +
-                  
+
                 '      mediaPlayer!!.setOnCompletionListener {' + '\n' +
                 '        mediaPlayer!!.start()' + '\n' +
                 '      }' + '\n' +
@@ -120,7 +84,7 @@ function make(options) {
 
                    '    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
- 
+
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
                    `    rectangleView.setAlpha(${options.footer.opacity}f)` + '\n\n' +
 
@@ -263,14 +227,14 @@ function make(options) {
                     '      animationRectangleGray.duration = 500'  + '\n' +
                     '      animationRectangleGray.interpolator = LinearInterpolator()' + '\n' +
                     '      animationRectangleGray.fillAfter = true' + '\n\n' +
-                
+
                     '      rectangleGrayView.startAnimation(animationRectangleGray)' + '\n' +
                     '    } else {' + '\n' +
                     '      rectangleGrayView.setAlpha(0.8f)' + '\n' +
                     '    }' + '\n\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
- 
+
                     '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
@@ -291,7 +255,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)' + '\n\n' +
- 
+
                     '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
                     '    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)' + '\n\n' +
 
@@ -406,7 +370,7 @@ function make(options) {
   if (options.aboutText) {
     aboutCode += `      append("\\n\\n${JSON.stringify(options.aboutText).slice(1, -1)}")` + '\n'
   }
-                    
+
   aboutCode += '    }' + '\n' +
                '    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))' + '\n' +
                `    textView.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
@@ -418,7 +382,7 @@ function make(options) {
 
                '    val leftDpText = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp)' + '\n' +
                '    val topDpText = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)' + '\n\n' +
-                
+
                '    layoutParamsText.gravity = Gravity.TOP or Gravity.START' + '\n' +
                '    layoutParamsText.setMargins(leftDpText, topDpText, 0, 0)' + '\n\n' +
 
@@ -434,7 +398,7 @@ function make(options) {
                '  }'
 
   helper.writeScene(aboutCode)
-  
+
   const settingsCode = '  private fun settings(animate: Boolean) {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
@@ -460,14 +424,14 @@ function make(options) {
                     '      animationRectangleGray.duration = 500'  + '\n' +
                     '      animationRectangleGray.interpolator = LinearInterpolator()' + '\n' +
                     '      animationRectangleGray.fillAfter = true' + '\n\n' +
-                
+
                     '      rectangleGrayView.startAnimation(animationRectangleGray)' + '\n' +
                     '    } else {' + '\n' +
                     '      rectangleGrayView.setAlpha(0.8f)' + '\n' +
                     '    }' + '\n\n' +
 
                     '    val rectangleView = RectangleView(this)' + '\n\n' +
- 
+
                     '    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))' + '\n' +
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
@@ -488,7 +452,7 @@ function make(options) {
                     '    )' + '\n\n' +
 
                     '    val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)' + '\n\n' +
- 
+
                     '    layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START' + '\n' +
                     '    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)' + '\n\n' +
 
@@ -1076,7 +1040,7 @@ function make(options) {
                     '    inputStream.close()' + '\n\n' +
 
                     '    val saves = JSONArray(text)' + '\n\n' +
-                    
+
                     '    var leftDp = 100' + '\n' +
                     '    var topDp = 50' + '\n\n' +
 
@@ -1125,7 +1089,7 @@ function make(options) {
                     '  }'
 
   helper.writeScene(saverCode)
-  
+
   visualNovel.menu = {
     name: 'menu()',
     backgroundMusic: options.background.music,

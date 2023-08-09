@@ -1,29 +1,11 @@
 import fs from 'fs'
 
 function init(options) {
-  if (options?.name == 'onCreate') {
-    console.error('ERROR: Scene name cannot be onCreate. (Android)')
+  if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options?.name))
+    throw new Error(`Scene name cannot be ${options.name}. (Android)`)
 
-    process.exit(1)
-  }
-
-  if (options.name == 'menu') {
-    console.error('ERROR: Scene name cannot be menu.')
-
-    process.exit(1)
-  }
-
-  if (options.name == 'about') {
-    console.error('ERROR: Scene name cannot be onBackPressed.')
-
-    process.exit(1)
-  }
-
-  if (visualNovel.scenes.find(scene => scene.name == options.name)) {
-    console.error('ERROR: Scene with duplicated name.\n- Scene name: ' + options.name)
-
-    process.exit(1)
-  }
+  if (visualNovel.scenes.find(scene => scene.name == options.name))
+    throw new Error('Scene with duplicated name.\n- Scene name: ' + options.name)
 
   console.log('Starting scene.. (Android)')
 
@@ -31,138 +13,75 @@ function init(options) {
 }
 
 function addCharacter(scene, options) {
-  if (!options?.name) {
-    console.error(`ERROR: Character name not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.name)
+    throw new Error(`Character name not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (scene.characters.find(character => character.name == options.name))
+    throw new Error(`Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
 
-  if (scene.characters.find(character => character.name == options.name)) {
-    console.error(`ERROR: Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
+  if (!options.image)
+    throw new Error(`Character image not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+    throw new Error(`Character image not found.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
-  if (!options.image) {
-    console.error(`ERROR: Character image not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+  if (!options.position?.side)
+    throw new Error(`Character position side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    throw new Error(`Character position side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image))) {
-    console.error(`ERROR: Character image not found.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    throw new Error(`Character position side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    throw new Error(`Character position margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-  if (!options.position?.side) {
-    console.error(`ERROR: Character position side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    throw new Error(`Character position top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (!['center', 'left', 'right'].includes(options.position.side)) {
-    console.error(`ERROR: Character position side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (options.position.side != 'center' && options.position.margins?.side == null) {
-    console.error(`ERROR: Character position side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number') {
-    console.error(`ERROR: Character position margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (options.position.side != 'center' && options.position.margins?.top == null) {
-    console.error(`ERROR: Character position top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number') {
-    console.error(`ERROR: Character position top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    throw new Error(`Character position top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
   if (options.animations) {
-    if (!Array.isArray(options.animations)) {
-      console.error(`ERROR: Character animations must be an array.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-      process.exit(1)
-    }
+    if (!Array.isArray(options.animations))
+      throw new Error(`Character animations must be an array.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
     for (let animation of options.animations) {
-      if (!animation.type) {
-        console.error(`ERROR: Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      if (!animation.type)
+        throw new Error(`Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        process.exit(1)
-      }
-
-      if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(animation.type)) {
-        console.error(`ERROR: Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-        process.exit(1)
-      }
+      if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(animation.type))
+        throw new Error(`Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       switch (animation.type) {
         case 'movement': {
-          if (!animation.side) {
-            console.error(`ERROR: Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (!animation.side)
+            throw new Error(`Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
+          if (!['center', 'left', 'right'].includes(animation.side))
+            throw new Error(`Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-          if (!['center', 'left', 'right'].includes(animation.side)) {
-            console.error(`ERROR: Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (animation.side != 'center' && animation.margins?.side == null)
+            throw new Error(`Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
+          if (animation.side != 'center' && typeof animation.margins?.side != 'number')
+            throw new Error(`Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-          if (animation.side != 'center' && animation.margins?.side == null) {
-            console.error(`ERROR: Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (animation.side != 'center' && animation.margins.top == null)
+            throw new Error(`Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
-
-          if (animation.side != 'center' && typeof animation.margins?.side != 'number') {
-            console.error(`ERROR: Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
-
-          if (animation.side != 'center' && animation.margins.top == null) {
-            console.error(`ERROR: Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
-
-          if (animation.side != 'center' && typeof animation.margins?.top != 'number') {
-            console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
+          if (animation.side != 'center' && typeof animation.margins?.top != 'number')
+            throw new Error(`Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
           break
         }
         case 'jump': {
-          if (animation.margins?.top == null) {
-            console.error(`ERROR: Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (animation.margins?.top == null)
+            throw new Error(`Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
-
-          if (typeof animation.margins?.top != 'number') {
-            console.error(`ERROR: Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
+          if (typeof animation.margins?.top != 'number')
+            throw new Error(`Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
           break
         }
@@ -173,60 +92,36 @@ function addCharacter(scene, options) {
           break
         }
         case 'rotate': {
-          if (animation.degrees == null) {
-            console.error(`ERROR: Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (animation.degrees == null)
+            throw new Error(`Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
-
-          if (typeof animation.degrees != 'number') {
-            console.error(`ERROR: Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
+          if (typeof animation.degrees != 'number')
+            throw new Error(`Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
           break
         }
         case 'scale': {
-          if (animation.scale == null) {
-            console.error(`ERROR: Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+          if (animation.scale == null)
+            throw new Error(`Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-            process.exit(1)
-          }
-
-          if (typeof animation.scale != 'number') {
-            console.error(`ERROR: Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-            process.exit(1)
-          }
+          if (typeof animation.scale != 'number')
+            throw new Error(`Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
           break
         }
       }
 
-      if (animation.duration == null) {
-        console.error(`ERROR: Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      if (animation.duration == null)
+        throw new Error(`Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        process.exit(1)
-      }
+      if (typeof animation.duration != 'number')
+        throw new Error(`Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-      if (typeof animation.duration != 'number') {
-        console.error(`ERROR: Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      if (animation.delay == null)
+        throw new Error(`Character animation delay not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-        process.exit(1)
-      }
-
-      if (animation.delay == null) {
-        console.error(`ERROR: Character animation delay not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-        process.exit(1)
-      }
-
-      if (typeof animation.delay != 'number') {
-        console.error(`ERROR: Character animation delay must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
-
-        process.exit(1)
-      }
+      if (typeof animation.delay != 'number')
+        throw new Error(`Character animation delay must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
       if (animation.delay != 0)
         visualNovel.internalInfo.hasDelayedAnimation = true
@@ -243,17 +138,11 @@ function addCharacter(scene, options) {
 }
 
 function addScenario(scene, options) {
-  if (!options?.image) {
-    console.error(`ERROR: Scenario image not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.image)
+    throw new Error(`Scenario image not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image))) {
-    console.error(`ERROR: Scenario image not found.\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
-
-    process.exit(1)
-  }
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+    throw new Error(`Scenario image not found.\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
   console.log(`Adding scenario for scene "${scene.name}".. (Android)`)
 
@@ -265,65 +154,35 @@ function addScenario(scene, options) {
 }
 
 function addSpeech(scene, options) {
-  if (options.author?.name && !options.author.textColor) {
-    console.error(`ERROR: Speech author text color not provided.\n- Scene name: ${scene.name}`)
+  if (options.author?.name && !options.author.textColor)
+    throw new Error(`Speech author text color not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!options?.author?.rectangle?.color)
+    throw new Error(`Speech author rectangle color not provided.\n- Scene name: ${scene.name}`)
 
-  if (!options?.author?.rectangle?.color) {
-    console.error(`ERROR: Speech author rectangle color not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.author?.rectangle?.opacity)
+    throw new Error(`Speech author rectangle opacity not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (typeof options.author.rectangle.opacity != 'number')
+    throw new Error(`Speech author rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
 
-  if (!options?.author?.rectangle?.opacity) {
-    console.error(`ERROR: Speech author rectangle opacity not provided.\n- Scene name: ${scene.name}`)
+  if (!options.text?.content)
+    throw new Error(`Speech text content not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!options.text.color)
+    throw new Error(`Speech text color not provided.\n- Scene name: ${scene.name}`)
 
-  if (typeof options.author.rectangle.opacity != 'number') {
-    console.error(`ERROR: Speech author rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
+  if (!options.text.fontSize)
+    throw new Error(`Speech text font size not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!options.text.rectangle?.color)
+    throw new Error(`Speech text rectangle color not provided.\n- Scene name: ${scene.name}`)
 
-  if (!options.text?.content) {
-    console.error(`ERROR: Speech text content not provided.\n- Scene name: ${scene.name}`)
+  if (!options.text.rectangle?.opacity)
+    throw new Error(`Speech text rectangle opacity not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (!options.text.color) {
-    console.error(`ERROR: Speech text color not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (!options.text.fontSize) {
-    console.error(`ERROR: Speech text font size not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (!options.text.rectangle?.color) {
-    console.error(`ERROR: Speech text rectangle color not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (!options.text.rectangle?.opacity) {
-    console.error(`ERROR: Speech text rectangle opacity not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (typeof options.text.rectangle.opacity != 'number') {
-    console.error(`ERROR: Speech text rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (typeof options.text.rectangle.opacity != 'number')
+    throw new Error(`Speech text rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
 
   console.log(`Adding speech for scene "${scene.name}".. (Android)`)
 
@@ -338,36 +197,21 @@ function addSpeech(scene, options) {
 }
 
 function addSoundEffects(scene, options) {
-  if (!Array.isArray(options)) {
-    console.error(`ERROR: Sound effects must be an array.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (!Array.isArray(options))
+    throw new Error(`Sound effects must be an array.\n- Scene name: ${scene.name}`)
 
   for (let sound of options) {
-    if (!sound?.sound) {
-      console.error(`ERROR: Sound effects sound not provided.\n- Scene name: ${scene.name}`)
+    if (!sound?.sound)
+      throw new Error(`Sound effects sound not provided.\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
+    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound)))
+      throw new Error(`Sound effects sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
 
-    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound))) {
-      console.error(`ERROR: Sound effects sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
+    if (sound?.delay == null)
+      throw new Error(`Sound effects delay not provided.\n- Scene name: ${scene.name}`)
 
-      process.exit(1)
-    }
-
-    if (sound?.delay == null) {
-      console.error(`ERROR: Sound effects delay not provided.\n- Scene name: ${scene.name}`)
-
-      process.exit(1)
-    }
-
-    if (typeof sound.delay != 'number') {
-      console.error(`ERROR: Sound effects delay must be a number.\n- Scene name: ${scene.name}`)
-
-      process.exit(1)
-    }
+    if (typeof sound.delay != 'number')
+      throw new Error(`Sound effects delay must be a number.\n- Scene name: ${scene.name}`)
 
     if (sound.delay != 0)
       visualNovel.internalInfo.hasDelayedSoundEffect = true
@@ -378,36 +222,24 @@ function addSoundEffects(scene, options) {
   scene.effect = options
 
   visualNovel.internalInfo.hasEffect = true
-  
+
   console.log(`Sound effects added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function addMusic(scene, options) {
-  if (!options?.music) {
-    console.error(`ERROR: Scene music not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.music)
+    throw new Error(`Scene music not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
+  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.music)))
+    throw new Error(`Scene music not found.\n- Scene name: ${scene.name}\n- Music: ${options.music}`)
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.music))) {
-    console.error(`ERROR: Scene music not found.\n- Scene name: ${scene.name}\n- Music: ${options.music}`)
+  if (options?.delay == null)
+    throw new Error(`Scene music delay not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (options?.delay == null) {
-    console.error(`ERROR: Scene music delay not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
-
-  if (options.delay && typeof options.delay != 'number') {
-    console.error(`ERROR: Scene music delay must be a number.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (options.delay && typeof options.delay != 'number')
+    throw new Error(`Scene music delay must be a number.\n- Scene name: ${scene.name}`)
 
   console.log(`Adding music for scene "${scene.name}".. (Android)`)
 
@@ -421,17 +253,11 @@ function addMusic(scene, options) {
 }
 
 function addTransition(scene, options) {
-  if (!options?.duration) {
-    console.error(`ERROR: Scene transition duration not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.duration)
+    throw new Error(`Scene transition duration not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (typeof options.duration != 'number') {
-    console.error(`ERROR: Scene transition duration must be a number.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (typeof options.duration != 'number')
+    throw new Error(`Scene transition duration must be a number.\n- Scene name: ${scene.name}`)
 
   console.log(`Adding transition for scene "${scene.name}".. (Android)`)
 
@@ -443,17 +269,11 @@ function addTransition(scene, options) {
 }
 
 function finalize(scene, options) {
-  if (!options?.buttonsColor) {
-    console.error(`ERROR: Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
+  if (!options?.buttonsColor)
+    throw new Error(`Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
 
-    process.exit(1)
-  }
-
-  if (!options.footerTextColor) {
-    console.error(`ERROR: Scene text color not provided.\n- Scene name: ${scene.name}`)
-
-    process.exit(1)
-  }
+  if (!options.footerTextColor)
+    throw new Error(`Scene text color not provided.\n- Scene name: ${scene.name}`)
 
   console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
 
@@ -571,9 +391,9 @@ function finalize(scene, options) {
         '    })' + '\n'
       )
     }
-    
+
     let i = 0
-    
+
     if (character.animations) for (let animation of character.animations) {
       if (animation.delay != 0) {
         sceneCode += SPACE + 'handler.postDelayed(object : Runnable {' + '\n' +
@@ -688,7 +508,7 @@ function finalize(scene, options) {
     if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
       sceneCode += `    rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)` + '\n'
     }
-    
+
     sceneCode += `    rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())` + '\n'
 
     if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
@@ -697,7 +517,7 @@ function finalize(scene, options) {
                     '      animationRectangleSpeech.duration = 1000'  + '\n' +
                     '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
                     '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
-  
+
                     '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n' +
                     '    } else {' + '\n' +
                     `      rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)` + '\n' +
@@ -716,7 +536,7 @@ function finalize(scene, options) {
                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
                  '      LayoutParams.WRAP_CONTENT' + '\n' +
                  '    )' + '\n\n' +
-                  
+
                  '    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL' + '\n' +
                  '    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)' + '\n\n' +
 
@@ -745,7 +565,7 @@ function finalize(scene, options) {
                    '      animationRectangleAuthor.duration = 1000' + '\n' +
                    '      animationRectangleAuthor.interpolator = LinearInterpolator()' + '\n' +
                    '      animationRectangleAuthor.fillAfter = true' + '\n\n' +
-             
+
                    '      rectangleViewAuthor.startAnimation(animationRectangleAuthor)' + '\n' +
                    '    } else {' + '\n' +
                    `      rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)` + '\n' + 
@@ -796,7 +616,7 @@ function finalize(scene, options) {
 
       sceneCode += '    frameLayout.addView(textViewAuthor)'
     }
-    
+
     sceneCode += '\n'
   }
 
@@ -882,7 +702,7 @@ function finalize(scene, options) {
 
       if (finalCode.length != 0) {
         finalCode.reverse()
-  
+
         sceneCode += finalCode.join('')
       }
     }
@@ -979,7 +799,7 @@ function finalize(scene, options) {
 
                     '    frameLayout.addView(buttonBack)' + '\n\n'
   }
-  
+
   sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
                '  }'
 

@@ -12,29 +12,17 @@ global.PerforVNM = {
 function init(options) {
   console.log('Starting VN, coding main code.. (Android)')
 
-  if (!options?.name) {
-    console.log('ERROR: No name provided.')
+  if (!options?.name)
+    throw new Error('No name provided.')
 
-    process.exit(1)
-  }
+  if (!options.fullName)
+    throw new Error('No fullName provided.')
 
-  if (!options.fullName) {
-    console.log('ERROR: No fullName provided.')
+  if (!options.version)
+    throw new Error('No version provided.')
 
-    process.exit(1)
-  }
-
-  if (!options.version) {
-    console.log('ERROR: No version provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.applicationId) {
-    console.log('ERROR: No applicationId provided.')
-
-    process.exit(1)
-  }
+  if (!options.applicationId)
+    throw new Error('No applicationId provided.')
 
   visualNovel.info = options
 
@@ -97,7 +85,15 @@ function init(options) {
   '}' + '\n' +
   '__PERFORVNM_CLASSES__'
 
-  console.log('Main coded. (Android)')
+  console.log('Main coded. Adding configuration files (Android)')
+
+  visualNovel.customXML.push({
+    path: 'values/strings.xml',
+    content: '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
+             '<resources>' + '\n' +
+             `    <string name="app_name">${visualNovel.info.name}</string>` + '\n' +
+             '</resources>'
+  })
 }
 
 function finalize() {
@@ -109,14 +105,16 @@ function finalize() {
 
   if (visualNovel.scenes.length) {
     let scenesCode = []
-    let i = 0
+    let i = -1
 
-    for (const scene of visualNovel.scenes) {
+    while (i++ < visualNovel.scenes.length - 1) {
+      const scene = visualNovel.scenes[i]
+
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
         const finishScene = []
 
-        if ((scene.effect && !scene.music) || (scene.effect && scene.music)) {
+        if (scene.effect || scene.music) {
           finishScene.push('      if (mediaPlayer != null) {' + '\n' +
                            '        mediaPlayer!!.stop()' + '\n' +
                            '        mediaPlayer!!.release()' + '\n' +
@@ -125,12 +123,6 @@ function finalize() {
         }
       
         if (scene.effect && scene.music) {
-          finishScene.push('      if (mediaPlayer != null) {' + '\n' +
-                           '        mediaPlayer!!.stop()' + '\n' +
-                           '        mediaPlayer!!.release()' + '\n' +
-                           '        mediaPlayer = null' + '\n' +
-                           '      }' + '\n')
-      
           finishScene.push('      if (mediaPlayer2 != null) {' + '\n' +
                            '        mediaPlayer2!!.stop()' + '\n' +
                            '        mediaPlayer2!!.release()' + '\n' +
@@ -143,23 +135,17 @@ function finalize() {
 
         if (i == visualNovel.scenes.length - 2)
           finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
-    
+
         finishScene.push('      it.setOnClickListener(null)')
-
-        const functionParams = []
-        if (nextScene.speech && !scene.speech) functionParams.push('true')
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) functionParams.push('true')
-
-        const switchParams = []
-        if (scene.speech) switchParams.push('true')
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) switchParams.push('true')
-  
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${switchParams.join(', ')})`
 
         let code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
                    finishScene.join('\n') + '\n\n'
 
-        if(scene.speech && !nextScene.speech) {
+        const functionParams = []
+        if (nextScene.speech && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+
+        if (scene.speech && !nextScene.speech) {
           code += `      val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)` + '\n' +
                   '      animationRectangleSpeech.duration = 500' + '\n' +
                   '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
@@ -178,7 +164,7 @@ function finalize() {
                   '      animationAuthorSpeech.duration = 500' + '\n' +
                   '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
                   '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
-                                                          
+
                   '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n'
 
           if (scene.speech.author?.name) {
@@ -197,21 +183,29 @@ function finalize() {
         } else {
           code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
         }
-        
+
         code += '    }'
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
 
-        const functionParams2 = []
-        if (scene.speech) functionParams2.push('animate: Boolean')
-        if (scene.speech?.author?.name && nextScene.speech && !nextScene.speech?.author?.name) functionParams2.push('animateAuthor: Boolean')
+        const functionParams2 = { function: [], switch: [] }
+        if (scene.speech) {
+          functionParams2.function.push('animate: Boolean')
+          functionParams2.switch.push('true')
+        }
+        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
+          functionParams2.function.push('animateAuthor: Boolean')
+          functionParams2.switch.push('true')
+        }
 
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.join(', '))
+        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
         if (scene.speech) {
           const speechHandler = '\n' + '    if (animate) {' + '\n' +
                                 '      var i = 0' + '\n\n' +
-                                
+
                                 '      handler.postDelayed(object : Runnable {' + '\n' +
                                 '        override fun run() {' + '\n' +
                                 '          if (i < speechText.length) {' + '\n' +
@@ -230,18 +224,25 @@ function finalize() {
       } else {
         const oldScene = visualNovel.scenes[i - 1]
 
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${scene.speech ? 'true' : ''})`
+        const functionParams = { function: [], switch: [] }
+        if (scene.speech && !oldScene.speech) {
+          functionParams.function.push('animate: Boolean')
+          functionParams.switch.push('true')
+        }
+        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
+          functionParams.function.push('animateAuthor: Boolean')
+          functionParams.switch.push('true')
+        }
+
+        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
-
-        const functionParams = []
-        if (scene.speech) functionParams.push('animate: Boolean')
-        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) functionParams.push('animateAuthor: Boolean')
-
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.join(', '))
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
 
         if (scene.speech) {
-          const speechHandler = '\n' + '    handler.postDelayed(object : Runnable {' + '\n' +
+          const speechHandler = '\n' + '    var i = 0' + '\n\n' +
+
+                                '    handler.postDelayed(object : Runnable {' + '\n' +
                                 '      override fun run() {' + '\n' +
                                 '        if (i < speechText.length) {' + '\n' +
                                 '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
@@ -256,8 +257,6 @@ function finalize() {
       }
 
       scenesCode.push('\n\n' + scene.code)
-
-      i++
     }
 
     helper.replace('__PERFORVNM_SCENES__', scenesCode.join(''))
@@ -351,18 +350,14 @@ function finalize() {
     }
 
     addHeaders += '  override fun onDestroy() {' + '\n' +
-                  '    super.onDestroy()' + '\n\n'
+                  '    super.onDestroy()'
 
     if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
-      addHeaders += '    handler.removeCallbacksAndMessages(null)'
-      
-      if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.needs2Players) {
-        addHeaders += '\n\n'
-      }
+      addHeaders += '\n\n' + '    handler.removeCallbacksAndMessages(null)'
     }
 
     if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
-      addHeaders += '    if (mediaPlayer != null) {' + '\n' +
+      addHeaders += '\n\n' + '    if (mediaPlayer != null) {' + '\n' +
                     '      mediaPlayer!!.stop()' + '\n' +
                     '      mediaPlayer!!.release()' + '\n' +
                     '      mediaPlayer = null' + '\n' +
@@ -370,20 +365,14 @@ function finalize() {
     }
 
     if (visualNovel.internalInfo.needs2Players) {
-      addHeaders += '\n\n'
+      addHeaders += '\n\n' + '    if (mediaPlayer2 != null) {' + '\n' +
+                    '      mediaPlayer2!!.stop()' + '\n' +
+                    '      mediaPlayer2!!.release()' + '\n' +
+                    '      mediaPlayer2 = null' + '\n' +
+                    '    }'
     }
 
-    if (visualNovel.internalInfo.needs2Players) {
-      addHeaders += '\n' + '    if (mediaPlayer2 != null) {' + '\n' +
-                  '      mediaPlayer2!!.stop()' + '\n' +
-                  '      mediaPlayer2!!.release()' + '\n' +
-                  '      mediaPlayer2 = null' + '\n' +
-                  '    }' + '\n'
-    } else {
-      addHeaders += '\n'
-    }
-    
-    addHeaders += '  }' + '\n'
+    addHeaders += '\n' + '  }' + '\n'
   }
 
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
@@ -408,13 +397,7 @@ function finalize() {
   fs.writeFile(`../android/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
     if (err) return console.error(`ERROR: ${err} (Android)`)
 
-    console.log('VN in Kotlin written, writing other configurations.. (Android)')
-
-    fs.writeFile(`../android/app/src/main/res/values/strings.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="app_name">${visualNovel.info.name}</string>\n</resources>`, (err) => {
-      if (err) return console.error(`ERROR: ${err} (Android)`)
-
-      console.log('Android app configuration files written, ready to build. (Android)')
-    })
+    console.log('VN in Kotlin written. (Android)')
   })
 
   while (visualNovel.customXML.length > 0) {
@@ -422,6 +405,8 @@ function finalize() {
 
     fs.writeFile(`../android/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
       if (err) return console.error(`ERROR: ${err} (Android)`)
+
+      console.log(`Android custom XML (${customXML.path}) written. (Android)`)
     })
   }
 
