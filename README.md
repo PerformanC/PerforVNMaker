@@ -30,7 +30,7 @@ We're working on making this requirement even lower.
 
 ### Installation
 
-To install PerforVNM, you can use `npm`:
+To install PerforVNM, you can use `npm` or `yarn`.
 
 ```bash
 npm install @performanc/perforvnmaker
@@ -44,7 +44,7 @@ yarn add @performanc/perforvnmaker
 
 PerforVNM is made mainly to be used by independent artists & studios, and coding is not their main skill, so we provide an easy and self-explanatory API.
 
-To take a look at the functions available, you can take a look at [our hand-made documentation](docs/), and as an example, you can take a look at [our test file](src/perforvnm.js).
+To take a look at the functions available, you can take a look at [our hand-made documentation](docs/), and as an example, you can take a look at [our test file](test/perforvnm.js).
 
 ### Code generation
 
