@@ -1,5 +1,6 @@
 package com.perforvnm
 
+import java.io.File
 import java.io.InputStreamReader
 import org.json.JSONArray
 import kotlin.math.roundToInt
@@ -103,6 +104,12 @@ class MainActivity : Activity() {
     textSpeed = sharedPreferences.getLong("textSpeed", 50L)
 
     sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)
+
+    val savesFile = File(getFilesDir(), "saves.json")
+    if (!savesFile.exists()) {
+      savesFile.createNewFile()
+      savesFile.writeText("[]")
+    }
 
     menu()
   }
@@ -1152,7 +1159,7 @@ class MainActivity : Activity() {
         frameLayoutScenes.addView(imageViewCharacter)
       }
 
-      if (i % 4 == 0) {
+      if (i != 0 && i % 4 == 0) {
         leftDp = 100
         topDp += 100
       } else {
@@ -1254,6 +1261,40 @@ class MainActivity : Activity() {
       }
     }
 
+    val buttonSave = Button(this)
+    buttonSave.text = "Save"
+    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSave.setTextColor(0xFFFFFFFF.toInt())
+    buttonSave.background = null
+
+    val layoutParamsSave = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+
+    layoutParamsSave.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)
+
+    buttonSave.layoutParams = layoutParamsSave
+
+    buttonSave.setOnClickListener {
+      val inputStream = openFileInput("saves.json")
+      var saves = inputStream.bufferedReader().use { it.readText() }
+      inputStream.close()
+
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}]}"
+
+      saves = saves.dropLast(1) + "," + newSave + "]"
+
+      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
+      outputStream.write(saves.toByteArray())
+      outputStream.close()
+    }
+
+    frameLayout.addView(buttonSave)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
@@ -1265,10 +1306,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1449,6 +1490,40 @@ class MainActivity : Activity() {
 
     frameLayout.addView(textViewAuthor)
 
+    val buttonSave = Button(this)
+    buttonSave.text = "Save"
+    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSave.setTextColor(0xFFFFFFFF.toInt())
+    buttonSave.background = null
+
+    val layoutParamsSave = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+
+    layoutParamsSave.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)
+
+    buttonSave.layoutParams = layoutParamsSave
+
+    buttonSave.setOnClickListener {
+      val inputStream = openFileInput("saves.json")
+      var saves = inputStream.bufferedReader().use { it.readText() }
+      inputStream.close()
+
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+
+      saves = saves.dropLast(1) + "," + newSave + "]"
+
+      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
+      outputStream.write(saves.toByteArray())
+      outputStream.close()
+    }
+
+    frameLayout.addView(buttonSave)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
@@ -1460,10 +1535,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1501,7 +1576,7 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
+    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
@@ -1628,6 +1703,40 @@ class MainActivity : Activity() {
 
     frameLayout.addView(textViewAuthor)
 
+    val buttonSave = Button(this)
+    buttonSave.text = "Save"
+    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSave.setTextColor(0xFFFFFFFF.toInt())
+    buttonSave.background = null
+
+    val layoutParamsSave = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+
+    layoutParamsSave.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)
+
+    buttonSave.layoutParams = layoutParamsSave
+
+    buttonSave.setOnClickListener {
+      val inputStream = openFileInput("saves.json")
+      var saves = inputStream.bufferedReader().use { it.readText() }
+      inputStream.close()
+
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+
+      saves = saves.dropLast(1) + "," + newSave + "]"
+
+      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
+      outputStream.write(saves.toByteArray())
+      outputStream.close()
+    }
+
+    frameLayout.addView(buttonSave)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
@@ -1639,10 +1748,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
+    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1680,7 +1789,7 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
+    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)

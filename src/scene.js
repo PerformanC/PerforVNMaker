@@ -743,7 +743,77 @@ function finalize(scene, options) {
 
   finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
 
-  sceneCode += '\n' + '    val buttonMenu = Button(this)' + '\n' +
+  sceneCode += '\n' + '    val buttonSave = Button(this)' + '\n' +
+               '    buttonSave.text = "Save"' + '\n' +
+               '    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+               `    buttonSave.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+               '    buttonSave.background = null' + '\n\n' +
+
+               '    val layoutParamsSave = LayoutParams(' + '\n' +
+               '      LayoutParams.WRAP_CONTENT,' + '\n' +
+               '      LayoutParams.WRAP_CONTENT' + '\n' +
+               '    )' + '\n\n' +
+
+               '    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)' + '\n\n' +
+
+               '    layoutParamsSave.gravity = Gravity.TOP or Gravity.START' + '\n' +
+               '    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)' + '\n\n' +
+
+               '    buttonSave.layoutParams = layoutParamsSave' + '\n\n' +
+
+               '    buttonSave.setOnClickListener {' + '\n' +
+               '      val inputStream = openFileInput("saves.json")' + '\n' +
+               '      var saves = inputStream.bufferedReader().use { it.readText() }' + '\n' +
+               '      inputStream.close()' + '\n\n'
+
+  let sceneJson = {}
+
+  if (scene.background != '') {
+    sceneJson.scenario = scene.background
+  }
+
+  sceneJson.scene = scene.name
+
+  if (scene.characters.length != 0) {
+    sceneJson.characters = []
+
+    scene.characters.forEach((character) => {
+      let positionType = character.position.side
+
+      if (character.position.side != 'center') {
+        if (character.position.margins.top != 0)
+          positionType += 'Top'
+
+        if (character.position.margins.side == 0 && character.position.margins.top != 0)
+          positionType = 'top'
+      }
+
+      sceneJson.characters.push({
+        name: character.name,
+        image: character.image,
+        position: {
+          sideType: positionType,
+          ...(character.position.side == 'center' ? {} : {
+            side: character.position.margins.side,
+            ...(character.position.margins.top == 0 ? {} : { top: character.position.margins.top })
+          })
+        }
+      })
+    })
+  }
+
+  sceneCode += `      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -1)}"` + '\n\n' +
+
+               '      saves = saves.dropLast(1) + "," + newSave + "]"' + '\n\n' +
+
+               '      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)' + '\n' +
+               '      outputStream.write(saves.toByteArray())' + '\n' +
+               '      outputStream.close()' + '\n' +
+               '    }' + '\n\n' +
+               
+                '    frameLayout.addView(buttonSave)' + '\n\n' +
+  
+               '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
                '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
                `    buttonMenu.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
@@ -754,10 +824,10 @@ function finalize(scene, options) {
                '      LayoutParams.WRAP_CONTENT' + '\n' +
                '    )' + '\n\n' +
 
-               '    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)' + '\n\n' +
+               '    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)' + '\n\n' +
 
                '    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START' + '\n' +
-               '    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)' + '\n\n' +
+               '    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)' + '\n\n' +
 
                '    buttonMenu.layoutParams = layoutParamsMenu' + '\n\n'
 
@@ -786,7 +856,7 @@ function finalize(scene, options) {
                   '      LayoutParams.WRAP_CONTENT' + '\n' +
                   '    )' + '\n\n' +
 
-                  '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)' + '\n\n' +
+                  '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)' + '\n\n' +
 
                   '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
                   '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +

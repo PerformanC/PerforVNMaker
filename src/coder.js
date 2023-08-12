@@ -31,6 +31,7 @@ function init(options) {
 
   visualNovel.code = 'package ' + options.applicationId + '\n\n' +
 
+  'import java.io.File' + '\n' +
   'import java.io.InputStreamReader' + '\n' +
   'import org.json.JSONArray' + '\n' +
   'import kotlin.math.roundToInt' + '\n\n' +

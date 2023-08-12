@@ -66,6 +66,12 @@ function make(options) {
 
               '    sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)' + '\n\n' +
 
+              '    val savesFile = File(getFilesDir(), "saves.json")' + '\n' +
+              '    if (!savesFile.exists()) {' + '\n' +
+              '      savesFile.createNewFile()' + '\n' +
+              '      savesFile.writeText("[]")' + '\n' +
+              '    }' + '\n\n' +
+
               '    menu()'
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
@@ -1132,7 +1138,7 @@ function make(options) {
                     '        frameLayoutScenes.addView(imageViewCharacter)' + '\n' +
                     '      }' + '\n\n' +
 
-                    '      if (i % 4 == 0) {' + '\n' +
+                    '      if (i != 0 && i % 4 == 0) {' + '\n' +
                     '        leftDp = 100' + '\n' +
                     '        topDp += 100' + '\n' +
                     '      } else {' + '\n' +

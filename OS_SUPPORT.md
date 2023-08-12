@@ -10,6 +10,14 @@ Android System is the most used OS in the world, found in everything from drones
 
 The scenes are the place where the story happens.
 
+#### Save button
+
+The save button allows the player to save their progress in the visual novel.
+
+##### Version support
+
+<= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
+
 #### Menu button
 
 The menu button is the button that goes to the menu.
@@ -160,10 +168,10 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Characters (Completed)
 - [x] Animations (Completed)
 - [x] Sound effects (Completed)
+- [x] Save/Load system
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
 - [ ] Custom paths (High Priority)
-- [ ] Save/Load system (High Priority)
 - [ ] Achievements
 - [ ] Inventory
 - [ ] Text effects
