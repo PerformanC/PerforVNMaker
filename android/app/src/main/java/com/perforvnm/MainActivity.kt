@@ -152,7 +152,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene0(true)
+      scene1()
     }
 
     frameLayout.addView(buttonStart)
@@ -292,7 +292,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene0(true)
+      scene1()
     }
 
     frameLayout.addView(buttonStart)
@@ -491,7 +491,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene0(true)
+      scene1()
     }
 
     frameLayout.addView(buttonStart)
@@ -942,7 +942,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene0(true)
+      scene1()
     }
 
     frameLayout.addView(buttonStart)
@@ -1083,16 +1083,9 @@ class MainActivity : Activity() {
         }
 
         when (buttonData.getString("scene")) {
-          "scene0" -> scene0(true)
-          "scene1" -> scene1(true)
+          "scene1" -> scene1()
           "scene2" -> scene2(true)
-          "scene3" -> scene3(true)
-          "scene4" -> scene4(true)
-          "scene5" -> scene5(true)
-          "scene6" -> scene6(true)
-          "scene7" -> scene7(true)
-          "scene8" -> scene8(true)
-          "scene9" -> scene9()
+          "scene3" -> scene3()
         }
       }
 
@@ -1165,7 +1158,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene0(animate: Boolean) {
+  private fun scene1() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -1235,6 +1228,113 @@ class MainActivity : Activity() {
 
         override fun onAnimationRepeat(animation: Animator) {}
       })
+
+    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
+
+    if (mediaPlayer != null) {
+      mediaPlayer!!.start()
+
+      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
+
+      mediaPlayer!!.setOnCompletionListener {
+        if (mediaPlayer != null) {
+          mediaPlayer!!.stop()
+          mediaPlayer!!.release()
+          mediaPlayer = null
+        }
+      }
+    }
+
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
+    buttonMenu.background = null
+
+    val layoutParamsMenu = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
+
+    buttonMenu.layoutParams = layoutParamsMenu
+
+    buttonMenu.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+      if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
+        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
+      }
+
+      menu()
+    }
+
+    frameLayout.addView(buttonMenu)
+
+    setContentView(frameLayout)
+
+    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      handler.removeCallbacksAndMessages(null)
+      it.setOnClickListener(null)
+
+      scene2(true)
+    }
+  }
+
+  private fun scene2(animate: Boolean) {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView_scenario = ImageView(this)
+    imageView_scenario.setImageResource(R.raw.background_thanking)
+    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_scenario)
+
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.raw.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    val layoutParams_Pedro = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDp_Pedro = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp)
+
+    layoutParams_Pedro.gravity = Gravity.CENTER
+    layoutParams_Pedro.setMargins(leftDp_Pedro, 0, 0, 0)
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
+    frameLayout.addView(imageView_Pedro)
 
     val rectangleViewSpeech = RectangleView(this)
 
@@ -1340,22 +1440,6 @@ class MainActivity : Activity() {
 
     frameLayout.addView(textViewAuthor)
 
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
@@ -1375,237 +1459,6 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene1(true)
-    }
-  }
-
-  private fun scene1(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
       handler.removeCallbacksAndMessages(null)
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
@@ -1647,17 +1500,11 @@ class MainActivity : Activity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
       handler.removeCallbacksAndMessages(null)
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene0(false)
+      scene1()
     }
 
     frameLayout.addView(buttonBack)
@@ -1665,35 +1512,54 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
       handler.removeCallbacksAndMessages(null)
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
       it.setOnClickListener(null)
 
-      scene2(true)
+      val animationRectangleSpeech = AlphaAnimation(0.8f, 0f)
+      animationRectangleSpeech.duration = 500
+      animationRectangleSpeech.interpolator = LinearInterpolator()
+      animationRectangleSpeech.fillAfter = true
+
+      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
+
+      val animationTextSpeech = AlphaAnimation(1f, 0f)
+      animationTextSpeech.duration = 500
+      animationTextSpeech.interpolator = LinearInterpolator()
+      animationTextSpeech.fillAfter = true
+
+      textViewSpeech.startAnimation(animationTextSpeech)
+
+      val animationAuthorSpeech = AlphaAnimation(0.6f, 0f)
+      animationAuthorSpeech.duration = 500
+      animationAuthorSpeech.interpolator = LinearInterpolator()
+      animationAuthorSpeech.fillAfter = true
+
+      rectangleViewAuthor.startAnimation(animationAuthorSpeech)
+
+      textViewAuthor.startAnimation(animationTextSpeech)
+
+      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {
+        override fun onAnimationStart(animation: Animation?) {}
+
+        override fun onAnimationEnd(animation: Animation?) {
+          scene3()
+        }
+
+        override fun onAnimationRepeat(animation: Animation?) {}
+      })
     }
   }
 
-  private fun scene2(animate: Boolean) {
+  private fun scene3() {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
 
     val imageView_scenario = ImageView(this)
     imageView_scenario.setImageResource(R.raw.background_thanking)
     imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
     frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
 
     val imageView_Pedro = ImageView(this)
     imageView_Pedro.setImageResource(R.raw.pedro_staring)
@@ -1704,141 +1570,14 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val leftDp_Pedro = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp)
+
     layoutParams_Pedro.gravity = Gravity.CENTER
+    layoutParams_Pedro.setMargins(leftDp_Pedro, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
     frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
 
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
@@ -1859,14 +1598,6 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -1906,1827 +1637,9 @@ class MainActivity : Activity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene1(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene3(true)
-    }
-  }
-
-  private fun scene3(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       scene2(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene4(true)
-    }
-  }
-
-  private fun scene4(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene3(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene5(true)
-    }
-  }
-
-  private fun scene5(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene4(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene6(true)
-    }
-  }
-
-  private fun scene6(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene5(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene7(true)
-    }
-  }
-
-  private fun scene7(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene6(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene8(true)
-    }
-  }
-
-  private fun scene8(animate: Boolean) {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
-
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
-        }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene7(false)
-    }
-
-    frameLayout.addView(buttonBack)
-
-    setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-      it.setOnClickListener(null)
-
-      scene9()
-    }
-  }
-
-  private fun scene9() {
-    val frameLayout = FrameLayout(this)
-    frameLayout.setBackgroundColor(0xFF000000.toInt())
-
-    val animationFadeIn = AlphaAnimation(0f, 1f)
-    animationFadeIn.duration = 1000
-    animationFadeIn.interpolator = LinearInterpolator()
-    animationFadeIn.fillAfter = true
-
-    val imageView_scenario = ImageView(this)
-    imageView_scenario.setImageResource(R.raw.background_thanking)
-    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    frameLayout.addView(imageView_scenario)
-
-    imageView_scenario.startAnimation(animationFadeIn)
-
-    val imageView_Pedro = ImageView(this)
-    imageView_Pedro.setImageResource(R.raw.pedro_staring)
-    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
-
-    val layoutParams_Pedro = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParams_Pedro.gravity = Gravity.CENTER
-
-    imageView_Pedro.layoutParams = layoutParams_Pedro
-
-    frameLayout.addView(imageView_Pedro)
-    imageView_Pedro.animate()
-      .translationY(-10f)
-      .setDuration(500)
-      .setInterpolator(OvershootInterpolator())
-      .setListener(object : Animator.AnimatorListener {
-        override fun onAnimationStart(animation: Animator) {}
-
-        override fun onAnimationEnd(animation: Animator) {
-          imageView_Pedro.animate()
-            .translationY(0f)
-            .setDuration(500)
-            .setInterpolator(OvershootInterpolator())
-            .setListener(object : Animator.AnimatorListener {
-              override fun onAnimationStart(animation: Animator) {}
-
-              override fun onAnimationEnd(animation: Animator) {
-                handler.postDelayed(object : Runnable {
-                  override fun run() {
-                    imageView_Pedro.animate()
-                      .translationX(20f)
-                      .translationY(0f)
-                      .setDuration(1000)
-                      .setInterpolator(LinearInterpolator())
-                      .start()
-                  }
-                }, 1000)
-              }
-
-              override fun onAnimationCancel(animation: Animator) {}
-
-              override fun onAnimationRepeat(animation: Animator) {}
-            })
-            .start()
-        }
-
-        override fun onAnimationCancel(animation: Animator) {}
-
-        override fun onAnimationRepeat(animation: Animator) {}
-      })
-
-    val rectangleViewSpeech = RectangleView(this)
-
-    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
-    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-
-    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
-    rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewSpeech)
-
-    val textViewSpeech = TextView(this)
-    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
-    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsSpeech = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
-
-    textViewSpeech.layoutParams = layoutParamsSpeech
-
-    var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    var i = 0
-
-    handler.postDelayed(object : Runnable {
-      override fun run() {
-        if (i < speechText.length) {
-          textViewSpeech.text = speechText.substring(0, i + 1)
-          i++
-          handler.postDelayed(this, textSpeed)
-        }
-      }
-    }, textSpeed)
-
-    frameLayout.addView(textViewSpeech)
-
-    val rectangleViewAuthor = RectangleView(this)
-
-    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
-    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
-
-    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
-    rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    frameLayout.addView(rectangleViewAuthor)
-
-    val textViewAuthor = TextView(this)
-    textViewAuthor.text = "Pedro"
-    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
-    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
-
-    val layoutParamsAuthor = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
-
-    textViewAuthor.layoutParams = layoutParamsAuthor
-
-    frameLayout.addView(textViewAuthor)
-
-    mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      mediaPlayer!!.setVolume(sEffectVolume, sEffectVolume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }
-      }
-    }
-
-    val buttonMenu = Button(this)
-    buttonMenu.text = "Menu"
-    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
-    buttonMenu.background = null
-
-    val layoutParamsMenu = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, 0, 0, 0)
-
-    buttonMenu.layoutParams = layoutParamsMenu
-
-    buttonMenu.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
-
-      if (mediaPlayer != null) {
-        mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }
-
-      menu()
-    }
-
-    frameLayout.addView(buttonMenu)
-
-    val buttonBack = Button(this)
-    buttonBack.text = "Back"
-    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-    buttonBack.setTextColor(0xFFFFFFFF.toInt())
-    buttonBack.background = null
-
-    val layoutParamsBack = LayoutParams(
-      LayoutParams.WRAP_CONTENT,
-      LayoutParams.WRAP_CONTENT
-    )
-
-    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
-
-    buttonBack.layoutParams = layoutParamsBack
-
-    buttonBack.setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-
-      scene8(false)
     }
 
     frameLayout.addView(buttonBack)

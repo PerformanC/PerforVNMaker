@@ -335,19 +335,25 @@ function finalize(scene, options) {
         dpiFunctions += '\n'
 
         let layoutParams = `    layoutParams_${character.name}.setMargins(`
-        if (character.position.margins.side != 0) {
+        if (character.position.margins.side != 0 && character.position.side == 'left') {
           layoutParams += `${character.position.side}Dp_${character.name}, `
         } else {
           layoutParams += '0, '
         }
 
         if (character.position.margins.top != 0) {
-          layoutParams += `topDp_${character.name}`
+          layoutParams += `topDp_${character.name}, `
         } else {
-          layoutParams += '0'
+          layoutParams += '0, '
         }
 
-        layoutParams += ', 0, 0)'
+        if (character.position.margins.side != 0 && character.position.side == 'right') {
+          layoutParams += `${character.position.side}Dp_${character.name}, `
+        } else {
+          layoutParams += '0, '
+        }
+
+        layoutParams += '0)'
 
         sceneCode += `    val imageView_${character.name} = ImageView(this)` + '\n' +
                      `    imageView_${character.name}.setImageResource(R.raw.${character.image})` + '\n' +
