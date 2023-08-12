@@ -13,6 +13,7 @@ import android.media.MediaPlayer
 import android.widget.TextView
 import android.widget.ImageView
 import android.widget.ScrollView
+import android.widget.RelativeLayout
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.Button
@@ -1058,13 +1059,12 @@ class MainActivity : Activity() {
     for (i in 0 until saves.length()) {
       val buttonData = saves.getJSONObject(i)
 
-      val rectangleScene = RectangleView(this)
-      rectangleScene.setColor(0xFF230000.toInt())
+      val relativeLayout = RelativeLayout(this)
 
-      val layoutParamsRectangleScene = LayoutParams(
+      val layoutParamsRelativeLayout = LayoutParams(
         resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
         resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
-      )
+       )
 
       if (i != 0) {
         if (i % 4 == 0) {
@@ -1078,8 +1078,20 @@ class MainActivity : Activity() {
       val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))
       val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))
 
-      layoutParamsRectangleScene.gravity = Gravity.TOP or Gravity.START
-      layoutParamsRectangleScene.setMargins(leftDpLoad, topDpLoad, 0, 0)
+      layoutParamsRelativeLayout.gravity = Gravity.TOP or Gravity.START
+      layoutParamsRelativeLayout.setMargins(leftDpLoad, topDpLoad, 0, 0)
+
+      relativeLayout.layoutParams = layoutParamsRelativeLayout
+
+      val rectangleScene = RectangleView(this)
+      rectangleScene.setColor(0xFF000000.toInt())
+
+      val layoutParamsRectangleScene = RelativeLayout.LayoutParams(
+        RelativeLayout.LayoutParams.MATCH_PARENT,
+        RelativeLayout.LayoutParams.MATCH_PARENT
+      )
+
+      layoutParamsRectangleScene.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
 
       rectangleScene.layoutParams = layoutParamsRectangleScene
 
@@ -1097,7 +1109,23 @@ class MainActivity : Activity() {
         }
       }
 
-      frameLayoutScenes.addView(rectangleScene)
+      relativeLayout.addView(rectangleScene)
+
+      val imageViewScenario = ImageView(this)
+      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))
+
+      val layoutParamsImageViewScenario = RelativeLayout.LayoutParams(
+        RelativeLayout.LayoutParams.MATCH_PARENT,
+        RelativeLayout.LayoutParams.MATCH_PARENT
+      )
+
+      layoutParamsImageViewScenario.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+
+      imageViewScenario.layoutParams = layoutParamsImageViewScenario
+
+      relativeLayout.addView(imageViewScenario)
+
+      frameLayoutScenes.addView(relativeLayout)
     }
 
     scrollView.addView(frameLayoutScenes)

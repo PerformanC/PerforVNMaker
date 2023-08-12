@@ -1047,13 +1047,11 @@ function make(options) {
                     '    for (i in 0 until saves.length()) {' + '\n' +
                     '      val buttonData = saves.getJSONObject(i)' + '\n\n' +
 
-                    '      val rectangleScene = RectangleView(this)' + '\n' +
-                    '      rectangleScene.setColor(0xFF230000.toInt())' + '\n\n' +
-
-                    '      val layoutParamsRectangleScene = LayoutParams(' + '\n' +
+                    '      val relativeLayout = RelativeLayout(this)' + '\n\n' +
+                    '      val layoutParamsRelativeLayout = LayoutParams(' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)' + '\n' +
-                    '      )' + '\n\n' +
+                    '       )' + '\n\n' +
 
                     '      if (i != 0) {' + '\n' +
                     '        if (i % 4 == 0) {' + '\n' +
@@ -1067,8 +1065,20 @@ function make(options) {
                     '      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))' + '\n' +
                     '      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))' + '\n\n' +
 
-                    '      layoutParamsRectangleScene.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '      layoutParamsRectangleScene.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
+                    '      layoutParamsRelativeLayout.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '      layoutParamsRelativeLayout.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
+
+                    '      relativeLayout.layoutParams = layoutParamsRelativeLayout' + '\n\n' +
+
+                    '      val rectangleScene = RectangleView(this)' + '\n' +
+                    '      rectangleScene.setColor(0xFF000000.toInt())' + '\n\n' +
+
+                    '      val layoutParamsRectangleScene = RelativeLayout.LayoutParams(' + '\n' +
+                    '        RelativeLayout.LayoutParams.MATCH_PARENT,' + '\n' +
+                    '        RelativeLayout.LayoutParams.MATCH_PARENT' + '\n' +
+                    '      )' + '\n\n' +
+
+                    '      layoutParamsRectangleScene.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)' + '\n\n' +
 
                     '      rectangleScene.layoutParams = layoutParamsRectangleScene' + '\n\n' +
 
@@ -1078,7 +1088,25 @@ function make(options) {
                     '        __PERFORVNM_SWITCHES__' + '\n' +
                     '      }' + '\n\n' +
 
-                    '      frameLayoutScenes.addView(rectangleScene)' + '\n' +
+                    '      relativeLayout.addView(rectangleScene)' + '\n\n' +
+
+                    // TODO: Only apply scenario if it exists, add characters and remove rectangleScene if scenario is available
+
+                    '      val imageViewScenario = ImageView(this)' + '\n' +
+                    '      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))' + '\n\n' +
+
+                    '      val layoutParamsImageViewScenario = RelativeLayout.LayoutParams(' + '\n' +
+                    '        RelativeLayout.LayoutParams.MATCH_PARENT,' + '\n' +
+                    '        RelativeLayout.LayoutParams.MATCH_PARENT' + '\n' +
+                    '      )' + '\n\n' +
+
+                    '      layoutParamsImageViewScenario.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)' + '\n\n' +
+
+                    '      imageViewScenario.layoutParams = layoutParamsImageViewScenario' + '\n\n' +
+
+                    '      relativeLayout.addView(imageViewScenario)' + '\n\n' +
+
+                    '      frameLayoutScenes.addView(relativeLayout)' + '\n' +
                     '    }' + '\n\n' +
 
                     '    scrollView.addView(frameLayoutScenes)' + '\n\n' +

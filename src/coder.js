@@ -41,6 +41,7 @@ function init(options) {
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
   'import android.widget.ScrollView' + '\n' +
+  'import android.widget.RelativeLayout' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
   'import android.widget.FrameLayout.LayoutParams' + '\n' +
   'import android.widget.Button' + '\n' +
@@ -291,11 +292,11 @@ function finalize() {
                     '        }'
     } else releaseCode = '// No music to release.'
 
-    helper.replace('__PERFORVNM_RELEASE_MEDIA_PLAYER__', releaseCode)
+    helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
 
     switchesCode += '\n' + '        }'
 
-    helper.replace('__PERFORVNM_SWITCHES__', switchesCode)
+    helper.replace(/__PERFORVNM_SWITCHES__/g, switchesCode)
   }
 
   let addHeaders = ''
