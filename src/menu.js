@@ -1047,10 +1047,18 @@ function make(options) {
                     '    for (i in 0 until saves.length()) {' + '\n' +
                     '      val buttonData = saves.getJSONObject(i)' + '\n\n' +
 
-                    '      val imageViewScenario = ImageView(this)' + '\n' +
-                    '      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))' + '\n\n' +
+                    '      var savesBackground: View' + '\n\n' +
 
-                    '      val layoutParamsImageViewScenario = LayoutParams(' + '\n' +
+                    '      try {' + '\n' +
+                    '        savesBackground = ImageView(this)' + '\n' +
+                    '        savesBackground.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))' + '\n\n' +
+                    '      } catch (e: Exception) {' + '\n' +
+                    '        savesBackground = RectangleView(this)' + '\n\n' +
+
+                    '        savesBackground.setColor(0xFF000000.toInt())' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      val layoutParamsSavesBackground = LayoutParams(' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)' + '\n' +
                     '      )' + '\n\n' +
@@ -1058,21 +1066,18 @@ function make(options) {
                     '      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))' + '\n' +
                     '      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))' + '\n\n' +
 
-                    '      layoutParamsImageViewScenario.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '      layoutParamsImageViewScenario.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
+                    '      layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '      layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
 
-                    '      imageViewScenario.layoutParams = layoutParamsImageViewScenario' + '\n\n' +
+                    '      savesBackground.layoutParams = layoutParamsSavesBackground' + '\n\n' +
 
-                    // TODO: __PERFORVNM_RELEASE_MEDIA_PLAYER__ will cause additional space when there are no mediaPlayers to release (and potential crash if there are no mediaPlayers at all).
-                    // TODO: Not use imageViewScenario if there are not one, and use a rectangleView instead.
-
-                    '      imageViewScenario.setOnClickListener {' + '\n' +
+                    '      savesBackground.setOnClickListener {' + '\n' +
                     '        __PERFORVNM_RELEASE_MEDIA_PLAYER__' + '\n\n' +
 
                     '        __PERFORVNM_SWITCHES__' + '\n' +
                     '      }' + '\n\n' +
 
-                    '      frameLayoutScenes.addView(imageViewScenario)' + '\n\n' +
+                    '      frameLayoutScenes.addView(savesBackground)' + '\n\n' +
 
                     '      val characters = buttonData.getJSONArray("characters")' + '\n\n' +
 

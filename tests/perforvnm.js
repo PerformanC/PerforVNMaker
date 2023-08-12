@@ -108,25 +108,25 @@ thirdScene = perfor.scene.addCharacter(thirdScene, {
   }
 })
 thirdScene = perfor.scene.addScenario(thirdScene, { image: 'background_thanking' })
-// thirdScene = perfor.scene.addSpeech(thirdScene, {
-//   author: {
-//     name: 'Pedro',
-//     textColor: 'FFFFFF',
-//     rectangle: {
-//       color: '000000',
-//       opacity: 0.6
-//     }
-//   },
-//   text: {
-//     content: '"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way."',
-//     color: 'FFFFFF',
-//     fontSize: 12,
-//     rectangle: {
-//       color: '000000',
-//       opacity: 0.8
-//     }
-//   }
-// })
+thirdScene = perfor.scene.addSpeech(thirdScene, {
+  author: {
+    name: 'Pedro',
+    textColor: 'FFFFFF',
+    rectangle: {
+      color: '000000',
+      opacity: 0.6
+    }
+  },
+  text: {
+    content: '"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way."',
+    color: 'FFFFFF',
+    fontSize: 9,
+    rectangle: {
+      color: '000000',
+      opacity: 0.8
+    }
+  }
+})
 perfor.scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 perfor.coder.finalize() /* Finishes up the code */

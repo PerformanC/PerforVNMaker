@@ -1059,10 +1059,19 @@ class MainActivity : Activity() {
     for (i in 0 until saves.length()) {
       val buttonData = saves.getJSONObject(i)
 
-      val imageViewScenario = ImageView(this)
-      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))
+      var savesBackground: View
 
-      val layoutParamsImageViewScenario = LayoutParams(
+      try {
+        savesBackground = ImageView(this)
+        savesBackground.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))
+
+      } catch (e: Exception) {
+        savesBackground = RectangleView(this)
+
+        savesBackground.setColor(0xFF000000.toInt())
+      }
+
+      val layoutParamsSavesBackground = LayoutParams(
         resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
         resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
       )
@@ -1070,12 +1079,12 @@ class MainActivity : Activity() {
       val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))
       val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))
 
-      layoutParamsImageViewScenario.gravity = Gravity.TOP or Gravity.START
-      layoutParamsImageViewScenario.setMargins(leftDpLoad, topDpLoad, 0, 0)
+      layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START
+      layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)
 
-      imageViewScenario.layoutParams = layoutParamsImageViewScenario
+      savesBackground.layoutParams = layoutParamsSavesBackground
 
-      imageViewScenario.setOnClickListener {
+      savesBackground.setOnClickListener {
         if (mediaPlayer != null) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
@@ -1089,7 +1098,7 @@ class MainActivity : Activity() {
         }
       }
 
-      frameLayoutScenes.addView(imageViewScenario)
+      frameLayoutScenes.addView(savesBackground)
 
       val characters = buttonData.getJSONArray("characters")
 
@@ -1516,38 +1525,7 @@ class MainActivity : Activity() {
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
       it.setOnClickListener(null)
 
-      val animationRectangleSpeech = AlphaAnimation(0.8f, 0f)
-      animationRectangleSpeech.duration = 500
-      animationRectangleSpeech.interpolator = LinearInterpolator()
-      animationRectangleSpeech.fillAfter = true
-
-      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
-
-      val animationTextSpeech = AlphaAnimation(1f, 0f)
-      animationTextSpeech.duration = 500
-      animationTextSpeech.interpolator = LinearInterpolator()
-      animationTextSpeech.fillAfter = true
-
-      textViewSpeech.startAnimation(animationTextSpeech)
-
-      val animationAuthorSpeech = AlphaAnimation(0.6f, 0f)
-      animationAuthorSpeech.duration = 500
-      animationAuthorSpeech.interpolator = LinearInterpolator()
-      animationAuthorSpeech.fillAfter = true
-
-      rectangleViewAuthor.startAnimation(animationAuthorSpeech)
-
-      textViewAuthor.startAnimation(animationTextSpeech)
-
-      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {
-        override fun onAnimationStart(animation: Animation?) {}
-
-        override fun onAnimationEnd(animation: Animation?) {
-          scene3()
-        }
-
-        override fun onAnimationRepeat(animation: Animation?) {}
-      })
+      scene3()
     }
   }
 
@@ -1579,6 +1557,77 @@ class MainActivity : Activity() {
 
     frameLayout.addView(imageView_Pedro)
 
+    val rectangleViewSpeech = RectangleView(this)
+
+    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
+
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
+    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
+    rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewSpeech)
+
+    val textViewSpeech = TextView(this)
+    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
+    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsSpeech = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
+
+    textViewSpeech.layoutParams = layoutParamsSpeech
+
+    var speechText = "\"And this is the third scene, incredible right? With this code generator\n you can make your own visual novels in a simple way.\""
+    var i = 0
+
+    handler.postDelayed(object : Runnable {
+      override fun run() {
+        if (i < speechText.length) {
+          textViewSpeech.text = speechText.substring(0, i + 1)
+          i++
+          handler.postDelayed(this, textSpeed)
+        }
+      }
+    }, textSpeed)
+
+    frameLayout.addView(textViewSpeech)
+
+    val rectangleViewAuthor = RectangleView(this)
+
+    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
+    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
+
+    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.6f)
+    rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewAuthor)
+
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+    frameLayout.addView(textViewAuthor)
+
     val buttonMenu = Button(this)
     buttonMenu.text = "Menu"
     buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
@@ -1598,6 +1647,8 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -1637,6 +1688,8 @@ class MainActivity : Activity() {
     buttonBack.layoutParams = layoutParamsBack
 
     buttonBack.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       scene2(false)
