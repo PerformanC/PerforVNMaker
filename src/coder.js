@@ -24,6 +24,9 @@ function init(options) {
   if (!options.applicationId)
     throw new Error('No applicationId provided.')
 
+  if (!options.paths?.android)
+    throw new Error('No path provided.')
+
   visualNovel.info = options
 
   visualNovel.code = 'package ' + options.applicationId + '\n\n' +
@@ -395,7 +398,7 @@ function finalize() {
 
   console.log('Code finished up, writing to file.. (Android)')
 
-  fs.writeFile(`../android/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
+  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
     if (err) return console.error(`ERROR: ${err} (Android)`)
 
     console.log('VN in Kotlin written. (Android)')
@@ -404,20 +407,12 @@ function finalize() {
   while (visualNovel.customXML.length > 0) {
     const customXML = visualNovel.customXML.shift()
 
-    fs.writeFile(`../android/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
+    fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
       if (err) return console.error(`ERROR: ${err} (Android)`)
 
       console.log(`Android custom XML (${customXML.path}) written. (Android)`)
     })
   }
-
-  fs.readFile('package.json', 'utf8', (err, data) => {
-    if (err) return console.error(`ERROR: ${err} (Android)`)
-
-    fs.writeFile('package.json', data.replace(/"version": ".*"/g, `"version": "${PerforVNM.codeGeneratorVersion}"`), (err) => {
-      if (err) return console.error(`ERROR: ${err} (Android)`)
-    })
-  })
 }
 
 export default {

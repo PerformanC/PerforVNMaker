@@ -25,13 +25,13 @@ function make(options) {
     throw new Error('Menu background image not provided.')
 
   if (options.background.music) {
-    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
+    if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
       throw new Error(`Menu background music not found.`)
 
     visualNovel.internalInfo.menuMusic = true
   }
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
     throw new Error('Menu background image not found.')
 
   if (!options.footer?.color)

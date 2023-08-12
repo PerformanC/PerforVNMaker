@@ -1,15 +1,16 @@
-import coder from './coder.js'
-import scene from './scene.js'
-import menu from './menu.js'
+import perfor from '../index.js'
 
-coder.init({
+perfor.coder.init({
   name: 'PerforVNM',
   fullName: 'The PerforVNM',
   applicationId: 'com.perforvnm',
-  version: '1.0.0'
+  version: '1.0.0',
+  paths: {
+    android: './android'
+  }
 })
 
-menu.make({
+perfor.menu.make({
   textSpeed: 50,
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
@@ -30,8 +31,8 @@ menu.make({
   }
 }) /* Generates the menu */
 
-let firstScene = scene.init({ name: 'scene1' }) /* Initializes a scene */
-firstScene = scene.addCharacter(firstScene, {
+let firstScene = perfor.scene.init({ name: 'scene1' }) /* Initializes a scene */
+firstScene = perfor.scene.addCharacter(firstScene, {
   name: 'Pedro',
   image: 'pedro_staring',
   position: {
@@ -55,13 +56,13 @@ firstScene = scene.addCharacter(firstScene, {
     delay: 1000,
   }]
 }) /* Adds a character to the scene */
-firstScene = scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
-firstScene = scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
-firstScene = scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
-scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
+firstScene = perfor.scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
+firstScene = perfor.scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
+firstScene = perfor.scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
+perfor.scene.finalize(firstScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' }) /* Writes the scene */
 
-let secondScene = scene.init({ name: 'scene2' })
-secondScene = scene.addCharacter(secondScene, {
+let secondScene = perfor.scene.init({ name: 'scene2' })
+secondScene = perfor.scene.addCharacter(secondScene, {
   name: 'Pedro',
   image: 'pedro_staring',
   position: {
@@ -72,8 +73,8 @@ secondScene = scene.addCharacter(secondScene, {
     }
   }
 })
-secondScene = scene.addScenario(secondScene, { image: 'background_thanking' })
-secondScene = scene.addSpeech(secondScene, {
+secondScene = perfor.scene.addScenario(secondScene, { image: 'background_thanking' })
+secondScene = perfor.scene.addSpeech(secondScene, {
   author: {
     name: 'Pedro',
     textColor: 'FFFFFF',
@@ -92,10 +93,10 @@ secondScene = scene.addSpeech(secondScene, {
     }
   }
 }) /* Adds a speech to the scene */
-scene.finalize(secondScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+perfor.scene.finalize(secondScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
-let thirdScene = scene.init({ name: 'scene3' })
-thirdScene = scene.addCharacter(thirdScene, {
+let thirdScene = perfor.scene.init({ name: 'scene3' })
+thirdScene = perfor.scene.addCharacter(thirdScene, {
   name: 'Pedro',
   image: 'pedro_staring',
   position: {
@@ -106,8 +107,8 @@ thirdScene = scene.addCharacter(thirdScene, {
     }
   }
 })
-thirdScene = scene.addScenario(thirdScene, { image: 'background_thanking' })
-// thirdScene = scene.addSpeech(thirdScene, {
+thirdScene = perfor.scene.addScenario(thirdScene, { image: 'background_thanking' })
+// thirdScene = perfor.scene.addSpeech(thirdScene, {
 //   author: {
 //     name: 'Pedro',
 //     textColor: 'FFFFFF',
@@ -126,6 +127,6 @@ thirdScene = scene.addScenario(thirdScene, { image: 'background_thanking' })
 //     }
 //   }
 // })
-scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+perfor.scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
-coder.finalize() /* Finishes up the code */
+perfor.coder.finalize() /* Finishes up the code */

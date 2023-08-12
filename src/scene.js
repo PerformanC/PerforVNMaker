@@ -22,7 +22,7 @@ function addCharacter(scene, options) {
   if (!options.image)
     throw new Error(`Character image not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
     throw new Error(`Character image not found.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
   if (!options.position?.side)
@@ -141,7 +141,7 @@ function addScenario(scene, options) {
   if (!options?.image)
     throw new Error(`Scenario image not provided.\n- Scene name: ${scene.name}`)
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
     throw new Error(`Scenario image not found.\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
 
   console.log(`Adding scenario for scene "${scene.name}".. (Android)`)
@@ -204,7 +204,7 @@ function addSoundEffects(scene, options) {
     if (!sound?.sound)
       throw new Error(`Sound effects sound not provided.\n- Scene name: ${scene.name}`)
 
-    if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound)))
+    if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound)))
       throw new Error(`Sound effects sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
 
     if (sound?.delay == null)
@@ -232,7 +232,7 @@ function addMusic(scene, options) {
   if (!options?.music)
     throw new Error(`Scene music not provided.\n- Scene name: ${scene.name}`)
 
-  if (!fs.readdirSync(`../android/app/src/main/res/raw`).find((file) => file.startsWith(options.music)))
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.music)))
     throw new Error(`Scene music not found.\n- Scene name: ${scene.name}\n- Music: ${options.music}`)
 
   if (options?.delay == null)

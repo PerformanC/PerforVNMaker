@@ -1,5 +1,7 @@
 # PerforVNMaker
 
+[![Discord Server](https://img.shields.io/discord/1036045973039890522?color=5865F2&logo=discord&logoColor=white)](https://discord.gg/uPveNfTuCJ) [![Package size](https://packagephobia.now.sh/badge?p=@performanc/perforvnmaker)](https://packagephobia.now.sh/result?p=@performanc/perforvnmaker)
+
 High-performance Visual Novel Maker with code generation technology.
 
 ## Project status
@@ -25,6 +27,18 @@ Please refer to the [Discord Server & Feedback](#discord-server--feedback) secti
 Since `ES6` is used, the minimum requirement for NodeJS is `v13` and above, and the minimum requirement for Android is `Android 4.0` and above.
 
 We're working on making this requirement even lower.
+
+### Installation
+
+To install PerforVNM, you can use `npm`:
+
+```bash
+npm install @performanc/perforvnmaker
+```
+
+```bash
+yarn add @performanc/perforvnmaker
+```
 
 ### API usage
 
