@@ -1047,66 +1047,92 @@ function make(options) {
                     '    for (i in 0 until saves.length()) {' + '\n' +
                     '      val buttonData = saves.getJSONObject(i)' + '\n\n' +
 
-                    '      val relativeLayout = RelativeLayout(this)' + '\n\n' +
-                    '      val layoutParamsRelativeLayout = LayoutParams(' + '\n' +
+                    '      val imageViewScenario = ImageView(this)' + '\n' +
+                    '      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))' + '\n\n' +
+
+                    '      val layoutParamsImageViewScenario = LayoutParams(' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),' + '\n' +
                     '        resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)' + '\n' +
-                    '       )' + '\n\n' +
-
-                    '      if (i != 0) {' + '\n' +
-                    '        if (i % 4 == 0) {' + '\n' +
-                    '          leftDp = 100' + '\n' +
-                    '          topDp += 100' + '\n' +
-                    '        } else {' + '\n' +
-                    '          leftDp += 133' + '\n' +
-                    '        }' + '\n' +
-                    '      }' + '\n\n' +
+                    '      )' + '\n\n' +
 
                     '      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))' + '\n' +
                     '      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))' + '\n\n' +
 
-                    '      layoutParamsRelativeLayout.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                    '      layoutParamsRelativeLayout.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
+                    '      layoutParamsImageViewScenario.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                    '      layoutParamsImageViewScenario.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n\n' +
 
-                    '      relativeLayout.layoutParams = layoutParamsRelativeLayout' + '\n\n' +
+                    '      imageViewScenario.layoutParams = layoutParamsImageViewScenario' + '\n\n' +
 
-                    '      val rectangleScene = RectangleView(this)' + '\n' +
-                    '      rectangleScene.setColor(0xFF000000.toInt())' + '\n\n' +
+                    // TODO: __PERFORVNM_RELEASE_MEDIA_PLAYER__ will cause additional space when there are no mediaPlayers to release (and potential crash if there are no mediaPlayers at all).
+                    // TODO: Not use imageViewScenario if there are not one, and use a rectangleView instead.
 
-                    '      val layoutParamsRectangleScene = RelativeLayout.LayoutParams(' + '\n' +
-                    '        RelativeLayout.LayoutParams.MATCH_PARENT,' + '\n' +
-                    '        RelativeLayout.LayoutParams.MATCH_PARENT' + '\n' +
-                    '      )' + '\n\n' +
-
-                    '      layoutParamsRectangleScene.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)' + '\n\n' +
-
-                    '      rectangleScene.layoutParams = layoutParamsRectangleScene' + '\n\n' +
-
-                    '      rectangleScene.setOnClickListener {' + '\n' +
+                    '      imageViewScenario.setOnClickListener {' + '\n' +
                     '        __PERFORVNM_RELEASE_MEDIA_PLAYER__' + '\n\n' +
 
                     '        __PERFORVNM_SWITCHES__' + '\n' +
                     '      }' + '\n\n' +
 
-                    '      relativeLayout.addView(rectangleScene)' + '\n\n' +
+                    '      frameLayoutScenes.addView(imageViewScenario)' + '\n\n' +
 
-                    // TODO: Only apply scenario if it exists, add characters and remove rectangleScene if scenario is available
+                    '      val characters = buttonData.getJSONArray("characters")' + '\n\n' +
 
-                    '      val imageViewScenario = ImageView(this)' + '\n' +
-                    '      imageViewScenario.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))' + '\n\n' +
+                    '      for (j in 0 until characters.length()) {' + '\n' +
+                    '        val characterData = characters.getJSONObject(j)' + '\n\n' +
 
-                    '      val layoutParamsImageViewScenario = RelativeLayout.LayoutParams(' + '\n' +
-                    '        RelativeLayout.LayoutParams.MATCH_PARENT,' + '\n' +
-                    '        RelativeLayout.LayoutParams.MATCH_PARENT' + '\n' +
-                    '      )' + '\n\n' +
+                    '        val imageViewCharacter = ImageView(this)' + '\n' +
+                    '        imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))' + '\n\n' +
 
-                    '      layoutParamsImageViewScenario.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)' + '\n\n' +
+                    '        val layoutParamsImageViewCharacter = LayoutParams(' + '\n' +
+                    '          resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),' + '\n' +
+                    '          resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)' + '\n' +
+                    '        )' + '\n\n' +
 
-                    '      imageViewScenario.layoutParams = layoutParamsImageViewScenario' + '\n\n' +
+                    '        layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START' + '\n\n' +
 
-                    '      relativeLayout.addView(imageViewScenario)' + '\n\n' +
+                    '        when (characterData.getJSONObject("position").getString("sideType")) {' + '\n' +
+                    '          "left" -> {' + '\n' +
+                    '            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n\n' +
 
-                    '      frameLayoutScenes.addView(relativeLayout)' + '\n' +
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '          "leftTop" -> {' + '\n' +
+                    '            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n' +
+                    '            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n\n' +
+
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '          "right" -> {' + '\n' +
+                    '            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n' +
+
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '          "rightTop" -> {' + '\n' +
+                    '            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n' +
+                    '            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n\n' +
+
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '          "top" -> {' + '\n' +
+                    '            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))' + '\n\n' +
+
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '          "center" -> {' + '\n' +
+                    '            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)' + '\n' +
+                    '          }' + '\n' +
+                    '        }' + '\n\n' +
+
+                    '        imageViewCharacter.layoutParams = layoutParamsImageViewCharacter' + '\n\n' +
+
+                    '        frameLayoutScenes.addView(imageViewCharacter)' + '\n' +
+                    '      }' + '\n\n' +
+
+                    '      if (i % 4 == 0) {' + '\n' +
+                    '        leftDp = 100' + '\n' +
+                    '        topDp += 100' + '\n' +
+                    '      } else {' + '\n' +
+                    '        leftDp += 133' + '\n' +
+                    '      }' + '\n' +
                     '    }' + '\n\n' +
 
                     '    scrollView.addView(frameLayoutScenes)' + '\n\n' +

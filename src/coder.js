@@ -32,7 +32,8 @@ function init(options) {
   visualNovel.code = 'package ' + options.applicationId + '\n\n' +
 
   'import java.io.InputStreamReader' + '\n' +
-  'import org.json.JSONArray' + '\n\n' +
+  'import org.json.JSONArray' + '\n' +
+  'import kotlin.math.roundToInt' + '\n\n' +
 
   'import android.os.Build' + '\n' +
   'import android.os.Bundle' + '\n' +
@@ -44,7 +45,6 @@ function init(options) {
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
   'import android.widget.ScrollView' + '\n' +
-  'import android.widget.RelativeLayout' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
   'import android.widget.FrameLayout.LayoutParams' + '\n' +
   'import android.widget.Button' + '\n' +
