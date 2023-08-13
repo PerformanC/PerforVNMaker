@@ -12,33 +12,29 @@ global.PerforVNM = {
 function init(options) {
   console.log('Starting VN, coding main code.. (Android)')
 
-  if (!options?.name) {
-    console.log('ERROR: No name provided.')
+  if (!options?.name)
+    throw new Error('No name provided.')
 
-    process.exit(1)
-  }
+  if (!options.fullName)
+    throw new Error('No fullName provided.')
 
-  if (!options.fullName) {
-    console.log('ERROR: No fullName provided.')
+  if (!options.version)
+    throw new Error('No version provided.')
 
-    process.exit(1)
-  }
+  if (!options.applicationId)
+    throw new Error('No applicationId provided.')
 
-  if (!options.version) {
-    console.log('ERROR: No version provided.')
-
-    process.exit(1)
-  }
-
-  if (!options.applicationId) {
-    console.log('ERROR: No applicationId provided.')
-
-    process.exit(1)
-  }
+  if (!options.paths?.android)
+    throw new Error('No path provided.')
 
   visualNovel.info = options
 
   visualNovel.code = 'package ' + options.applicationId + '\n\n' +
+
+  'import java.io.File' + '\n' +
+  'import java.io.InputStreamReader' + '\n' +
+  'import org.json.JSONArray' + '\n' +
+  'import kotlin.math.roundToInt' + '\n\n' +
 
   'import android.os.Build' + '\n' +
   'import android.os.Bundle' + '\n' +
@@ -49,6 +45,7 @@ function init(options) {
   'import android.media.MediaPlayer' + '\n' +
   'import android.widget.TextView' + '\n' +
   'import android.widget.ImageView' + '\n' +
+  'import android.widget.ScrollView' + '\n' +
   'import android.widget.FrameLayout' + '\n' +
   'import android.widget.FrameLayout.LayoutParams' + '\n' +
   'import android.widget.Button' + '\n' +
@@ -93,7 +90,15 @@ function init(options) {
   '}' + '\n' +
   '__PERFORVNM_CLASSES__'
 
-  console.log('Main coded. (Android)')
+  console.log('Main coded. Adding configuration files (Android)')
+
+  visualNovel.customXML.push({
+    path: 'values/strings.xml',
+    content: '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
+             '<resources>' + '\n' +
+             `    <string name="app_name">${visualNovel.info.name}</string>` + '\n' +
+             '</resources>'
+  })
 }
 
 function finalize() {
@@ -101,16 +106,20 @@ function finalize() {
 
   helper.replace('__PERFORVNM_CODE__', '')
 
+  let switchesCode = 'when (buttonData.getString("scene")) {'
+
   if (visualNovel.scenes.length) {
     let scenesCode = []
-    let i = 0
+    let i = -1
 
-    for (const scene of visualNovel.scenes) {
+    while (i++ < visualNovel.scenes.length - 1) {
+      const scene = visualNovel.scenes[i]
+
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
         const finishScene = []
 
-        if ((scene.effect && !scene.music) || (scene.effect && scene.music)) {
+        if (scene.effect || scene.music) {
           finishScene.push('      if (mediaPlayer != null) {' + '\n' +
                            '        mediaPlayer!!.stop()' + '\n' +
                            '        mediaPlayer!!.release()' + '\n' +
@@ -119,12 +128,6 @@ function finalize() {
         }
       
         if (scene.effect && scene.music) {
-          finishScene.push('      if (mediaPlayer != null) {' + '\n' +
-                           '        mediaPlayer!!.stop()' + '\n' +
-                           '        mediaPlayer!!.release()' + '\n' +
-                           '        mediaPlayer = null' + '\n' +
-                           '      }' + '\n')
-      
           finishScene.push('      if (mediaPlayer2 != null) {' + '\n' +
                            '        mediaPlayer2!!.stop()' + '\n' +
                            '        mediaPlayer2!!.release()' + '\n' +
@@ -137,56 +140,128 @@ function finalize() {
 
         if (i == visualNovel.scenes.length - 2)
           finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
-    
+
         finishScene.push('      it.setOnClickListener(null)')
 
+        let code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
+                   finishScene.join('\n') + '\n\n'
+
         const functionParams = []
-        if (nextScene.speech && !scene.speech) functionParams.push('true')
-        if (visualNovel.scenes.length != 0 && nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) functionParams.push('true')
+        if (nextScene.speech && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
 
-        const code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                     finishScene.join('\n') + '\n\n' +
+        if (scene.speech && !nextScene.speech) {
+          code += `      val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)` + '\n' +
+                  '      animationRectangleSpeech.duration = 500' + '\n' +
+                  '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
+                  '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
 
-                     (scene.speech && !nextScene.speech ? '      val animationRectangleSpeech = AlphaAnimation(' + scene.speech.text.rectangle.opacity + 'f, 0f)' + '\n' +
-                                                          '      animationRectangleSpeech.duration = 500' + '\n' +
-                                                          '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
-                                                          '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
+                  '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n\n' +
 
-                                                          '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n\n' +
+                  '      val animationTextSpeech = AlphaAnimation(1f, 0f)' + '\n' +
+                  '      animationTextSpeech.duration = 500' + '\n' +
+                  '      animationTextSpeech.interpolator = LinearInterpolator()' + '\n' +
+                  '      animationTextSpeech.fillAfter = true' + '\n\n' +
 
-                                                          '      val animationTextSpeech = AlphaAnimation(1f, 0f)' + '\n' +
-                                                          '      animationTextSpeech.duration = 500' + '\n' +
-                                                          '      animationTextSpeech.interpolator = LinearInterpolator()' + '\n' +
-                                                          '      animationTextSpeech.fillAfter = true' + '\n\n' +
+                  '      textViewSpeech.startAnimation(animationTextSpeech)' + '\n\n' +
 
-                                                          '      textViewSpeech.startAnimation(animationTextSpeech)' + '\n\n' +
+                  `      val animationAuthorSpeech = AlphaAnimation(${scene.speech.author.rectangle.opacity}f, 0f)` + '\n' +
+                  '      animationAuthorSpeech.duration = 500' + '\n' +
+                  '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
+                  '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
 
-                                                          '      val animationAuthorSpeech = AlphaAnimation(' + scene.speech.author.rectangle.opacity + 'f, 0f)' + '\n' +
-                                                          '      animationAuthorSpeech.duration = 500' + '\n' +
-                                                          '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
-                                                          '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
-                                                          
-                                                          '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n' +
+                  '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n'
 
-                                                          (scene.speech.author?.name ? '      textViewAuthor.startAnimation(animationTextSpeech)' + '\n\n' : '') +
+          if (scene.speech.author?.name) {
+            code += '      textViewAuthor.startAnimation(animationTextSpeech)' + '\n\n'
+          }
 
-                                                          '      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
-                                                          '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
+          code += '      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
+                  '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
 
-                                                          '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
-                                                          '          ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n' +
-                                                          '        }' + '\n\n' +
+                  '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
+                  `          ${nextScene.name}(${functionParams.join(', ')})` + '\n' +
+                  '        }' + '\n\n' +
 
-                                                          '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
-                                                          '      })' + '\n' : '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n') +
-                     '    }'
+                  '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
+                  '      })' + '\n'
+        } else {
+          code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
+        }
 
-       scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
-      } else scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
+        code += '    }'
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
+
+        const functionParams2 = { function: [], switch: [] }
+        if (scene.speech) {
+          functionParams2.function.push('animate: Boolean')
+          functionParams2.switch.push('true')
+        }
+        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
+          functionParams2.function.push('animateAuthor: Boolean')
+          functionParams2.switch.push('true')
+        }
+
+        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
+
+        if (scene.speech) {
+          const speechHandler = '\n' + '    if (animate) {' + '\n' +
+                                '      var i = 0' + '\n\n' +
+
+                                '      handler.postDelayed(object : Runnable {' + '\n' +
+                                '        override fun run() {' + '\n' +
+                                '          if (i < speechText.length) {' + '\n' +
+                                '            textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                                '            i++' + '\n' +
+                                '            handler.postDelayed(this, textSpeed)' + '\n' +
+                                '          }' + '\n' +
+                                '        }' + '\n' +
+                                '      }, textSpeed)' + '\n' +
+                                '    } else {' + '\n' +
+                                '      textViewSpeech.text = speechText' + '\n' +
+                                '    }' + '\n'
+
+          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+        }
+      } else {
+        const oldScene = visualNovel.scenes[i - 1]
+
+        const functionParams = { function: [], switch: [] }
+        if (scene.speech && !oldScene.speech) {
+          functionParams.function.push('animate: Boolean')
+          functionParams.switch.push('true')
+        }
+        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
+          functionParams.function.push('animateAuthor: Boolean')
+          functionParams.switch.push('true')
+        }
+
+        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
+
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
+        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
+
+        if (scene.speech) {
+          const speechHandler = '\n' + '    var i = 0' + '\n\n' +
+
+                                '    handler.postDelayed(object : Runnable {' + '\n' +
+                                '      override fun run() {' + '\n' +
+                                '        if (i < speechText.length) {' + '\n' +
+                                '          textViewSpeech.text = speechText.substring(0, i + 1)' + '\n' +
+                                '          i++' + '\n' +
+                                '          handler.postDelayed(this, textSpeed)' + '\n' +
+                                '        }' + '\n' +
+                                '      }' + '\n' +
+                                '    }, textSpeed)' + '\n'
+
+          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+        }
+      }
 
       scenesCode.push('\n\n' + scene.code)
-
-      i++
     }
 
     helper.replace('__PERFORVNM_SCENES__', scenesCode.join(''))
@@ -196,25 +271,44 @@ function finalize() {
   helper.replace('__PERFORVNM_CLASSES__', '')
 
   if (visualNovel.menu) {
-    const menuCode = 'buttonStart.setOnClickListener {' + '\n' +
-                      (visualNovel.menu.options.background.music ? '      if (mediaPlayer != null) {' + '\n' +
-                      '        mediaPlayer!!.stop()' + '\n' +
-                      '        mediaPlayer!!.release()' + '\n' +
-                      '        mediaPlayer = null' + '\n' +
-                      '      }' + '\n\n' : '') +
+    let menuCode = 'buttonStart.setOnClickListener {' + '\n'
 
-                      '      ' + (visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' + '\n' : '      // No scenes created.' + '\n') +
-                      '    }'
+    if (visualNovel.menu.options.background.music) {
+      menuCode += '      if (mediaPlayer != null) {' + '\n' +
+                  '        mediaPlayer!!.stop()' + '\n' +
+                  '        mediaPlayer!!.release()' + '\n' +
+                  '        mediaPlayer = null' + '\n' +
+                  '      }' + '\n\n'
+    }
+
+    menuCode += `      ${visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' : '      // No scenes created.'}` + '\n' +
+                '    }'
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
+
+    let releaseCode;
+
+    if (visualNovel.menu.options.background.music) {
+      releaseCode = 'if (mediaPlayer != null) {' + '\n' +
+                    '          mediaPlayer!!.stop()' + '\n' +
+                    '          mediaPlayer!!.release()' + '\n' +
+                    '          mediaPlayer = null' + '\n' +
+                    '        }'
+    } else releaseCode = '// No music to release.'
+
+    helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
+
+    switchesCode += '\n' + '        }'
+
+    helper.replace(/__PERFORVNM_SWITCHES__/g, switchesCode)
   }
 
   let addHeaders = ''
-  if (visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
+  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)
-    addHeaders += '  private var textSpeed = ' + (visualNovel.menu?.textSpeed || 1000) + 'L' + '\n'
+    addHeaders += `  private var textSpeed = ${visualNovel.menu?.textSpeed || 1000}L` + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasEffect)
     addHeaders += '  private var sEffectVolume = 1f' + '\n'
@@ -226,55 +320,69 @@ function finalize() {
     addHeaders += '  private var mediaPlayer2: MediaPlayer? = null' + '\n'
 
   if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
-    addHeaders += (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
+    if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
+      addHeaders += '  private var mediaPlayer: MediaPlayer? = null' + '\n\n' +
 
-                  '  override fun onPause() {' + '\n' +
-                  '    super.onPause()' + '\n\n' +
+                    '  override fun onPause() {' + '\n' +
+                    '    super.onPause()' + '\n\n' +
 
-                  '    mediaPlayer?.pause()' + '\n' +
+                    '    mediaPlayer?.pause()' + '\n'
 
-                  (visualNovel.internalInfo.needs2Players ? '    mediaPlayer2?.pause()' + '\n' : '') +
+      if (visualNovel.internalInfo.needs2Players) {
+        addHeaders += '    mediaPlayer2?.pause()' + '\n'
+      }
 
-                  '  }' + '\n\n' +
+      addHeaders += '  }' + '\n\n' +
 
-                  '  override fun onResume() {' + '\n' +
-                  '    super.onResume()' + '\n\n' +
+                    '  override fun onResume() {' + '\n' +
+                    '    super.onResume()' + '\n\n' +
 
-                  '    if (mediaPlayer != null) {' + '\n' +
-                  '      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())' + '\n' +
-                  '      mediaPlayer!!.start()' + '\n' +
-                  '    }' + '\n' +
+                    '    if (mediaPlayer != null) {' + '\n' +
+                    '      mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())' + '\n' +
+                    '      mediaPlayer!!.start()' + '\n' +
+                    '    }' + '\n'
 
-                  (visualNovel.internalInfo.needs2Players ? '\n' +
-                  '    if (mediaPlayer2 != null) {' + '\n' +
-                  '      mediaPlayer2!!.seekTo(mediaPlayer2!!.getCurrentPosition())' + '\n' +
-                  '      mediaPlayer2!!.start()' + '\n' +
-                  '    }' : '') +
+      if (visualNovel.internalInfo.needs2Players) {
+        addHeaders += '\n' + '    if (mediaPlayer2 != null) {' + '\n' +
+                      '      mediaPlayer2!!.seekTo(mediaPlayer2!!.getCurrentPosition())' + '\n' +
+                      '      mediaPlayer2!!.start()' + '\n' +
+                      '    }'
+      }
 
-                  '  }' + '\n\n' : '\n') +
-                  '  override fun onDestroy() {' + '\n' +
-                  '    super.onDestroy()' + '\n\n' +
+      addHeaders += '  }' + '\n\n'
+    } else {
+      addHeaders += '\n'
+    }
 
-                  (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect  ? '    handler.removeCallbacksAndMessages(null)' + (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.needs2Players ? '\n\n' : '') : '') +
+    addHeaders += '  override fun onDestroy() {' + '\n' +
+                  '    super.onDestroy()'
 
-                  (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect ? '    if (mediaPlayer != null) {' + '\n' +
-                  '      mediaPlayer!!.stop()' + '\n' +
-                  '      mediaPlayer!!.release()' + '\n' +
-                  '      mediaPlayer = null' + '\n' +
-                  '    }' : '') + (visualNovel.internalInfo.needs2Players ? '\n\n' : '') +
+    if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
+      addHeaders += '\n\n' + '    handler.removeCallbacksAndMessages(null)'
+    }
 
-                  (visualNovel.internalInfo.needs2Players ? '\n' +
-                  '    if (mediaPlayer2 != null) {' + '\n' +
-                  '      mediaPlayer2!!.stop()' + '\n' +
-                  '      mediaPlayer2!!.release()' + '\n' +
-                  '      mediaPlayer2 = null' + '\n' +
-                  '    }' + '\n' : '\n') +
-                  '  }' + '\n'
+    if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
+      addHeaders += '\n\n' + '    if (mediaPlayer != null) {' + '\n' +
+                    '      mediaPlayer!!.stop()' + '\n' +
+                    '      mediaPlayer!!.release()' + '\n' +
+                    '      mediaPlayer = null' + '\n' +
+                    '    }'
+    }
+
+    if (visualNovel.internalInfo.needs2Players) {
+      addHeaders += '\n\n' + '    if (mediaPlayer2 != null) {' + '\n' +
+                    '      mediaPlayer2!!.stop()' + '\n' +
+                    '      mediaPlayer2!!.release()' + '\n' +
+                    '      mediaPlayer2 = null' + '\n' +
+                    '    }'
+    }
+
+    addHeaders += '\n' + '  }' + '\n'
   }
 
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
-  const startMusicCode = '\n' + '      mediaPlayer = MediaPlayer.create(this, R.raw.' + visualNovel.menu?.backgroundMusic + ')' + '\n\n' +
+  const startMusicCode = '\n' + `      mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.backgroundMusic})` + '\n\n' +
 
                          '      if (mediaPlayer != null) {' + '\n' +
                          '        mediaPlayer!!.start()' + '\n\n' +
@@ -291,33 +399,21 @@ function finalize() {
 
   console.log('Code finished up, writing to file.. (Android)')
 
-  fs.writeFile(`../android/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
+  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
     if (err) return console.error(`ERROR: ${err} (Android)`)
 
-    console.log('VN in Kotlin written, writing other configurations.. (Android)')
-
-    fs.writeFile(`../android/app/src/main/res/values/strings.xml`, `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n    <string name="app_name">${visualNovel.info.name}</string>\n</resources>`, (err) => {
-      if (err) return console.error(`ERROR: ${err} (Android)`)
-
-      console.log('Android app configuration files written, ready to build. (Android)')
-    })
+    console.log('VN in Kotlin written. (Android)')
   })
 
   while (visualNovel.customXML.length > 0) {
     const customXML = visualNovel.customXML.shift()
 
-    fs.writeFile(`../android/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
+    fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
       if (err) return console.error(`ERROR: ${err} (Android)`)
+
+      console.log(`Android custom XML (${customXML.path}) written. (Android)`)
     })
   }
-
-  fs.readFile('package.json', 'utf8', (err, data) => {
-    if (err) return console.error(`ERROR: ${err} (Android)`)
-
-    fs.writeFile('package.json', data.replace(/"version": ".*"/g, `"version": "${PerforVNM.codeGeneratorVersion}"`), (err) => {
-      if (err) return console.error(`ERROR: ${err} (Android)`)
-    })
-  })
 }
 
 export default {
