@@ -1,0 +1,32 @@
+{
+  "name": "@performanc/perforvnmaker",
+  "version": "1.18.2-b.1",
+  "description": "NodeJS Visual Novel Maker (code generator) ",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "node tests/perforvnm.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PerformanC/PerforVNMaker.git"
+  },
+  "keywords": [
+    "visualnovelmaker",
+    "vnmaker",
+    "app-maker",
+    "cross-platform",
+    "kotlin",
+    "code-generator",
+    "code-generation"
+  ],
+  "author": "The PerformanC Organization",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/PerformanC/PerforVNMaker/issues"
+  },
+  "homepage": "https://github.com/PerformanC/PerforVNMaker#readme",
+  "type": "module"
+}
