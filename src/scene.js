@@ -1,87 +1,90 @@
 import fs from 'fs'
 
+import helper from './helper.js'
+
 function init(options) {
+  if (!options?.name)
+    helper.logFatal('Scene name not provided.')
+
   if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options?.name))
-    throw new Error(`Scene name cannot be ${options.name}. (Android)`)
+    helper.logFatal('Scene name is already in usage by PerforVNM internals.')
 
   if (visualNovel.scenes.find(scene => scene.name == options.name))
-    throw new Error('Scene with duplicated name.\n- Scene name: ' + options.name)
-
-  console.log('Starting scene.. (Android)')
+    helper.logFatal('A scene already exists with this name.')
 
   return { name: options.name, characters: [], background: null, speech: null, effect: null, music: null, transition: null }
 }
 
 function addCharacter(scene, options) {
   if (!options?.name)
-    throw new Error(`Character name not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character name not provided.')
 
   if (scene.characters.find(character => character.name == options.name))
-    throw new Error(`Character already exists.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}\n- Position: ${options.position}`)
+    helper.logFatal('A character already exists with this name.')
 
   if (!options.image)
-    throw new Error(`Character image not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character image not provided.')
 
   if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    throw new Error(`Character image not found.\n- Character name: ${options.name}\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
+    helper.logFatal('Character image not found in provided path.')
 
   if (!options.position?.side)
-    throw new Error(`Character position side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position side not provided.')
 
   if (!['center', 'left', 'right'].includes(options.position.side))
-    throw new Error(`Character position side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position side not valid, it must be either center, left or right.')
 
   if (options.position.side != 'center' && options.position.margins?.side == null)
-    throw new Error(`Character position side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position side margin not provided.')
 
   if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    throw new Error(`Character position margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position margin must be a number.')
 
   if (options.position.side != 'center' && options.position.margins?.top == null)
-    throw new Error(`Character position top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position top margin not provided.')
 
   if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    throw new Error(`Character position top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+    helper.logFatal('Character position top margin must be a number.')
 
   if (options.animations) {
     if (!Array.isArray(options.animations))
-      throw new Error(`Character animations must be an array.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+      helper.logFatal('Character animations must be an array.')
 
     for (let animation of options.animations) {
       if (!animation.type)
-        throw new Error(`Character animation type not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation type not provided.')
 
       if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(animation.type))
-        throw new Error(`Character animation type not valid, it must be either movement, jump, fade, rotate or scale.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation type not valid, it must be either movement, jump, fade, rotate or scale.')
 
       switch (animation.type) {
         case 'movement': {
           if (!animation.side)
-            throw new Error(`Character animation movement side not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation movement side not provided.')
 
           if (!['center', 'left', 'right'].includes(animation.side))
-            throw new Error(`Character animation movement side not valid, it must be either center, left or right.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation movement side not valid, it must be either center, left or right.')
 
           if (animation.side != 'center' && animation.margins?.side == null)
-            throw new Error(`Character animation movement side margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation movement side margin not provided.')
 
           if (animation.side != 'center' && typeof animation.margins?.side != 'number')
-            throw new Error(`Character animation movement side margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation movement side margin must be a number.')
 
           if (animation.side != 'center' && animation.margins.top == null)
-            throw new Error(`Character animation movement top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation movement top margin not provided.')
 
           if (animation.side != 'center' && typeof animation.margins?.top != 'number')
-            throw new Error(`Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation top margin must be a number.')
 
           break
         }
         case 'jump': {
           if (animation.margins?.top == null)
-            throw new Error(`Character animation top margin not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation top margin not provided.')
 
           if (typeof animation.margins?.top != 'number')
-            throw new Error(`Character animation top margin must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation top margin must be a number.')
 
           break
         }
@@ -93,189 +96,166 @@ function addCharacter(scene, options) {
         }
         case 'rotate': {
           if (animation.degrees == null)
-            throw new Error(`Character animation degrees not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation degrees not provided.')
 
           if (typeof animation.degrees != 'number')
-            throw new Error(`Character animation degrees must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation degrees must be a number.')
 
           break
         }
         case 'scale': {
           if (animation.scale == null)
-            throw new Error(`Character animation scale not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation scale not provided.')
 
           if (typeof animation.scale != 'number')
-            throw new Error(`Character animation scale must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+            helper.logFatal('Character animation scale must be a number.')
 
           break
         }
       }
 
       if (animation.duration == null)
-        throw new Error(`Character animation duratiton not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation duratiton not provided.')
 
       if (typeof animation.duration != 'number')
-        throw new Error(`Character animation duratiton must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation duratiton must be a number.')
 
       if (animation.delay == null)
-        throw new Error(`Character animation delay not provided.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation delay not provided.')
 
       if (typeof animation.delay != 'number')
-        throw new Error(`Character animation delay must be a number.\n- Character name: ${options.name}\n- Scene name: ${scene.name}`)
+        helper.logFatal('Character animation delay must be a number.')
 
       if (animation.delay != 0)
         visualNovel.internalInfo.hasDelayedAnimation = true
     }
   }
 
-  console.log(`Adding character "${options.name}" for scene "${scene.name}".. (Android)`)
-
   scene.characters.push({ name: options.name, image: options.image, position: options.position, animations: options.animations })
-
-  console.log(`Character "${options.name}" added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function addScenario(scene, options) {
   if (!options?.image)
-    throw new Error(`Scenario image not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Scenario image not provided.')
 
   if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    throw new Error(`Scenario image not found.\n- Scene name: ${scene.name}\n- Image: ${options.image}`)
-
-  console.log(`Adding scenario for scene "${scene.name}".. (Android)`)
+    helper.logFatal('Scenario image not found in provided path.')
 
   scene.background = options.image
-
-  console.log(`Scenario added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function addSpeech(scene, options) {
   if (options.author?.name && !options.author.textColor)
-    throw new Error(`Speech author text color not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech author text color not provided.')
 
   if (!options?.author?.rectangle?.color)
-    throw new Error(`Speech author rectangle color not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech author rectangle color not provided.')
 
   if (!options?.author?.rectangle?.opacity)
-    throw new Error(`Speech author rectangle opacity not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech author rectangle opacity not provided.')
 
   if (typeof options.author.rectangle.opacity != 'number')
-    throw new Error(`Speech author rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech author rectangle opacity must be a number.')
 
   if (!options.text?.content)
-    throw new Error(`Speech text content not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech text content not provided.')
 
   if (!options.text.color)
-    throw new Error(`Speech text color not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech text color not provided.')
 
   if (!options.text.fontSize)
-    throw new Error(`Speech text font size not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech text font size not provided.')
+
+  if (typeof options.text.fontSize != 'number')
+    helper.logFatal('Speech text font size must be a number.')
 
   if (!options.text.rectangle?.color)
-    throw new Error(`Speech text rectangle color not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech text rectangle color not provided.')
 
   if (!options.text.rectangle?.opacity)
-    throw new Error(`Speech text rectangle opacity not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Speech text rectangle opacity not provided.')
 
   if (typeof options.text.rectangle.opacity != 'number')
-    throw new Error(`Speech text rectangle opacity must be a number.\n- Scene name: ${scene.name}`)
-
-  console.log(`Adding speech for scene "${scene.name}".. (Android)`)
+    helper.logFatal('Speech text rectangle opacity must be a number.')
 
   scene.speech = options
   scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
 
   visualNovel.internalInfo.hasSpeech = true
 
-  console.log(`Speech added for scene "${scene.name}". (Android)`)
-
   return scene
 }
 
 function addSoundEffects(scene, options) {
   if (!Array.isArray(options))
-    throw new Error(`Sound effects must be an array.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Sound effects must be an array.')
 
   for (let sound of options) {
     if (!sound?.sound)
-      throw new Error(`Sound effects sound not provided.\n- Scene name: ${scene.name}`)
+      helper.logFatal('Sound effects sound not provided.')
 
     if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound)))
-      throw new Error(`Sound effects sound not found.\n- Scene name: ${scene.name}\n- Sound: ${options.sound}`)
+      helper.logFatal('Sound effects sound not found.')
 
     if (sound?.delay == null)
-      throw new Error(`Sound effects delay not provided.\n- Scene name: ${scene.name}`)
+      helper.logFatal('Sound effects delay not provided.')
 
     if (typeof sound.delay != 'number')
-      throw new Error(`Sound effects delay must be a number.\n- Scene name: ${scene.name}`)
+      helper.logFatal('Sound effects delay must be a number.')
 
     if (sound.delay != 0)
       visualNovel.internalInfo.hasDelayedSoundEffect = true
   }
 
-  console.log(`Adding sound effects for scene "${scene.name}".. (Android)`)
-
   scene.effect = options
 
   visualNovel.internalInfo.hasEffect = true
-
-  console.log(`Sound effects added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function addMusic(scene, options) {
   if (!options?.music)
-    throw new Error(`Scene music not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Scene music not provided.')
 
   if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.music)))
-    throw new Error(`Scene music not found.\n- Scene name: ${scene.name}\n- Music: ${options.music}`)
+    helper.logFatal('Scene music not found in provided path.')
 
   if (options?.delay == null)
-    throw new Error(`Scene music delay not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Scene music delay not provided.')
 
   if (options.delay && typeof options.delay != 'number')
-    throw new Error(`Scene music delay must be a number.\n- Scene name: ${scene.name}`)
-
-  console.log(`Adding music for scene "${scene.name}".. (Android)`)
+    helper.logFatal('Scene music delay must be a number.')
 
   scene.music = options
 
   visualNovel.internalInfo.hasSceneMusic = true
-
-  console.log(`Music added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function addTransition(scene, options) {
   if (!options?.duration)
-    throw new Error(`Scene transition duration not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Scene transition duration not provided.')
 
   if (typeof options.duration != 'number')
-    throw new Error(`Scene transition duration must be a number.\n- Scene name: ${scene.name}`)
-
-  console.log(`Adding transition for scene "${scene.name}".. (Android)`)
+    helper.logFatal('Scene transition duration must be a number.')
 
   scene.transition = options
-
-  console.log(`Transition added for scene "${scene.name}". (Android)`)
 
   return scene
 }
 
 function finalize(scene, options) {
   if (!options?.buttonsColor)
-    throw new Error(`Scene "back" text color not provided.\n- Scene name: ${scene.name}`)
+    helper.logFatal('Scene "back" text color not provided.')
 
   if (!options.footerTextColor)
-    throw new Error(`Scene text color not provided.\n- Scene name: ${scene.name}`)
-
-  console.log(`Ending scene, coding scene "${scene.name}".. (Android)`)
+    helper.logFatal('Scene text color not provided.')
 
   let sceneCode = `  private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {` + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
@@ -881,7 +861,7 @@ function finalize(scene, options) {
 
   visualNovel.scenes.push({ ...scene, code: sceneCode })
 
-  console.log(`Scene "${scene.name}" coded. (Android)`)
+  helper.logOk(`Scene "${scene.name}" coded.`, 'Android')
 }
 
 export default {
