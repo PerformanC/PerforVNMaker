@@ -31,6 +31,10 @@ function logOk(message, platform) {
   console.log(`\u001b[34mOK ${platformColor}${platform}\u001b[0m: ${message}`)
 }
 
+function logWarning(message) {
+  console.warn(`\u001b[33mWarning\u001b[0m: ${makeLog(message)}`)
+}
+
 function lastMessage(finished) {
   if (!finished[0] || !finished[1]) return;
 
@@ -43,5 +47,6 @@ export default {
   makeLog,
   logFatal,
   logOk,
+  logWarning,
   lastMessage
 }

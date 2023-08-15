@@ -404,7 +404,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.18.2-b.0 (code generator), 1.16.8-b.0 (generated code).")
+      append(" 1.19.2-b.0 (code generator), 1.16.8-b.0 (generated code).")
       append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
@@ -1342,6 +1342,54 @@ class MainActivity : Activity() {
 
     frameLayout.addView(buttonMenu)
 
+    val buttonSubScenes = Button(this)
+    buttonSubScenes.text = "second"
+    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSubScenes.setTextColor(0xFFFFFFFF.toInt())
+    buttonSubScenes.background = null
+
+    val layoutParamsSubScenes = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)
+
+    layoutParamsSubScenes.gravity = Gravity.CENTER_VERTICAL
+    layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)
+
+    buttonSubScenes.layoutParams = layoutParamsSubScenes
+
+    buttonSubScenes.setOnClickListener {
+      scene2()
+    }
+
+    frameLayout.addView(buttonSubScenes)
+
+    val buttonSubScenes2 = Button(this)
+    buttonSubScenes2.text = "third"
+    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSubScenes2.setTextColor(0xFFFFFFFF.toInt())
+    buttonSubScenes2.background = null
+
+    val layoutParamsSubScenes2 = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)
+
+    layoutParamsSubScenes2.gravity = Gravity.CENTER_VERTICAL
+    layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)
+
+    buttonSubScenes2.layoutParams = layoutParamsSubScenes2
+
+    buttonSubScenes2.setOnClickListener {
+      scene3()
+    }
+
+    frameLayout.addView(buttonSubScenes2)
+
     setContentView(frameLayout)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
@@ -1594,14 +1642,6 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      handler.removeCallbacksAndMessages(null)
-      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
-      it.setOnClickListener(null)
-
-      scene3()
-    }
   }
 
   private fun scene3() {

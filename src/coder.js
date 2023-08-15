@@ -2,7 +2,7 @@ import fs from 'fs'
 
 import helper from './helper.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
 global.PerforVNM = {
   codeGeneratorVersion: '1.19.2-b.0',
   generatedCodeVersion: '1.16.8-b.0',
@@ -108,11 +108,8 @@ function finalize() {
 
   if (visualNovel.scenes.length) {
     let scenesCode = []
-    let i = -1
 
-    while (i++ < visualNovel.scenes.length - 1) {
-      const scene = visualNovel.scenes[i]
-
+    visualNovel.scenes.forEach((scene, i) => {
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
         const finishScene = []
@@ -141,55 +138,57 @@ function finalize() {
 
         finishScene.push('      it.setOnClickListener(null)')
 
-        let code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                   finishScene.join('\n') + '\n\n'
+        if (scene.type == 'normal') {
+          let code = '\n\n' + '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
+                    finishScene.join('\n') + '\n\n'
 
-        const functionParams = []
-        if (nextScene.speech && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+          const functionParams = []
+          if (nextScene.speech && i != visualNovel.scenes.length - 2) functionParams.push('true')
+          if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
 
-        if (scene.speech && !nextScene.speech) {
-          code += `      val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)` + '\n' +
-                  '      animationRectangleSpeech.duration = 500' + '\n' +
-                  '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
-                  '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
+          if (scene.speech && !nextScene.speech) {
+            code += `      val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)` + '\n' +
+                    '      animationRectangleSpeech.duration = 500' + '\n' +
+                    '      animationRectangleSpeech.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationRectangleSpeech.fillAfter = true' + '\n\n' +
 
-                  '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n\n' +
+                    '      rectangleViewSpeech.startAnimation(animationRectangleSpeech)' + '\n\n' +
 
-                  '      val animationTextSpeech = AlphaAnimation(1f, 0f)' + '\n' +
-                  '      animationTextSpeech.duration = 500' + '\n' +
-                  '      animationTextSpeech.interpolator = LinearInterpolator()' + '\n' +
-                  '      animationTextSpeech.fillAfter = true' + '\n\n' +
+                    '      val animationTextSpeech = AlphaAnimation(1f, 0f)' + '\n' +
+                    '      animationTextSpeech.duration = 500' + '\n' +
+                    '      animationTextSpeech.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationTextSpeech.fillAfter = true' + '\n\n' +
 
-                  '      textViewSpeech.startAnimation(animationTextSpeech)' + '\n\n' +
+                    '      textViewSpeech.startAnimation(animationTextSpeech)' + '\n\n' +
 
-                  `      val animationAuthorSpeech = AlphaAnimation(${scene.speech.author.rectangle.opacity}f, 0f)` + '\n' +
-                  '      animationAuthorSpeech.duration = 500' + '\n' +
-                  '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
-                  '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
+                    `      val animationAuthorSpeech = AlphaAnimation(${scene.speech.author.rectangle.opacity}f, 0f)` + '\n' +
+                    '      animationAuthorSpeech.duration = 500' + '\n' +
+                    '      animationAuthorSpeech.interpolator = LinearInterpolator()' + '\n' +
+                    '      animationAuthorSpeech.fillAfter = true' + '\n\n' +
 
-                  '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n'
+                    '      rectangleViewAuthor.startAnimation(animationAuthorSpeech)' + '\n\n'
 
-          if (scene.speech.author?.name) {
-            code += '      textViewAuthor.startAnimation(animationTextSpeech)' + '\n\n'
+            if (scene.speech.author?.name) {
+              code += '      textViewAuthor.startAnimation(animationTextSpeech)' + '\n\n'
+            }
+
+            code += '      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
+                    '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
+
+                    '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
+                    `          ${nextScene.name}(${functionParams.join(', ')})` + '\n' +
+                    '        }' + '\n\n' +
+
+                    '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
+                    '      })' + '\n'
+          } else {
+            code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
           }
 
-          code += '      animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {' + '\n' +
-                  '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
+          code += '    }'
 
-                  '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
-                  `          ${nextScene.name}(${functionParams.join(', ')})` + '\n' +
-                  '        }' + '\n\n' +
-
-                  '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
-                  '      })' + '\n'
-        } else {
-          code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
+          scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
         }
-
-        code += '    }'
-
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', code)
 
         const functionParams2 = { function: [], switch: [] }
         if (scene.speech) {
@@ -260,7 +259,7 @@ function finalize() {
       }
 
       scenesCode.push('\n\n' + scene.code)
-    }
+    })
 
     helper.replace('__PERFORVNM_SCENES__', scenesCode.join(''))
   } else helper.replace('__PERFORVNM_SCENES__', '')
@@ -279,7 +278,7 @@ function finalize() {
                   '      }' + '\n\n'
     }
 
-    menuCode += `      ${visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' : '      // No scenes created.'}` + '\n' +
+    menuCode += `      ${visualNovel.scenes.length != 0 ? visualNovel.scenes[0].name + '(' + (visualNovel.scenes[0].speech ? 'true' : '') + ')' : '// No scenes created.'}` + '\n' +
                 '    }'
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
@@ -406,7 +405,7 @@ function finalize() {
 
     finished[0] = true
 
-    // helper.lastMessage(finished)
+    helper.lastMessage(finished)
   })
 
   let i = 0, j = visualNovel.customXML.length - 1

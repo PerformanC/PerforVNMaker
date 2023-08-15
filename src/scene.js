@@ -6,13 +6,13 @@ function init(options) {
   if (!options?.name)
     helper.logFatal('Scene name not provided.')
 
-  if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options?.name))
+  if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options.name))
     helper.logFatal('Scene name is already in usage by PerforVNM internals.')
 
   if (visualNovel.scenes.find(scene => scene.name == options.name))
     helper.logFatal('A scene already exists with this name.')
 
-  return { name: options.name, characters: [], background: null, speech: null, effect: null, music: null, transition: null }
+  return { name: options.name, type: 'normal', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null }
 }
 
 function addCharacter(scene, options) {
@@ -246,6 +246,24 @@ function addTransition(scene, options) {
     helper.logFatal('Scene transition duration must be a number.')
 
   scene.transition = options
+
+  return scene
+}
+
+function setNextScene(scene, options) {
+  scene.next = options
+}
+
+function addSubScenes(scene, options) {
+  options.forEach((subScene) => {
+    if (!subScene?.text)
+      helper.logFatal('Sub-scene options text not provided.')
+
+    if (scene.subScenes.find((subScene) => subScene.scene == subScene))
+      helper.logFatal('A sub-scene already exists with this name.')
+  })
+
+  scene.subScenes = options
 
   return scene
 }
@@ -824,6 +842,7 @@ function finalize(scene, options) {
                '    }' + '\n\n' +
 
                '    frameLayout.addView(buttonMenu)' + '\n\n'
+
   if (visualNovel.scenes.length != 0) {
     sceneCode += '    val buttonBack = Button(this)' + '\n' +
                   '    buttonBack.text = "Back"' + '\n' +
@@ -856,8 +875,74 @@ function finalize(scene, options) {
                     '    frameLayout.addView(buttonBack)' + '\n\n'
   }
 
-  sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
-               '  }'
+  if (scene.subScenes.length == 2) {
+    sceneCode += '    val buttonSubScenes = Button(this)' + '\n' +
+                 `    buttonSubScenes.text = "${scene.subScenes[0].text}"` + '\n' +
+                 '    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+                 `    buttonSubScenes.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                  '    buttonSubScenes.background = null' + '\n\n' +
+
+                  '    val layoutParamsSubScenes = LayoutParams(' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT' + '\n' +
+                  '    )' + '\n\n' +
+
+                  '    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)' + '\n\n' +
+
+                  '    layoutParamsSubScenes.gravity = Gravity.CENTER_VERTICAL' + '\n' +
+                  '    layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)' + '\n\n' +
+
+                  '    buttonSubScenes.layoutParams = layoutParamsSubScenes' + '\n\n' +
+
+                  '    buttonSubScenes.setOnClickListener {' + '\n' +
+                  '      ' + scene.subScenes[0].scene + '()' + '\n' +
+                  '    }' + '\n\n' +
+
+                  '    frameLayout.addView(buttonSubScenes)' + '\n\n' +
+
+                  '    val buttonSubScenes2 = Button(this)' + '\n' +
+                  `    buttonSubScenes2.text = "${scene.subScenes[1].text}"` + '\n' +
+                  '    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+                  `    buttonSubScenes2.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                  '    buttonSubScenes2.background = null' + '\n\n' +
+
+                  '    val layoutParamsSubScenes2 = LayoutParams(' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                  '      LayoutParams.WRAP_CONTENT' + '\n' +
+                  '    )' + '\n\n' +
+
+                  '    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)' + '\n\n' +
+
+                  '    layoutParamsSubScenes2.gravity = Gravity.CENTER_VERTICAL' + '\n' +
+                  '    layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)' + '\n\n' +
+
+                  '    buttonSubScenes2.layoutParams = layoutParamsSubScenes2' + '\n\n' +
+
+                  '    buttonSubScenes2.setOnClickListener {' + '\n' +
+                  '      ' + scene.subScenes[1].scene + '()' + '\n' +
+                  '    }' + '\n\n' +
+
+                  '    frameLayout.addView(buttonSubScenes2)' + '\n\n'
+  } else if (scene.subScenes.length != 0) {
+    helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
+  }
+
+  if (scene.type == 'normal') {
+    sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
+                 '  }'
+  } else {
+    if (scene.next) {
+      sceneCode += '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
+                    '      ' + scene.next + '()' + '\n' +
+                    '    }' + '\n\n' +
+
+                    '    setContentView(frameLayout)' + '\n' +
+                    '  }'
+    } else {
+      sceneCode += '    setContentView(frameLayout)' + '\n' +
+                    '  }'
+    }
+  }
 
   visualNovel.scenes.push({ ...scene, code: sceneCode })
 
@@ -872,5 +957,7 @@ export default {
   addSoundEffects,
   addMusic,
   addTransition,
+  setNextScene,
+  addSubScenes,
   finalize
 }
