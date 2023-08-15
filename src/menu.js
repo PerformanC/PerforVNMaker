@@ -4,46 +4,47 @@ import helper from './helper.js'
 
 function make(options) {
   if (!options.textColor)
-    throw new Error('Menu text color not provided.')
+    helper.logFatal('Menu text color not provided.')
 
   if (!options.backTextColor)
-    throw new Error('Menu "back" text color not provided.')
+    helper.logFatal('Menu "back" text color not provided.')
 
   if (!options.textSpeed)
-    throw new Error('(Menu config) Scenes text speed not provided.')
+    helper.logFatal('(Menu config) Scenes text speed not provided.')
 
   if (!options.seekBar?.backgroundColor)
-    throw new Error('Seek bar background color not provided.')
+    helper.logFatal('Seek bar background color not provided.')
 
   if (!options.seekBar.progressColor)
-    throw new Error('Seek bar progress color not provided.')
+    helper.logFatal('Seek bar progress color not provided.')
 
   if (!options.seekBar.thumbColor)
-    throw new Error('Seek bar thumb color not provided.')
+    helper.logFatal('Seek bar thumb color not provided.')
 
   if (!options?.background?.image)
-    throw new Error('Menu background image not provided.')
+    helper.logFatal('Menu background image not provided.')
 
   if (options.background.music) {
     if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
-      throw new Error(`Menu background music not found.`)
+      helper.logFatal('Menu background music not found in provided path.')
 
     visualNovel.internalInfo.menuMusic = true
   }
 
   if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
-    throw new Error('Menu background image not found.')
+    helper.logFatal('Menu background image not found in provided path.')
 
   if (!options.footer?.color)
-    throw new Error('Menu footer color not provided.')
+    helper.logFatal('Menu footer color not provided.')
 
   if (!options.footer.textColor)
-    throw new Error('Menu text color not provided.')
+    helper.logFatal('Menu text color not provided.')
 
   if (!options.footer.opacity)
-    throw new Error('Menu footer opacity not provided.')
+    helper.logFatal('Menu footer opacity not provided.')
 
-  console.log('Starting VN, coding menu.. (Android)')
+  if (typeof options.footer.opacity != 'number')
+    helper.logFatal('Menu footer opacity must be a number.')
 
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n'
 
@@ -1161,7 +1162,7 @@ function make(options) {
     options
   }
 
-  console.log('Menu coded. (Android)')
+  helper.logOk('Main, about, settings and saves menu coded.', 'Android')
 }
 
 export default {

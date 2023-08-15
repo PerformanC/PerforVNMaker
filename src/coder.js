@@ -4,28 +4,28 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.18.2-b.0',
+  codeGeneratorVersion: '1.19.2-b.0',
   generatedCodeVersion: '1.16.8-b.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
 function init(options) {
-  console.log('Starting VN, coding main code.. (Android)')
+  helper.logOk('Starting VN, coding main code.', 'Android')
 
   if (!options?.name)
-    throw new Error('No name provided.')
+    helper.logFatal('No name provided.')
 
   if (!options.fullName)
-    throw new Error('No fullName provided.')
+    helper.logFatal('No fullName provided.')
 
   if (!options.version)
-    throw new Error('No version provided.')
+    helper.logFatal('No version provided.')
 
   if (!options.applicationId)
-    throw new Error('No applicationId provided.')
+    helper.logFatal('No applicationId provided.')
 
   if (!options.paths?.android)
-    throw new Error('No path provided.')
+    helper.logFatal('No path provided.')
 
   visualNovel.info = options
 
@@ -90,8 +90,6 @@ function init(options) {
   '}' + '\n' +
   '__PERFORVNM_CLASSES__'
 
-  console.log('Main coded. Adding configuration files (Android)')
-
   visualNovel.customXML.push({
     path: 'values/strings.xml',
     content: '<?xml version="1.0" encoding="utf-8"?>' + '\n' +
@@ -99,11 +97,11 @@ function init(options) {
              `    <string name="app_name">${visualNovel.info.name}</string>` + '\n' +
              '</resources>'
   })
+
+  helper.logOk('Base configuration files and main function coded.', 'Android')
 }
 
 function finalize() {
-  console.log('Finalizing VN, finishing up code.. (Android)')
-
   helper.replace('__PERFORVNM_CODE__', '')
 
   let switchesCode = 'when (buttonData.getString("scene")) {'
@@ -397,21 +395,34 @@ function finalize() {
 
   helper.replace(/__PERFORVNM_START_MUSIC__/g, startMusicCode)
 
-  console.log('Code finished up, writing to file.. (Android)')
+  helper.logOk('Code finished up.', 'Android')
+
+  let finished = [ false, false ]
 
   fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
-    if (err) return console.error(`ERROR: ${err} (Android)`)
+    if (err) return helper.logFatal(err)
 
-    console.log('VN in Kotlin written. (Android)')
+    helper.logOk('Visual Novel output code written.', 'Android')
+
+    finished[0] = true
+
+    // helper.lastMessage(finished)
   })
 
+  let i = 0, j = visualNovel.customXML.length - 1
   while (visualNovel.customXML.length > 0) {
     const customXML = visualNovel.customXML.shift()
 
     fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
-      if (err) return console.error(`ERROR: ${err} (Android)`)
+      if (err) return helper.logFatal(err)
 
-      console.log(`Android custom XML (${customXML.path}) written. (Android)`)
+      helper.logOk(`Android custom XML (${customXML.path}) written.`, 'Android')
+
+      if (i++ == j) {
+        finished[1] = true
+
+        helper.lastMessage(finished)
+      }
     })
   }
 }
