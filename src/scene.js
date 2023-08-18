@@ -306,13 +306,13 @@ function finalize(scene, options) {
 
         if (character.animations) {
           sceneCode += `    val layoutParams_${character.name} = LayoutParams(` + '\n' +
-                        '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                        '      LayoutParams.WRAP_CONTENT' + '\n' +
-                        '    )' + '\n\n' +
+                       '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                       '      LayoutParams.WRAP_CONTENT' + '\n' +
+                       '    )' + '\n\n' +
 
-                        `    layoutParams_${character.name}.gravity = Gravity.CENTER` + '\n\n' +
+                       `    layoutParams_${character.name}.gravity = Gravity.CENTER` + '\n\n' +
 
-                        `    imageView_${character.name}.layoutParams = layoutParams_${character.name}` + '\n\n'
+                       `    imageView_${character.name}.layoutParams = layoutParams_${character.name}` + '\n\n'
         }
 
         sceneCode += `    frameLayout.addView(imageView_${character.name})` + '\n'
@@ -413,17 +413,17 @@ function finalize(scene, options) {
 
       if (animation.type == 'jump') {
         sceneCode += SPACE + `imageView_${character.name}.animate()` + '\n' +
-                    SPACE + `  .translationY(${animation.margins.top}f)` + '\n' +
-                    SPACE + `  .setDuration(${animation.duration / 2})` + '\n' +
-                    SPACE + '  .setInterpolator(OvershootInterpolator())' + '\n' +
-                    SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
-                    SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
+                     SPACE + `  .translationY(${animation.margins.top}f)` + '\n' +
+                     SPACE + `  .setDuration(${animation.duration / 2})` + '\n' +
+                     SPACE + '  .setInterpolator(OvershootInterpolator())' + '\n' +
+                     SPACE + '  .setListener(object : Animator.AnimatorListener {' + '\n' +
+                     SPACE + '    override fun onAnimationStart(animation: Animator) {}' + '\n\n' +
 
-                    SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n' +
-                    SPACE + `      imageView_${character.name}.animate()` + '\n' +
-                    SPACE + '        .translationY(0f)' + '\n' +
-                    SPACE + `        .setDuration(${animation.duration / 2})` + '\n' +
-                    SPACE + '        .setInterpolator(OvershootInterpolator())' + '\n'
+                     SPACE + '    override fun onAnimationEnd(animation: Animator) {' + '\n' +
+                     SPACE + `      imageView_${character.name}.animate()` + '\n' +
+                     SPACE + '        .translationY(0f)' + '\n' +
+                     SPACE + `        .setDuration(${animation.duration / 2})` + '\n' +
+                     SPACE + '        .setInterpolator(OvershootInterpolator())' + '\n'
 
         finalCode.push(
           SPACE + '    }' + '\n\n' +
@@ -646,19 +646,19 @@ function finalize(scene, options) {
 
       sceneCode += SPACE + `mediaPlayer = MediaPlayer.create(this, R.raw.${scene.music.music})` + '\n\n' +
 
-                    SPACE + 'if (mediaPlayer != null) {' + '\n' +
-                    SPACE + '  mediaPlayer!!.start()' + '\n\n' +
+                   SPACE + 'if (mediaPlayer != null) {' + '\n' +
+                   SPACE + '  mediaPlayer!!.start()' + '\n\n' +
 
-                    SPACE + '  mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n\n' +
+                   SPACE + '  mediaPlayer!!.setVolume(musicVolume, musicVolume)' + '\n\n' +
 
-                    SPACE + '  mediaPlayer!!.setOnCompletionListener {' + '\n' +
-                    SPACE + '    if (mediaPlayer != null) {' + '\n' +
-                    SPACE + '      mediaPlayer!!.stop()' + '\n' +
-                    SPACE + '      mediaPlayer!!.release()' + '\n' +
-                    SPACE + '      mediaPlayer = null' + '\n' +
-                    SPACE + '    }' + '\n' +
-                    SPACE + '  }' + '\n' +
-                    SPACE + '}' + '\n'
+                   SPACE + '  mediaPlayer!!.setOnCompletionListener {' + '\n' +
+                   SPACE + '    if (mediaPlayer != null) {' + '\n' +
+                   SPACE + '      mediaPlayer!!.stop()' + '\n' +
+                   SPACE + '      mediaPlayer!!.release()' + '\n' +
+                   SPACE + '      mediaPlayer = null' + '\n' +
+                   SPACE + '    }' + '\n' +
+                   SPACE + '  }' + '\n' +
+                   SPACE + '}' + '\n'
 
       if (finalCode.length != 0) {
         finalCode.reverse()
@@ -809,7 +809,7 @@ function finalize(scene, options) {
                '      outputStream.close()' + '\n' +
                '    }' + '\n\n' +
                
-                '    frameLayout.addView(buttonSave)' + '\n\n' +
+               '    frameLayout.addView(buttonSave)' + '\n\n' +
   
                '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
@@ -845,22 +845,22 @@ function finalize(scene, options) {
 
   if (visualNovel.scenes.length != 0) {
     sceneCode += '    val buttonBack = Button(this)' + '\n' +
-                  '    buttonBack.text = "Back"' + '\n' +
-                  '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-                  `    buttonBack.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
-                  '    buttonBack.background = null' + '\n\n' +
+                 '    buttonBack.text = "Back"' + '\n' +
+                 '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+                 `    buttonBack.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                 '    buttonBack.background = null' + '\n\n' +
 
-                  '    val layoutParamsBack = LayoutParams(' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT' + '\n' +
-                  '    )' + '\n\n' +
+                 '    val layoutParamsBack = LayoutParams(' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT' + '\n' +
+                 '    )' + '\n\n' +
 
-                  '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)' + '\n\n' +
+                 '    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)' + '\n\n' +
 
-                  '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
-                  '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +
+                 '    layoutParamsBack.gravity = Gravity.TOP or Gravity.START' + '\n' +
+                 '    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)' + '\n\n' +
 
-                  '    buttonBack.layoutParams = layoutParamsBack' + '\n\n'
+                 '    buttonBack.layoutParams = layoutParamsBack' + '\n\n'
 
     if (finishScene.length != 0) {
       sceneCode += '    buttonBack.setOnClickListener {' + '\n' +
@@ -872,57 +872,62 @@ function finalize(scene, options) {
       sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n' +
                    '    }' + '\n\n' +
 
-                    '    frameLayout.addView(buttonBack)' + '\n\n'
+                   '    frameLayout.addView(buttonBack)' + '\n\n'
   }
 
   if (scene.subScenes.length == 2) {
     sceneCode += '    val buttonSubScenes = Button(this)' + '\n' +
                  `    buttonSubScenes.text = "${scene.subScenes[0].text}"` + '\n' +
-                 '    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
+                 '    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))' + '\n' +
                  `    buttonSubScenes.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
-                  '    buttonSubScenes.background = null' + '\n\n' +
+                 '    buttonSubScenes.background = null' + '\n\n' +
 
-                  '    val layoutParamsSubScenes = LayoutParams(' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT' + '\n' +
-                  '    )' + '\n\n' +
+                 '    val layoutParamsSubScenes = LayoutParams(' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT' + '\n' +
+                 '    )' + '\n\n' +
 
-                  '    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)' + '\n\n' +
+                 '    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._120sdp)' + '\n\n' +
 
-                  '    layoutParamsSubScenes.gravity = Gravity.CENTER_VERTICAL' + '\n' +
-                  '    layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)' + '\n\n' +
+                 '    layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL' + '\n' +
+                 '    layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)' + '\n\n' +
 
-                  '    buttonSubScenes.layoutParams = layoutParamsSubScenes' + '\n\n' +
+                 '    buttonSubScenes.layoutParams = layoutParamsSubScenes' + '\n\n'
 
-                  '    buttonSubScenes.setOnClickListener {' + '\n' +
-                  '      ' + scene.subScenes[0].scene + '()' + '\n' +
-                  '    }' + '\n\n' +
 
-                  '    frameLayout.addView(buttonSubScenes)' + '\n\n' +
+    const functionParams = []
+    if (scene.subScenes[0].speech && !scene.speech) functionParams.push('true')
+    if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
 
-                  '    val buttonSubScenes2 = Button(this)' + '\n' +
-                  `    buttonSubScenes2.text = "${scene.subScenes[1].text}"` + '\n' +
-                  '    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-                  `    buttonSubScenes2.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
-                  '    buttonSubScenes2.background = null' + '\n\n' +
+    sceneCode += '    buttonSubScenes.setOnClickListener {' + '\n' +
+                 '      __PERFORVNM_SUBSCENE_1__' + '\n' +
+                 '    }' + '\n\n' +
 
-                  '    val layoutParamsSubScenes2 = LayoutParams(' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                  '      LayoutParams.WRAP_CONTENT' + '\n' +
-                  '    )' + '\n\n' +
+                 '    frameLayout.addView(buttonSubScenes)' + '\n\n' +
 
-                  '    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)' + '\n\n' +
+                 '    val buttonSubScenes2 = Button(this)' + '\n' +
+                 `    buttonSubScenes2.text = "${scene.subScenes[1].text}"` + '\n' +
+                 '    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))' + '\n' +
+                 `    buttonSubScenes2.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                 '    buttonSubScenes2.background = null' + '\n\n' +
 
-                  '    layoutParamsSubScenes2.gravity = Gravity.CENTER_VERTICAL' + '\n' +
-                  '    layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)' + '\n\n' +
+                 '    val layoutParamsSubScenes2 = LayoutParams(' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                 '      LayoutParams.WRAP_CONTENT' + '\n' +
+                 '    )' + '\n\n' +
 
-                  '    buttonSubScenes2.layoutParams = layoutParamsSubScenes2' + '\n\n' +
+                 '    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp)' + '\n\n' +
 
-                  '    buttonSubScenes2.setOnClickListener {' + '\n' +
-                  '      ' + scene.subScenes[1].scene + '()' + '\n' +
-                  '    }' + '\n\n' +
+                 '    layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL' + '\n' +
+                 '    layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)' + '\n\n' +
 
-                  '    frameLayout.addView(buttonSubScenes2)' + '\n\n'
+                 '    buttonSubScenes2.layoutParams = layoutParamsSubScenes2' + '\n\n' +
+
+                 '    buttonSubScenes2.setOnClickListener {' + '\n' +
+                 '      __PERFORVNM_SUBSCENE_2__' + '\n' +
+                 '    }' + '\n\n' +
+
+                 '    frameLayout.addView(buttonSubScenes2)' + '\n\n'
   } else if (scene.subScenes.length != 0) {
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
@@ -933,18 +938,19 @@ function finalize(scene, options) {
   } else {
     if (scene.next) {
       sceneCode += '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                    '      ' + scene.next + '()' + '\n' +
-                    '    }' + '\n\n' +
+                   '      ' + scene.next + '()' + '\n' +
+                   '    }' + '\n\n' +
 
-                    '    setContentView(frameLayout)' + '\n' +
-                    '  }'
+                   '    setContentView(frameLayout)' + '\n' +
+                   '  }'
     } else {
       sceneCode += '    setContentView(frameLayout)' + '\n' +
-                    '  }'
+                   '  }'
     }
   }
 
-  visualNovel.scenes.push({ ...scene, code: sceneCode })
+  if (scene.type == 'normal') visualNovel.scenes.push({ ...scene, code: sceneCode })
+  else visualNovel.subScenes.push({ ...scene, code: sceneCode })
 
   helper.logOk(`Scene "${scene.name}" coded.`, 'Android')
 }

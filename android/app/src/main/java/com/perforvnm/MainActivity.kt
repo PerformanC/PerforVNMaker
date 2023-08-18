@@ -1101,7 +1101,7 @@ class MainActivity : Activity() {
         when (buttonData.getString("scene")) {
           "scene1" -> scene1()
           "scene2" -> scene2(true)
-          "scene3" -> scene3()
+          "scene3" -> scene3(true)
         }
       }
 
@@ -1344,7 +1344,7 @@ class MainActivity : Activity() {
 
     val buttonSubScenes = Button(this)
     buttonSubScenes.text = "second"
-    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))
     buttonSubScenes.setTextColor(0xFFFFFFFF.toInt())
     buttonSubScenes.background = null
 
@@ -1353,22 +1353,22 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)
+    val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._120sdp)
 
-    layoutParamsSubScenes.gravity = Gravity.CENTER_VERTICAL
+    layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
     layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)
 
     buttonSubScenes.layoutParams = layoutParamsSubScenes
 
     buttonSubScenes.setOnClickListener {
-      scene2()
+      scene2(true)
     }
 
     frameLayout.addView(buttonSubScenes)
 
     val buttonSubScenes2 = Button(this)
     buttonSubScenes2.text = "third"
-    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))
     buttonSubScenes2.setTextColor(0xFFFFFFFF.toInt())
     buttonSubScenes2.background = null
 
@@ -1377,33 +1377,20 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._69sdp)
+    val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp)
 
-    layoutParamsSubScenes2.gravity = Gravity.CENTER_VERTICAL
+    layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
     layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)
 
     buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
     buttonSubScenes2.setOnClickListener {
-      scene3()
+      scene3(true)
     }
 
     frameLayout.addView(buttonSubScenes2)
 
     setContentView(frameLayout)
-
-    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      if (mediaPlayer != null) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = null
-      }
-
-      handler.removeCallbacksAndMessages(null)
-      it.setOnClickListener(null)
-
-      scene2(true)
-    }
   }
 
   private fun scene2(animate: Boolean) {
@@ -1472,21 +1459,17 @@ class MainActivity : Activity() {
     textViewSpeech.layoutParams = layoutParamsSpeech
 
     var speechText = "\"Welcome, user. Thanks for testing our code generator, this is an *basic*\n example of usage of the PerforVNM.\""
-    if (animate) {
-      var i = 0
+    var i = 0
 
-      handler.postDelayed(object : Runnable {
-        override fun run() {
-          if (i < speechText.length) {
-            textViewSpeech.text = speechText.substring(0, i + 1)
-            i++
-            handler.postDelayed(this, textSpeed)
-          }
+    handler.postDelayed(object : Runnable {
+      override fun run() {
+        if (i < speechText.length) {
+          textViewSpeech.text = speechText.substring(0, i + 1)
+          i++
+          handler.postDelayed(this, textSpeed)
         }
-      }, textSpeed)
-    } else {
-      textViewSpeech.text = speechText
-    }
+      }
+    }, textSpeed)
 
     frameLayout.addView(textViewSpeech)
 
@@ -1644,7 +1627,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene3() {
+  private fun scene3(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -1680,8 +1663,18 @@ class MainActivity : Activity() {
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
-    rectangleViewSpeech.setAlpha(0.8f)
     rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    if (animate) {
+      val animationRectangleSpeech = AlphaAnimation(0f, 0.8f)
+      animationRectangleSpeech.duration = 1000
+      animationRectangleSpeech.interpolator = LinearInterpolator()
+      animationRectangleSpeech.fillAfter = true
+
+      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
+    } else {
+      rectangleViewSpeech.setAlpha(0.8f)
+    }
 
     frameLayout.addView(rectangleViewSpeech)
 
@@ -1721,8 +1714,18 @@ class MainActivity : Activity() {
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
-    rectangleViewAuthor.setAlpha(0.6f)
     rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    if (animate) {
+      val animationRectangleAuthor = AlphaAnimation(0f, 0.6f)
+      animationRectangleAuthor.duration = 1000
+      animationRectangleAuthor.interpolator = LinearInterpolator()
+      animationRectangleAuthor.fillAfter = true
+
+      rectangleViewAuthor.startAnimation(animationRectangleAuthor)
+    } else {
+      rectangleViewAuthor.setAlpha(0.6f)
+    }
 
     frameLayout.addView(rectangleViewAuthor)
 
@@ -1740,6 +1743,15 @@ class MainActivity : Activity() {
     layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
+
+    if (animate) {
+      val animationAuthor = AlphaAnimation(0f, 1f)
+      animationAuthor.duration = 1000
+      animationAuthor.interpolator = LinearInterpolator()
+      animationAuthor.fillAfter = true
+
+      textViewAuthor.startAnimation(animationAuthor)
+    }
 
     frameLayout.addView(textViewAuthor)
 
@@ -1841,7 +1853,7 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene2(false)
+      scene1()
     }
 
     frameLayout.addView(buttonBack)

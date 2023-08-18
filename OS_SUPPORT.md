@@ -16,7 +16,7 @@ The save button allows the player to save their progress in the visual novel.
 
 ##### Version support
 
-<= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
+>= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
 
 #### Menu button
 
@@ -24,7 +24,7 @@ The menu button is the button that goes to the menu.
 
 ##### Version support
 
-<= `v1.2.2-alpha`: Supported
+>= `v1.2.2-alpha`: Supported
 
 #### Characters
 
@@ -32,9 +32,9 @@ The characters are overlaid on the scenario, and they can be moved around the sc
 
 ##### Version support
 
-<= `v1.0.2-alpha`: Supported but with bugs
+>= `v1.0.2-alpha`: Supported but with bugs
 
-<= `v1.15.0-b.0 & v1.12.2-b.0`: Supported
+>= `v1.15.0-b.0 & v1.12.2-b.0`: Supported
 
 OBS: Versions below `v1.5.3` must have the character image saved on the `drawable` folder, and versions above `v1.5.3` must have the character image saved on the `raw` folder.
 
@@ -44,9 +44,9 @@ The character animations are the animations that the characters can do, like `mo
 
 ###### Version support
 
-<= `v1.15.0-b.0 & 1.12.2-b.0`: Supported but limited to `movement` animation and 1 animation per character only
+>= `v1.15.0-b.0 & 1.12.2-b.0`: Supported but limited to `movement` animation and 1 animation per character only
 
-<= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
+>= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
 
 #### Scenarios
 
@@ -54,9 +54,9 @@ The scenarios are the image in the background of the scene, and they can be chan
 
 ##### Version support
 
-<= `v1.0.2-alpha`: Supported but with bugs
+>= `v1.0.2-alpha`: Supported but with bugs
 
-<= `v1.15.0-b.0 & v1.12.2-b.0`: Supported
+>= `v1.15.0-b.0 & v1.12.2-b.0`: Supported
 
 OBS: Versions below `v1.5.3` must have the scenario image saved on the `drawable` folder, and versions above `v1.5.3` must have the scenario image saved on the `raw` folder.
 
@@ -66,11 +66,11 @@ The speech is the text that the characters say, and it adds more expression to t
 
 ##### Version support
 
-<= `v1.1.2-alpha`: Supported but with bugs (speech texts containing `"`, `'` or `\` are not supported)
+>= `v1.1.2-alpha`: Supported but with bugs (speech texts containing `"`, `'` or `\` are not supported)
 
-<= `v1.16.2-b.0 & v1.14.6-b.0`: Supported without author animation:
+>= `v1.16.2-b.0 & v1.14.6-b.0`: Supported without author animation:
 
-<= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
+>= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
 
 #### Sound effect
 
@@ -82,11 +82,11 @@ Ensure that two sound effect doesn't play at the same time, or it *may* generate
 
 ##### Version support
 
-<= `v1.5.3-alpha`: Supported but with bugs and limited to 1 sound effect per scene
+>= `v1.5.3-alpha`: Supported but with bugs and limited to 1 sound effect per scene
 
-<= `v1.16.1-b.0 & v1.14.4-b.0`: Supported but limited to 1 sound effect per scene
+>= `v1.16.1-b.0 & v1.14.4-b.0`: Supported but limited to 1 sound effect per scene
 
-<= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
+>= `v1.18.2-b.0 & v1.16.8-b.0`: Supported
 
 #### Music
 
@@ -94,7 +94,15 @@ The music, differently from the sound effect, is the sound that can represent th
 
 ##### Version support
 
-<= `v1.16.0-b.0 & v1.14.2-b.0`: Supported
+>= `v1.16.0-b.0 & v1.14.2-b.0`: Supported
+
+##### Custom paths
+
+Custom paths allow multiple ends to the visual novel, allowing the player to choose their own path through buttons.
+
+###### Version support
+
+>= `v1.19.2-b.0 & v1.17.8-b.0`: Supported
 
 ### Menu
 
@@ -106,9 +114,9 @@ The start button is the button that starts the VN.
 
 ##### Version support
 
-<= `v1.0.0-alpha`: Supported
+>= `v1.0.0-alpha`: Supported
 
-<= `v1.1.2-alpha`: Supported with design changes
+>= `v1.1.2-alpha`: Supported with design changes
 
 #### About
 
@@ -116,11 +124,11 @@ The About menu is the place where the player can see the information about the V
 
 ##### Version support
 
-<= `v1.0.2-alpha`: Supported without hyperlink support & additional text support
+>= `v1.0.2-alpha`: Supported without hyperlink support & additional text support
 
-<= `v1.1.2-alpha`: Supported without additional text support
+>= `v1.1.2-alpha`: Supported without additional text support
 
-<= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
+>= `v1.16.2-b.0 & v1.15.8-b.0`: Supported
 
 #### Settings
 
@@ -128,9 +136,9 @@ The settings menu is the place where the player can change the text speed, menu 
 
 ##### Version support
 
-<= `v1.5.3-beta`: Supported but with bugs (dimensions)
+>= `v1.5.3-beta`: Supported but with bugs (dimensions)
 
-<= `v1.16.2-b.0 & v1.14.8-b.0`: Supported
+>= `v1.16.2-b.0 & v1.14.8-b.0`: Supported
 
 #### Background music
 
@@ -138,7 +146,7 @@ The background music is the music that plays on the menu.
 
 ##### Version support
 
-<= `v1.4.2-alpha`: Supported
+>= `v1.4.2-alpha`: Supported
 
 ## [iOS](https://www.apple.com/br/ios/ios-16/)
 
