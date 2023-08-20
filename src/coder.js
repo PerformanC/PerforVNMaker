@@ -202,25 +202,19 @@ function finalize() {
 
           const subFunctionParams = { function: [], switch: [] }
           if (subScene1.speech && !scene.speech) {
-            // subFunctionParams.function.push('animate: Boolean')
             subFunctionParams.switch.push('true')
           }
           if (subScene1.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            // subFunctionParams.function.push('animateAuthor: Boolean')
             subFunctionParams.switch.push('true')
           }
 
           const subFunctionParams2 = { function: [], switch: [] }
           if (subScene2.speech && !scene.speech) {
-            // subFunctionParams2.function.push('animate: Boolean')
             subFunctionParams2.switch.push('true')
           }
           if (subScene2.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            // subFunctionParams2.function.push('animateAuthor: Boolean')
             subFunctionParams2.switch.push('true')
           }
-
-          switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${subFunctionParams.switch.join(', ')})`
 
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', subScene1.name + '(' + subFunctionParams.switch.join(', ') + ')')
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', subScene2.name + '(' + subFunctionParams2.switch.join(', ') + ')')
@@ -286,21 +280,17 @@ function finalize() {
 
           const subFunctionParams = { function: [], switch: [] }
           if (subScene1.speech && !scene.speech) {
-            // subFunctionParams.function.push('animate: Boolean')
             subFunctionParams.switch.push('true')
           }
           if (subScene1.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            // subFunctionParams.function.push('animateAuthor: Boolean')
             subFunctionParams.switch.push('true')
           }
 
           const subFunctionParams2 = { function: [], switch: [] }
           if (subScene2.speech && !scene.speech) {
-            // subFunctionParams2.function.push('animate: Boolean')
             subFunctionParams2.switch.push('true')
           }
           if (subScene2.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            // subFunctionParams2.function.push('animateAuthor: Boolean')
             subFunctionParams2.switch.push('true')
           }
 
@@ -335,7 +325,7 @@ function finalize() {
 
     visualNovel.subScenes.forEach((scene, i) => {
       if (scene.next) {
-        const nextScene = visualNovel.scenes.find((scene) => scene.name == scene.next)
+        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next)
 
         if (!nextScene)
           helper.logFatal('Next scene does not exist.')
@@ -426,6 +416,7 @@ function finalize() {
           functionParams2.switch.push('true')
         }
 
+        scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
         switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))

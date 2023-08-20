@@ -252,6 +252,8 @@ function addTransition(scene, options) {
 
 function setNextScene(scene, options) {
   scene.next = options
+
+  return scene
 }
 
 function addSubScenes(scene, options) {
@@ -938,7 +940,7 @@ function finalize(scene, options) {
   } else {
     if (scene.next) {
       sceneCode += '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                   '      ' + scene.next + '()' + '\n' +
+                   '      ' + scene.next + '(__PERFORVNM_NEXT_SCENE_PARAMS__)' + '\n' +
                    '    }' + '\n\n' +
 
                    '    setContentView(frameLayout)' + '\n' +

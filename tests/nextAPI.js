@@ -94,6 +94,7 @@ secondScene = perfor.scene.addSpeech(secondScene, {
     }
   }
 }) /* Adds a speech to the scene */
+secondScene = perfor.scene.setNextScene(secondScene, 'scene4')
 perfor.scene.finalize(secondScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 let thirdScene = perfor.subScene.init({ name: 'scene3' })
@@ -128,6 +129,41 @@ thirdScene = perfor.scene.addSpeech(thirdScene, {
     }
   }
 })
+thirdScene = perfor.scene.setNextScene(thirdScene, 'scene4')
 perfor.scene.finalize(thirdScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+
+let fourthScene = perfor.scene.init({ name: 'scene4' })
+fourthScene = perfor.scene.addCharacter(fourthScene, {
+  name: 'Pedro',
+  image: 'pedro_staring',
+  position: {
+    side: 'left',
+    margins: {
+      side: 20,
+      top: 0
+    }
+  }
+})
+fourthScene = perfor.scene.addScenario(fourthScene, { image: 'background_thanking' })
+fourthScene = perfor.scene.addSpeech(fourthScene, {
+  author: {
+    name: 'Pedro',
+    textColor: 'FFFFFF',
+    rectangle: {
+      color: '000000',
+      opacity: 0.6
+    }
+  },
+  text: {
+    content: '"Paths are incredible, don\'t you think?" says in a happy tone',
+    color: 'FFFFFF',
+    fontSize: 9,
+    rectangle: {
+      color: '000000',
+      opacity: 0.8
+    }
+  }
+})
+perfor.scene.finalize(fourthScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 perfor.coder.finalize() /* Finishes up the code */
