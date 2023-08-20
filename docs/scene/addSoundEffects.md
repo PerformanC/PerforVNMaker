@@ -25,7 +25,7 @@ scene.addSoundEffects(scene, [{ sound: 'menu_music', delay: 1000 }])
 
 ## Return value
 
-This function will return the scene configurations if the addition was successful, otherwise, it will execute `process.exit(1)` to terminate the generation process.
+This function will return the scene configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 

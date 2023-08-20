@@ -251,6 +251,12 @@ function addTransition(scene, options) {
 }
 
 function setNextScene(scene, options) {
+  if (!options)
+    helper.logFatal('Scene next not provided.')
+
+  if (typeof options != 'string')
+    helper.logFatal('Scene next must be a string.')
+
   scene.next = options
 
   return scene

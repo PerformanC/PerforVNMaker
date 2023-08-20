@@ -42,7 +42,7 @@ menu.make({
 
 ## Return value
 
-This function will return `null` if the generation was successful, otherwise, it will execute `process.exit(1)` to terminate the generation process.
+This function will return `null` if the generation was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 
