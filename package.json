@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "node tests/nextAPI.js"
+    "test": "node tests/vn.js"
   },
   "repository": {
     "type": "git",
