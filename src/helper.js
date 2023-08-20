@@ -1,4 +1,4 @@
-function writeScene(sceneCode) {
+function writeFunction(sceneCode) {
   const writenCode = '\n\n' + sceneCode + '__PERFORVNM_SCENES__'
 
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', writenCode)
@@ -31,6 +31,10 @@ function logOk(message, platform) {
   console.log(`\u001b[34mOK ${platformColor}${platform}\u001b[0m: ${message}`)
 }
 
+function logWarning(message) {
+  console.warn(`\u001b[33mWarning\u001b[0m: ${makeLog(message)}`)
+}
+
 function lastMessage(finished) {
   if (!finished[0] || !finished[1]) return;
 
@@ -38,10 +42,11 @@ function lastMessage(finished) {
 }
 
 export default {
-  writeScene,
+  writeFunction,
   replace,
   makeLog,
   logFatal,
   logOk,
+  logWarning,
   lastMessage
 }

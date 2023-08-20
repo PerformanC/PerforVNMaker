@@ -188,7 +188,7 @@ function make(options) {
                    '    setContentView(frameLayout)' + '\n' +
                    '  }'
 
-  helper.writeScene(menuCode)
+  helper.writeFunction(menuCode)
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
@@ -404,7 +404,7 @@ function make(options) {
                '    setContentView(frameLayout)' + '\n' +
                '  }'
 
-  helper.writeScene(aboutCode)
+  helper.writeFunction(aboutCode)
 
   const settingsCode = '  private fun settings(animate: Boolean) {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
@@ -849,7 +849,7 @@ function make(options) {
                     '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
-  helper.writeScene(settingsCode)
+  helper.writeFunction(settingsCode)
 
   visualNovel.customXML.push({
     path: 'drawable/custom_seekbar_progress.xml',
@@ -1154,7 +1154,7 @@ function make(options) {
                     '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
-  helper.writeScene(saverCode)
+  helper.writeFunction(saverCode)
 
   visualNovel.menu = {
     name: 'menu()',
