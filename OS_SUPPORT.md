@@ -180,12 +180,12 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Custom paths (Completed)
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
+- [x] Custom buttons & *View (TextView only)
 - [ ] Achievements
 - [ ] Inventory
 - [ ] Text effects
 - [ ] Speech bubbles
 - [ ] Text box effects
-- [ ] Custom buttons & *View
 
 ## Code generation support
 
