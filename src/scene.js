@@ -318,6 +318,48 @@ function addCustomText(scene, options) {
   return scene
 }
 
+function addCustomButton(scene, options) {
+  if (!options?.text)
+    helper.logFatal('Custom button text not provided.')
+
+  if (!options.color)
+    helper.logFatal('Custom button text color not provided.')
+
+  if (!options.fontSize)
+    helper.logFatal('Custom button text font size not provided.')
+
+  if (typeof options.fontSize != 'number')
+    helper.logFatal('Custom button text font size must be a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom button position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom button position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom button position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom button position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom button position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom button position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom button position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'button',
+    ...options
+  })
+
+  return scene
+}
+
 function finalize(scene, options) {
   if (!options?.buttonsColor)
     helper.logFatal('Scene "back" text color not provided.')
@@ -982,60 +1024,105 @@ function finalize(scene, options) {
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
 
-  if (scene.custom.length != 0) {
-    scene.custom.forEach((custom, index) => {
-      switch (custom.type) {
-        case 'text': {
-          sceneCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
-                       `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
-                       `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
-                       `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
+  scene.custom.forEach((custom, index) => {
+    switch (custom.type) {
+      case 'text': {
+        sceneCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
+                     `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
+                     `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                     `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
 
-                       `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
-                       '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                       '      LayoutParams.WRAP_CONTENT' + '\n' +
-                       '    )' + '\n\n'
+                     `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n'
 
-          switch (custom.position) {
-            case 'left':
-            case 'right': {
-              if (custom.margins.top != 0) {
-                sceneCode += `    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)` + '\n\n'
-              }
-
-              if (custom.margins.side != 0) {
-                sceneCode += `    val ${custom.position}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)` + '\n\n'
-              }
-
-              sceneCode += positionCode.definitions.join('') +
-                           `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                           `    layoutParamsCustomText${index}.setMargins(${custom.margins.side != 0 ? `val ${custom.position}DpCustomText${index}` : '0'}, 0, ${custom.margins.top != 0 ? `val topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
-
-                           `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
-
-                           `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
-
-              break
+        switch (custom.position) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.margins.top != 0) {
+              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
             }
-            case 'center': {
-              sceneCode += `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
-                           '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                           '      LayoutParams.WRAP_CONTENT' + '\n' +
-                           '    )' + '\n\n' +
 
-                           `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
-
-                           `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
-
-                           `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
-
-              break
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
             }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomText${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomText${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                         `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                         `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
           }
         }
+
+        break
       }
-    })
-  }
+      case 'button': {
+        sceneCode += `    val buttonCustomButton${index} = Button(this)` + '\n' +
+                     `    buttonCustomButton${index}.text = "${custom.text}"` + '\n' +
+                     `    buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                     `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
+                     '    buttonCustomButton${index}.background = null' + '\n\n' +
+
+                     `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n'
+
+        switch (custom.position) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.margins.top != 0) {
+              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
+            }
+
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomButton${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomButton${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                         `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomButton${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                         `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+    }
+  })
 
   if (scene.type == 'normal') {
     sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
@@ -1071,5 +1158,6 @@ export default {
   setNextScene,
   addSubScenes,
   addCustomText,
+  addCustomButton,
   finalize
 }
