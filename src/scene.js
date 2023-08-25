@@ -360,6 +360,45 @@ function addCustomButton(scene, options) {
   return scene
 }
 
+function addCustomRectangle(scene, options) {
+  if (!options?.color)
+    helper.logFatal('Custom rectangle color not provided.')
+
+  if (!options.opacity)
+    helper.logFatal('Custom rectangle opacity not provided.')
+
+  if (typeof options.opacity != 'number')
+    helper.logFatal('Custom rectangle opacity must be a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom rectangle position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom rectangle position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom rectangle position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom rectangle position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom rectangle position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom rectangle position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom rectangle position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'rectangle',
+    ...options
+  })
+
+  return scene
+}
+
 function finalize(scene, options) {
   if (!options?.buttonsColor)
     helper.logFatal('Scene "back" text color not provided.')
@@ -1121,6 +1160,50 @@ function finalize(scene, options) {
 
         break
       }
+      case 'rectangle': {
+        sceneCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
+
+                     `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n'
+
+        switch (custom.position) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.margins.top != 0) {
+              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
+            }
+
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomRectangle${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomRectangle${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                         `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                         `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
     }
   })
 
@@ -1159,5 +1242,6 @@ export default {
   addSubScenes,
   addCustomText,
   addCustomButton,
+  addCustomRectangle,
   finalize
 }
