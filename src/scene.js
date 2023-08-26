@@ -399,6 +399,42 @@ function addCustomRectangle(scene, options) {
   return scene
 }
 
+function addCustomImage(scene, options) {
+  if (!options?.image)
+    helper.logFatal('Custom image not provided.')
+
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+    helper.logFatal('Custom image not found in provided path.')
+
+  if (!options.position)
+    helper.logFatal('Custom image position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom image position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom image position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom image position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom image position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom image position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom image position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'image',
+    ...options
+  })
+
+  return scene
+}
+
 function finalize(scene, options) {
   if (!options?.buttonsColor)
     helper.logFatal('Scene "back" text color not provided.')
@@ -1197,6 +1233,51 @@ function finalize(scene, options) {
                          `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
 
                          `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'image': {
+        sceneCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
+                     `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
+
+                      `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n' +
+                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                      '      LayoutParams.WRAP_CONTENT' + '\n' +
+                      '    )' + '\n\n'
+
+        switch (custom.position) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.margins.top != 0) {
+              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
+            }
+
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomImage${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomImage${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
 
             break
           }
