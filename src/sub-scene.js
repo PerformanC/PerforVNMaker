@@ -8,7 +8,7 @@ function init(options) {
   if (visualNovel.scenes.find(scene => scene.name == options.name))
     helper.logFatal('A scene already exists with this name.')
 
-  return { name: options.name, type: 'subScene', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null }
+  return { name: options.name, type: 'subScene', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
 }
 
 export default {

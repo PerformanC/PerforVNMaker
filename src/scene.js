@@ -1244,10 +1244,10 @@ function finalize(scene, options) {
         sceneCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
                      `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
 
-                      `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n' +
-                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                      '      LayoutParams.WRAP_CONTENT' + '\n' +
-                      '    )' + '\n\n'
+                     `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n'
 
         switch (custom.position) {
           case 'left':
@@ -1263,21 +1263,21 @@ function finalize(scene, options) {
 
             sceneCode += definitions.join('\n') + '\n\n' +
 
-                          `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                          `    layoutParamsCustomImage${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomImage${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
+                         `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomImage${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomImage${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
 
-                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+                         `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
 
-                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+                         `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
 
             break
           }
           case 'center': {
             sceneCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
 
-                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+                         `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
 
-                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+                         `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
 
             break
           }
