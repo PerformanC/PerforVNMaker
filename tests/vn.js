@@ -10,7 +10,7 @@ perfor.coder.init({
   }
 })
 
-perfor.menu.make({
+const menu = perfor.menu.init({
   textSpeed: 50,
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
@@ -29,7 +29,9 @@ perfor.menu.make({
     textColor: 'FFFFFFF',
     opacity: 0.8
   }
-}) /* Generates the menu */
+})
+
+perfor.menu.finalize(menu) /* Generates the menu */
 
 let firstScene = perfor.scene.init({ name: 'scene1' }) /* Initializes a scene */
 firstScene = perfor.scene.addCharacter(firstScene, {

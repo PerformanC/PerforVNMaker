@@ -404,7 +404,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.19.2-b.0 (code generator), 1.17.8-b.0 (generated code).")
+      append(" 1.20.2 (code generator), 1.18.8 (generated code).")
       append("\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
