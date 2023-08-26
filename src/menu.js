@@ -254,239 +254,285 @@ function addCustomImage(menu, options) {
 function finalize(menu) {
   let customCode = ''
   menu.custom.forEach((custom, index) => {
-    scene.custom.forEach((custom, index) => {
-      switch (custom.type) {
-        case 'text': {
-          customCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
-                        `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
-                        `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
-                        `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
-  
-                        `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
-                        '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                        '      LayoutParams.WRAP_CONTENT' + '\n' +
-                        '    )' + '\n\n'
-  
-          switch (custom.position) {
-            case 'left':
-            case 'right': {
-              const definitions = []
-              if (custom.margins.top != 0) {
-                definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
-              }
-  
-              if (custom.margins.side != 0) {
-                definitions.push(`    val ${custom.position}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
-              }
-  
-              customCode += definitions.join('\n') + '\n\n' +
-  
-                            `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                            `    layoutParamsCustomText${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomText${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
-  
-                            `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
-  
-              break
+    switch (custom.type) {
+      case 'text': {
+        customCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
+                      `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
+                      `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                      `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
+
+                      `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
+                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                      '      LayoutParams.WRAP_CONTENT' + '\n' +
+                      '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
             }
-            case 'center': {
-              customCode += `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
-  
-                            `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
-  
-              break
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
             }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomText${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                          `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
           }
-  
-          break
+          case 'center': {
+            customCode += `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                          `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
         }
-        case 'button': {
-          customCode += `    val buttonCustomButton${index} = Button(this)` + '\n' +
-                        `    buttonCustomButton${index}.text = "${custom.text}"` + '\n' +
-                        `    buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
-                        `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
-                        '    buttonCustomButton${index}.background = null' + '\n\n' +
-  
-                        `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n'
 
-          switch (custom.height) {
-            case 'match': {
-              customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
-
-              break
-            }
-            case 'wrap': {
-              customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
-
-              break
-            }
-            default: {
-              customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
-            }
-          }
-
-          customCode += '    )' + '\n\n'
-  
-          switch (custom.position) {
-            case 'left':
-            case 'right': {
-              const definitions = []
-              if (custom.margins.top != 0) {
-                definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
-              }
-  
-              if (custom.margins.side != 0) {
-                definitions.push(`    val ${custom.position}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
-              }
-  
-              customCode += definitions.join('\n') + '\n\n' +
-  
-                            `    layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                            `    layoutParamsCustomButton${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomButton${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)` + '\n\n' +
-  
-                            `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
-  
-              break
-            }
-            case 'center': {
-              customCode += `    layoutParamsCustomButton${index}.gravity = Gravity.CENTER` + '\n\n' +
-  
-                            `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
-  
-              break
-            }
-          }
-  
-          break
-        }
-        case 'rectangle': {
-          customCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
-  
-                        `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n'
-
-          switch (custom.height) {
-            case 'match': {
-              customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
-
-              break
-            }
-            case 'wrap': {
-              customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
-
-              break
-            }
-            default: {
-              customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
-            }
-          }
-
-          customCode += '    )' + '\n\n'
-  
-          switch (custom.position) {
-            case 'left':
-            case 'right': {
-              const definitions = []
-              if (custom.margins.top != 0) {
-                definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
-              }
-  
-              if (custom.margins.side != 0) {
-                definitions.push(`    val ${custom.position}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
-              }
-  
-              customCode += definitions.join('\n') + '\n\n' +
-  
-                            `    layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                            `    layoutParamsCustomRectangle${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomRectangle${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)` + '\n\n' +
-  
-                            `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
-  
-              break
-            }
-            case 'center': {
-              customCode += `    layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER` + '\n\n' +
-  
-                            `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
-  
-              break
-            }
-          }
-  
-          break
-        }
-        case 'image': {
-          customCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
-                        `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
-  
-                        `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n'
-
-          switch (custom.height) {
-            case 'match': {
-              customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
-
-              break
-            }
-            case 'wrap': {
-              customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
-
-              break
-            }
-            default: {
-              customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
-            }
-          }
-
-                        '    )' + '\n\n'
-  
-          switch (custom.position) {
-            case 'left':
-            case 'right': {
-              const definitions = []
-              if (custom.margins.top != 0) {
-                definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.top}ssp)`)
-              }
-  
-              if (custom.margins.side != 0) {
-                definitions.push(`    val ${custom.position}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.margins.side}ssp)`)
-              }
-  
-              customCode += definitions.join('\n') + '\n\n' +
-  
-                            `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
-                            `    layoutParamsCustomImage${index}.setMargins(${custom.margins.side != 0 ? `${custom.position}DpCustomImage${index}` : '0'}, 0, ${custom.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
-  
-                            `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
-  
-              break
-            }
-            case 'center': {
-              customCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
-  
-                            `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
-  
-                            `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
-  
-              break
-            }
-          }
-  
-          break
-        }
+        break
       }
-    })
+      case 'button': {
+        customCode += `    val buttonCustomButton${index} = Button(this)` + '\n' +
+                      `    buttonCustomButton${index}.text = "${custom.text}"` + '\n' +
+                      `    buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                      `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
+                      '    buttonCustomButton${index}.background = null' + '\n\n' +
+
+                      `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomButton${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                          `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomButton${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                          `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'rectangle': {
+        customCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
+
+                      `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomRectangle${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                          `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                          `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'image': {
+        customCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
+                      `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
+
+                      `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomImage${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+    }
   })
 
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n'

@@ -10,7 +10,7 @@ perfor.coder.init({
   }
 })
 
-const menu = perfor.menu.init({
+let menu = perfor.menu.init({
   textSpeed: 50,
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
@@ -30,6 +30,22 @@ const menu = perfor.menu.init({
     opacity: 0.8
   }
 })
+
+/*
+menu = perfor.menu.addCustomRectangle(menu, {
+  color: 'FFFFFF',
+  opacity: 0.8,
+  height: 'match',
+  width: 'match',
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  }
+})
+*/
 
 perfor.menu.finalize(menu) /* Generates the menu */
 
@@ -97,6 +113,22 @@ secondScene = perfor.scene.addSpeech(secondScene, {
   }
 }) /* Adds a speech to the scene */
 secondScene = perfor.scene.setNextScene(secondScene, 'scene4')
+/*
+secondScene = perfor.scene.addCustomRectangle(secondScene, {
+  color: 'FFFFFF',
+  opacity: 0.8,
+  height: 'match',
+  width: 'match',
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  }
+})
+*/
+
 perfor.scene.finalize(secondScene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 
 let thirdScene = perfor.subScene.init({ name: 'scene3' })
