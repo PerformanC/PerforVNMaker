@@ -331,6 +331,18 @@ function addCustomButton(scene, options) {
   if (typeof options.fontSize != 'number')
     helper.logFatal('Custom button text font size must be a number.')
 
+  if (!options.height)
+    helper.logFatal('Custom button height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom button height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom button width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom button width must be either match, wrap or a number.')
+
   if (!options.position)
     helper.logFatal('Custom button position not provided.')
 
@@ -370,6 +382,18 @@ function addCustomRectangle(scene, options) {
   if (typeof options.opacity != 'number')
     helper.logFatal('Custom rectangle opacity must be a number.')
 
+  if (!options.height)
+    helper.logFatal('Custom rectangle height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom rectangle height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom rectangle width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom rectangle width must be either match, wrap or a number.')
+
   if (!options.position)
     helper.logFatal('Custom rectangle position not provided.')
 
@@ -405,6 +429,18 @@ function addCustomImage(scene, options) {
 
   if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
     helper.logFatal('Custom image not found in provided path.')
+
+  if (!options.height)
+    helper.logFatal('Custom image height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom image height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom image width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom image width must be either match, wrap or a number.')
 
   if (!options.position)
     helper.logFatal('Custom image position not provided.')
@@ -1155,10 +1191,25 @@ function finalize(scene, options) {
                      `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
                      '    buttonCustomButton${index}.background = null' + '\n\n' +
 
-                     `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n'
+                     `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
+          }
+        }
+
+        sceneCode += '    )' + '\n\n'
 
         switch (custom.position) {
           case 'left':
@@ -1199,10 +1250,25 @@ function finalize(scene, options) {
       case 'rectangle': {
         sceneCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
 
-                     `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n'
+                     `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n'
+
+                     switch (custom.height) {
+                      case 'match': {
+                        sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+                        break
+                      }
+                      case 'wrap': {
+                        sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+                        break
+                      }
+                      default: {
+                        sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
+                      }
+                    }
+
+        sceneCode += '    )' + '\n\n'
 
         switch (custom.position) {
           case 'left':
@@ -1244,10 +1310,25 @@ function finalize(scene, options) {
         sceneCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
                      `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
 
-                     `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n' +
-                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
-                     '      LayoutParams.WRAP_CONTENT' + '\n' +
-                     '    )' + '\n\n'
+                     `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n'
+
+                     switch (custom.height) {
+                      case 'match': {
+                        sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+                        break
+                      }
+                      case 'wrap': {
+                        sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+                        break
+                      }
+                      default: {
+                        sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}ssp),` + '\n'
+                      }
+                    }
+
+        sceneCode += '    )' + '\n\n'
 
         switch (custom.position) {
           case 'left':
@@ -1324,5 +1405,6 @@ export default {
   addCustomText,
   addCustomButton,
   addCustomRectangle,
+  addCustomImage,
   finalize
 }

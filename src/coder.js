@@ -198,8 +198,6 @@ function finalize() {
           subScene1.parent = scene.name
           subScene2.parent = scene.name
 
-          console.log(visualNovel.subScenes)
-
           const subFunctionParams = { function: [], switch: [] }
           if (subScene1.speech && !scene.speech) {
             subFunctionParams.switch.push('true')
