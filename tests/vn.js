@@ -6,7 +6,7 @@ perfor.coder.init({
   applicationId: 'com.perforvnm',
   version: '1.0.0',
   paths: {
-    android: './android'
+    android: '../android'
   }
 })
 
