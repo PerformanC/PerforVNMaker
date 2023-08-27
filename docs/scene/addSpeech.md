@@ -31,13 +31,14 @@ scene.addSpeech(scene, {
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `author`: The author of the speech. An object with the following properties:
-  - `name`: The name of the author.
-  - `textColor`: The color of the author name.
-  - `rectangle`: The rectangle of the author name. An object with the following properties:
-    - `color`: The color of the rectangle.
-    - `opacity`: The opacity of the rectangle.
-- `text`: The text of the speech. An object with the following properties:
+- `options`: The options of the speech. An object with the following properties:
+  - `author`: The author of the speech. An object with the following properties:
+    - `name`: The name of the author.
+    - `textColor`: The color of the author name.
+    - `rectangle`: The rectangle of the author name. An object with the following properties:
+      - `color`: The color of the rectangle.
+      - `opacity`: The opacity of the rectangle.
+  - `text`: The text of the speech. An object with the following properties:
   - `content`: The content of the speech.
   - `color`: The color of the text.
   - `fontSize`: The font size of the text.

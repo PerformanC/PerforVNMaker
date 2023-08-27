@@ -6,9 +6,11 @@ High-performance Visual Novel Maker with code generation technology.
 
 ## Project status
 
-PerforVNM even though the fast development, leaks a few features that are essential for big VNs, but if you're making a small VN, we'll provide the best technologies for you.
+PerforVNM is currently in development, and limited to Android only, but we're working on making it available on more OSes.
 
-OBS: Remember to always update PerforVNM.
+If you don't care about the current limitations, you can take a look at the [Usage](#usage) section, and if you want to know more about the current limitations, you can take a look at the [Feature support](#feature-support) section.
+
+OBS: Remember to always update PerforVNM, soon we'll bring more platforms.
 
 ## Using PerforVNM?
 

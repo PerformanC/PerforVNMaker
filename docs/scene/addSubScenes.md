@@ -15,13 +15,14 @@ OBS: Maximum of 2 sub-scenes, if more are added, PerforVNM will ignore the rest.
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `subScenes`: The sub-scenes configurations.
-  - `subScene` is an array of objects with the following properties:
-    - `text`: The text that will be displayed in the sub-scene button.
-    - `scene`: The name of the scene that will be called when the sub-scene button is pressed.
-  - `subScene` is an array of objects with the following properties (2nd sub-scene):
-    - `text`: The text that will be displayed in the sub-scene button.
-    - `scene`: The name of the scene that will be called when the sub-scene button is pressed.
+- `options`: The options of the scenario. An object with the following property:
+  - `subScenes`: The sub-scenes configurations.
+    - `subScene` is an array of objects with the following properties:
+      - `text`: The text that will be displayed in the sub-scene button.
+      - `scene`: The name of the scene that will be called when the sub-scene button is pressed.
+    - `subScene` is an array of objects with the following properties (2nd sub-scene):
+      - `text`: The text that will be displayed in the sub-scene button.
+      - `scene`: The name of the scene that will be called when the sub-scene button is pressed.
 
 ## Return value
 

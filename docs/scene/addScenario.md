@@ -15,7 +15,8 @@ scene.addScenario(scene, { image: 'background_thanking' })
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `image`: The image of the scenario.
+- `options`: The options of the scenario. An object with the following property:
+  - `image`: The image of the scenario.
 
 ## Return value
 

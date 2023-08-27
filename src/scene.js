@@ -12,7 +12,7 @@ function init(options) {
   if (visualNovel.scenes.find(scene => scene.name == options.name))
     helper.logFatal('A scene already exists with this name.')
 
-  return { name: options.name, type: 'normal', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null }
+  return { name: options.name, type: 'normal', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
 }
 
 function addCharacter(scene, options) {
@@ -272,6 +272,201 @@ function addSubScenes(scene, options) {
   })
 
   scene.subScenes = options
+
+  return scene
+}
+
+function addCustomText(scene, options) {
+  if (!options?.text)
+    helper.logFatal('Custom text not provided.')
+
+  if (!options.color)
+    helper.logFatal('Custom text color not provided.')
+
+  if (!options.fontSize)
+    helper.logFatal('Custom text font size not provided.')
+
+  if (typeof options.fontSize != 'number')
+    helper.logFatal('Custom text font size must be a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom text position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom text position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom text position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom text position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom text position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom text position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom text position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'text',
+    ...options
+  })
+
+  return scene
+}
+
+function addCustomButton(scene, options) {
+  if (!options?.text)
+    helper.logFatal('Custom button text not provided.')
+
+  if (!options.color)
+    helper.logFatal('Custom button text color not provided.')
+
+  if (!options.fontSize)
+    helper.logFatal('Custom button text font size not provided.')
+
+  if (typeof options.fontSize != 'number')
+    helper.logFatal('Custom button text font size must be a number.')
+
+  if (!options.height)
+    helper.logFatal('Custom button height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom button height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom button width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom button width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom button position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom button position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom button position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom button position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom button position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom button position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom button position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'button',
+    ...options
+  })
+
+  return scene
+}
+
+function addCustomRectangle(scene, options) {
+  if (!options?.color)
+    helper.logFatal('Custom rectangle color not provided.')
+
+  if (!options.opacity)
+    helper.logFatal('Custom rectangle opacity not provided.')
+
+  if (typeof options.opacity != 'number')
+    helper.logFatal('Custom rectangle opacity must be a number.')
+
+  if (!options.height)
+    helper.logFatal('Custom rectangle height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom rectangle height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom rectangle width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom rectangle width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom rectangle position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom rectangle position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom rectangle position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom rectangle position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom rectangle position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom rectangle position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom rectangle position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'rectangle',
+    ...options
+  })
+
+  return scene
+}
+
+function addCustomImage(scene, options) {
+  if (!options?.image)
+    helper.logFatal('Custom image not provided.')
+
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+    helper.logFatal('Custom image not found in provided path.')
+
+  if (!options.height)
+    helper.logFatal('Custom image height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom image height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom image width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom image width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom image position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom image position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom image position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom image position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom image position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom image position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom image position top margin must be a number.')
+
+  scene.custom.push({
+    type: 'image',
+    ...options
+  })
 
   return scene
 }
@@ -940,6 +1135,288 @@ function finalize(scene, options) {
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
 
+  scene.custom.forEach((custom, index) => {
+    switch (custom.type) {
+      case 'text': {
+        sceneCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
+                     `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
+                     `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                     `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
+
+                     `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
+                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                     '      LayoutParams.WRAP_CONTENT' + '\n' +
+                     '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomText${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                         `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                         `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'button': {
+        sceneCode += `    val buttonCustomButton${index} = Button(this)` + '\n' +
+                     `    buttonCustomButton${index}.text = "${custom.text}"` + '\n' +
+                     `    buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                     `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
+                     '    buttonCustomButton${index}.background = null' + '\n\n' +
+
+                     `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        sceneCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomButton${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                         `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomButton${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                         `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'rectangle': {
+        sceneCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
+
+                     `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+        case 'match': {
+          sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+          break
+        }
+        case 'wrap': {
+          sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+          break
+        }
+        default: {
+          sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+        }
+      }
+
+      switch (custom.width) {
+        case 'match': {
+          sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+          break
+        }
+        case 'wrap': {
+          sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+          break
+        }
+        default: {
+          sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+        }
+      }
+
+        sceneCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomRectangle${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                         `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                         `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'image': {
+        sceneCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
+                     `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
+
+                     `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            sceneCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            sceneCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        sceneCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            sceneCode += definitions.join('\n') + '\n\n' +
+
+                         `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                         `    layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomImage${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
+
+                         `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                         `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            sceneCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                         `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                         `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+    }
+  })
+
   if (scene.type == 'normal') {
     sceneCode += `    setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__` + '\n' +
                  '  }'
@@ -973,5 +1450,9 @@ export default {
   addTransition,
   setNextScene,
   addSubScenes,
+  addCustomText,
+  addCustomButton,
+  addCustomRectangle,
+  addCustomImage,
   finalize
 }

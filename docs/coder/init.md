@@ -17,14 +17,15 @@ coder.init({
 
 ## Parameters
 
-- `name`: The compact name of the VN is used in the title of the app.
-- `fullName`: The full name of the VN, used in the About menu.
-- `applicationId`: The application id of the VN is used in the package name of the app.
-- `version`: The version of the VN, used by the system and in the About menu.
+- `options`: The options of the VN.
+  - `name`: The compact name of the VN is used in the title of the app.
+  - `fullName`: The full name of the VN, used in the About menu.
+  - `applicationId`: The application ID of the VN is used in the package name of the app.
+  - `version`: The version of the VN, used by the system and in the About menu.
 
 ## Return value
 
-This function will return `null` if the initialization was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return `undefined` if the initialization was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 

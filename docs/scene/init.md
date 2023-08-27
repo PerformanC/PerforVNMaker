@@ -12,7 +12,8 @@ scene.init({ name: 'scene1' })
 
 ## Parameters
 
-- `name`: The name of the scene.
+- `options`: The options of the scene.
+    - `name`: The name of the scene.
 
 ## Return value
 

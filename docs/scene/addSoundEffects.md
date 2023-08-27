@@ -19,9 +19,10 @@ scene.addSoundEffects(scene, [{ sound: 'menu_music', delay: 1000 }])
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `soundEffects`: An array of sound effects. Each sound effect must have the following properties:
-  - `sound`: The sound effect file name.
-  - `delay`: The delay of the sound effect can be any number.
+- `options`: The options of the sound effects. An array with the following properties:
+  - `soundEffects`: An array of sound effects. Each sound effect must have the following properties:
+    - `sound`: The sound effect file name.
+    - `delay`: The delay of the sound effect can be any number.
 
 ## Return value
 

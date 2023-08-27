@@ -2,8 +2,8 @@ import fs from 'fs'
 
 import helper from './helper.js'
 
-function make(options) {
-  if (!options.textColor)
+function init(options) {
+  if (!options?.textColor)
     helper.logFatal('Menu text color not provided.')
 
   if (!options.backTextColor)
@@ -21,8 +21,11 @@ function make(options) {
   if (!options.seekBar.thumbColor)
     helper.logFatal('Seek bar thumb color not provided.')
 
-  if (!options?.background?.image)
+  if (!options.background?.image)
     helper.logFatal('Menu background image not provided.')
+
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
+    helper.logFatal('Menu background image not found in provided path.')
 
   if (options.background.music) {
     if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
@@ -30,9 +33,6 @@ function make(options) {
 
     visualNovel.internalInfo.menuMusic = true
   }
-
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
-    helper.logFatal('Menu background image not found in provided path.')
 
   if (!options.footer?.color)
     helper.logFatal('Menu footer color not provided.')
@@ -46,10 +46,499 @@ function make(options) {
   if (typeof options.footer.opacity != 'number')
     helper.logFatal('Menu footer opacity must be a number.')
 
+  if (options.footer.opacity < 0 || options.footer.opacity > 1)
+    helper.logFatal('Menu footer opacity must be between 0 and 1.')
+
+  return {
+    ...options,
+    custom: []
+  }
+}
+
+
+function addCustomText(menu, options) {
+  if (!options?.text)
+    helper.logFatal('Custom text not provided.')
+
+  if (!options.color)
+    helper.logFatal('Custom text color not provided.')
+
+  if (!options.fontSize)
+    helper.logFatal('Custom text font size not provided.')
+
+  if (typeof options.fontSize != 'number')
+    helper.logFatal('Custom text font size must be a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom text position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom text position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom text position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom text position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom text position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom text position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom text position top margin must be a number.')
+
+    menu.custom.push({
+    type: 'text',
+    ...options
+  })
+
+  return menu
+}
+
+function addCustomButton(menu, options) {
+  if (!options?.text)
+    helper.logFatal('Custom button text not provided.')
+
+  if (!options.color)
+    helper.logFatal('Custom button text color not provided.')
+
+  if (!options.fontSize)
+    helper.logFatal('Custom button text font size not provided.')
+
+  if (typeof options.fontSize != 'number')
+    helper.logFatal('Custom button text font size must be a number.')
+
+    if (!options.height)
+    helper.logFatal('Custom button height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom button height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom button width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom button width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom button position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom button position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom button position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom button position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom button position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom button position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom button position top margin must be a number.')
+
+    menu.custom.push({
+    type: 'button',
+    ...options
+  })
+
+  return menu
+}
+
+function addCustomRectangle(menu, options) {
+  if (!options?.color)
+    helper.logFatal('Custom rectangle color not provided.')
+
+  if (!options.opacity)
+    helper.logFatal('Custom rectangle opacity not provided.')
+
+  if (typeof options.opacity != 'number')
+    helper.logFatal('Custom rectangle opacity must be a number.')
+
+    if (!options.height)
+    helper.logFatal('Custom rectangle height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom rectangle height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom rectangle width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom rectangle width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom rectangle position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom rectangle position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom rectangle position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom rectangle position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom rectangle position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom rectangle position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom rectangle position top margin must be a number.')
+
+    menu.custom.push({
+    type: 'rectangle',
+    ...options
+  })
+
+  return menu
+}
+
+function addCustomImage(menu, options) {
+  if (!options?.image)
+    helper.logFatal('Custom image not provided.')
+
+  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
+    helper.logFatal('Custom image not found in provided path.')
+
+    if (!options.height)
+    helper.logFatal('Custom image height not provided.')
+
+  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
+    helper.logFatal('Custom image height must be either match, wrap or a number.')
+
+  if (!options.width)
+    helper.logFatal('Custom image width not provided.')
+
+  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
+    helper.logFatal('Custom image width must be either match, wrap or a number.')
+
+  if (!options.position)
+    helper.logFatal('Custom image position not provided.')
+
+  if (options.position?.side == null)
+    helper.logFatal('Custom image position side not provided.')
+
+  if (!['center', 'left', 'right'].includes(options.position.side))
+    helper.logFatal('Custom image position side not valid, it must be either center, left or right.')
+
+  if (options.position.side != 'center' && options.position.margins?.side == null)
+    helper.logFatal('Custom image position side margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
+    helper.logFatal('Custom image position margin must be a number.')
+
+  if (options.position.side != 'center' && options.position.margins?.top == null)
+    helper.logFatal('Custom image position top margin not provided.')
+
+  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
+    helper.logFatal('Custom image position top margin must be a number.')
+
+    menu.custom.push({
+    type: 'image',
+    ...options
+  })
+
+  return menu
+}
+
+function finalize(menu) {
+  let customCode = ''
+  menu.custom.forEach((custom, index) => {
+    switch (custom.type) {
+      case 'text': {
+        customCode += `    val textViewCustomText${index} = TextView(this)` + '\n' +
+                      `    textViewCustomText${index}.text = "${custom.text}"` + '\n' +
+                      `    textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                      `    textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n\n' +
+
+                      `    val layoutParamsCustomText${index} = LayoutParams(` + '\n' +
+                      '      LayoutParams.WRAP_CONTENT,' + '\n' +
+                      '      LayoutParams.WRAP_CONTENT' + '\n' +
+                      '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomText${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                          `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomText${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}` + '\n\n' +
+
+                          `    frameLayout.addView(textViewCustomText${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'button': {
+        customCode += `    val buttonCustomButton${index} = Button(this)` + '\n' +
+                      `    buttonCustomButton${index}.text = "${custom.text}"` + '\n' +
+                      `    buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))` + '\n' +
+                      `    buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())` + '\n' +
+                      '    buttonCustomButton${index}.background = null' + '\n\n' +
+
+                      `    val layoutParamsCustomButton${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomButton${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                          `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomButton${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}` + '\n\n' +
+
+                          `    frameLayout.addView(buttonCustomButton${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'rectangle': {
+        customCode += `    val rectangleViewCustomRectangle${index} = RectangleView(this)` + '\n\n' +
+
+                      `    val layoutParamsCustomRectangle${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomRectangle${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                          `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}` + '\n\n' +
+
+                          `    frameLayout.addView(rectangleViewCustomRectangle${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+      case 'image': {
+        customCode += `    val imageViewCustomImage${index} = ImageView(this)` + '\n' +
+                      `    imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})` + '\n\n' +
+
+                      `    val layoutParamsCustomImage${index} = LayoutParams(` + '\n'
+
+        switch (custom.height) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),` + '\n'
+          }
+        }
+
+        switch (custom.width) {
+          case 'match': {
+            customCode += '      LayoutParams.MATCH_PARENT,' + '\n'
+
+            break
+          }
+          case 'wrap': {
+            customCode += '      LayoutParams.WRAP_CONTENT,' + '\n'
+
+            break
+          }
+          default: {
+            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),` + '\n'
+          }
+        }
+
+        customCode += '    )' + '\n\n'
+
+        switch (custom.position.side) {
+          case 'left':
+          case 'right': {
+            const definitions = []
+            if (custom.position.margins.top != 0) {
+              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+            }
+
+            if (custom.position.margins.side != 0) {
+              definitions.push(`    val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            }
+
+            customCode += definitions.join('\n') + '\n\n' +
+
+                          `    layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START` + '\n' +
+                          `    layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomImage${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+          case 'center': {
+            customCode += `    layoutParamsCustomImage${index}.gravity = Gravity.CENTER` + '\n\n' +
+
+                          `    imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}` + '\n\n' +
+
+                          `    frameLayout.addView(imageViewCustomImage${index})` + '\n\n'
+
+            break
+          }
+        }
+
+        break
+      }
+    }
+  })
+
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)' + '\n'
 
-  if (options.background.music) {
-    mainCode += `    mediaPlayer = MediaPlayer.create(this, R.raw.${options.background.music})` + '\n\n' +
+  if (menu.background.music) {
+    mainCode += `    mediaPlayer = MediaPlayer.create(this, R.raw.${menu.background.music})` + '\n\n' +
 
                 '    if (mediaPlayer != null) {' + '\n' +
                 '      mediaPlayer!!.start()' + '\n\n' +
@@ -63,7 +552,7 @@ function make(options) {
                 '    }' + '\n\n'
   }
 
-  mainCode += `    textSpeed = sharedPreferences.getLong("textSpeed", ${options.textSpeed}L)` + '\n\n' +
+  mainCode += `    textSpeed = sharedPreferences.getLong("textSpeed", ${menu.textSpeed}L)` + '\n\n' +
 
               '    sEffectVolume = sharedPreferences.getFloat("sEffectVolume", 1f)' + '\n\n' +
 
@@ -77,12 +566,12 @@ function make(options) {
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
 
-  const menuCode = '  private fun menu() {' + '\n' +
+  let menuCode = '  private fun menu() {' + '\n' +
                    '    val frameLayout = FrameLayout(this)' + '\n' +
                    '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                    '    val imageView = ImageView(this)' + '\n' +
-                   `    imageView.setImageResource(R.raw.${options.background.image})` + '\n' +
+                   `    imageView.setImageResource(R.raw.${menu.background.image})` + '\n' +
                    '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                    '    frameLayout.addView(imageView)' + '\n\n' +
@@ -93,14 +582,14 @@ function make(options) {
                    '    layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                    '    rectangleView.layoutParams = layoutParams' + '\n' +
-                   `    rectangleView.setAlpha(${options.footer.opacity}f)` + '\n\n' +
+                   `    rectangleView.setAlpha(${menu.footer.opacity}f)` + '\n\n' +
 
                    '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                    '    val buttonStart = Button(this)' + '\n' +
                    '    buttonStart.text = "Start"' + '\n' +
                    '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                   `    buttonStart.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                   `    buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                    '    buttonStart.background = null' + '\n\n' +
 
                    '    val layoutParamsStart = LayoutParams(' + '\n' +
@@ -122,7 +611,7 @@ function make(options) {
                    '    val buttonAbout = Button(this)' + '\n' +
                    '    buttonAbout.text = "About"' + '\n' +
                    '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                   `    buttonAbout.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                   `    buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                    '    buttonAbout.background = null' + '\n\n' +
 
                    '    val layoutParamsAbout = LayoutParams(' + '\n' +
@@ -144,7 +633,7 @@ function make(options) {
                    '    val buttonSettings = Button(this)' + '\n' +
                    '    buttonSettings.text = "Settings"' + '\n' +
                    '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                   `    buttonSettings.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                   `    buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                    '    buttonSettings.background = null' + '\n\n' +
 
                    '    val layoutParamsSettings = LayoutParams(' + '\n' +
@@ -166,7 +655,7 @@ function make(options) {
                    '    val buttonSaves = Button(this)' + '\n' +
                    '    buttonSaves.text = "Saves"' + '\n' +
                    '    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                   `    buttonSaves.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                   `    buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                    '    buttonSaves.background = null' + '\n\n' +
 
                    '    val layoutParamsSaves = LayoutParams(' + '\n' +
@@ -183,16 +672,20 @@ function make(options) {
                    '      saves(true)' + '\n' +
                    '    }' + '\n\n' +
 
-                   '    frameLayout.addView(buttonSaves)' + '\n\n' +
+                   '    frameLayout.addView(buttonSaves)' + '\n\n'
 
-                   '    setContentView(frameLayout)' + '\n' +
+  if (menu.custom.length != 0) {
+    menuCode += customCode
+  }
+
+  menuCode +=      '    setContentView(frameLayout)' + '\n' +
                    '  }'
 
   helper.writeFunction(menuCode)
 
   const rectangleViewCode = '\n' + 'class RectangleView(context: Context) : View(context) {' + '\n' +
                             '  private val paint = Paint().apply {' + '\n' +
-                            '    color = 0xFF' + options.footer.color + '.toInt()' + '\n' +
+                            `    color = 0xFF${menu.footer.color}.toInt()` + '\n' +
                             '    style = Paint.Style.FILL' + '\n' +
                             '  }' + '\n\n' +
 
@@ -214,7 +707,7 @@ function make(options) {
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                     '    val imageView = ImageView(this)' + '\n' +
-                    `    imageView.setImageResource(R.raw.${options.background.image})` + '\n' +
+                    `    imageView.setImageResource(R.raw.${menu.background.image})` + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                     '    frameLayout.addView(imageView)' + '\n\n' +
@@ -246,14 +739,14 @@ function make(options) {
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
-                    `    rectangleView.setAlpha(${options.footer.opacity}f)` + '\n\n' +
+                    `    rectangleView.setAlpha(${menu.footer.opacity}f)` + '\n\n' +
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
                     '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonStart.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
                     '    val layoutParamsStart = LayoutParams(' + '\n' +
@@ -275,7 +768,7 @@ function make(options) {
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
                     '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonAbout.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
                     '    val layoutParamsAbout = LayoutParams(' + '\n' +
@@ -293,7 +786,7 @@ function make(options) {
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
                     '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSettings.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
                     '    val layoutParamsSettings = LayoutParams(' + '\n' +
@@ -315,7 +808,7 @@ function make(options) {
                     '    val buttonSaves = Button(this)' + '\n' +
                     '    buttonSaves.text = "Saves"' + '\n' +
                     '    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSaves.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSaves.background = null' + '\n\n' +
 
                     '    val layoutParamsSaves = LayoutParams(' + '\n' +
@@ -337,7 +830,7 @@ function make(options) {
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
                     '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))' + '\n' +
-                    `    buttonBack.setTextColor(0xFF${options.backTextColor}.toInt())` + '\n' +
+                    `    buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())` + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
                     '    val layoutParamsBack = LayoutParams(' + '\n' +
@@ -374,13 +867,13 @@ function make(options) {
                     '      }, length - "PerforVNM".length, length, 0)' + '\n' +
                     `      append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).")` + '\n'
 
-  if (options.aboutText) {
-    aboutCode += `      append("\\n\\n${JSON.stringify(options.aboutText).slice(1, -1)}")` + '\n'
+  if (menu.aboutText) {
+    aboutCode += `      append("\\n\\n${JSON.stringify(menu.aboutText).slice(1, -1)}")` + '\n'
   }
 
   aboutCode += '    }' + '\n' +
                '    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))' + '\n' +
-               `    textView.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
+               `    textView.setTextColor(0xFF${menu.textColor}.toInt())` + '\n\n' +
 
                '    val layoutParamsText = LayoutParams(' + '\n' +
                '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -399,19 +892,23 @@ function make(options) {
                '    textView.ellipsize = TextUtils.TruncateAt.END' + '\n' +
                '    textView.movementMethod = LinkMovementMethod.getInstance()' + '\n\n' +
 
-               '    frameLayout.addView(textView)' + '\n\n' +
+               '    frameLayout.addView(textView)' + '\n\n'
 
-               '    setContentView(frameLayout)' + '\n' +
+  if (menu.custom.length != 0) {
+    aboutCode += customCode
+  }
+
+  aboutCode += '    setContentView(frameLayout)' + '\n' +
                '  }'
 
   helper.writeFunction(aboutCode)
 
-  const settingsCode = '  private fun settings(animate: Boolean) {' + '\n' +
+  let settingsCode = '  private fun settings(animate: Boolean) {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                     '    val imageView = ImageView(this)' + '\n' +
-                    `    imageView.setImageResource(R.raw.${options.background.image})` + '\n' +
+                    `    imageView.setImageResource(R.raw.${menu.background.image})` + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                     '    frameLayout.addView(imageView)' + '\n\n' +
@@ -443,14 +940,14 @@ function make(options) {
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
-                    `    rectangleView.setAlpha(${options.footer.opacity}f)` + '\n\n' +
+                    `    rectangleView.setAlpha(${menu.footer.opacity}f)` + '\n\n' +
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
                     '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonStart.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
                     '    val layoutParamsStart = LayoutParams(' + '\n' +
@@ -472,7 +969,7 @@ function make(options) {
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
                     '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonAbout.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
                     '    val layoutParamsAbout = LayoutParams(' + '\n' +
@@ -494,7 +991,7 @@ function make(options) {
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
                     '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSettings.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
                     '    val layoutParamsSettings = LayoutParams(' + '\n' +
@@ -512,7 +1009,7 @@ function make(options) {
                     '    val buttonSaves = Button(this)' + '\n' +
                     '    buttonSaves.text = "Saves"' + '\n' +
                     '    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSaves.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSaves.background = null' + '\n\n' +
 
                     '    val layoutParamsSaves = LayoutParams(' + '\n' +
@@ -534,7 +1031,7 @@ function make(options) {
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
                     '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))' + '\n' +
-                    `    buttonBack.setTextColor(0xFF${options.backTextColor}.toInt())` + '\n' +
+                    `    buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())` + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
                     '    val layoutParamsBack = LayoutParams(' + '\n' +
@@ -563,7 +1060,7 @@ function make(options) {
                     '    val textViewTextSpeed = TextView(this)' + '\n' +
                     '    textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"' + '\n' +
                     '    textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))' + '\n' +
-                    `    textViewTextSpeed.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
+                    `    textViewTextSpeed.setTextColor(0xFF${menu.textColor}.toInt())` + '\n\n' +
 
                     '    val layoutParamsText = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -640,7 +1137,7 @@ function make(options) {
                     '    val textViewMusicVolume = TextView(this)' + '\n' +
                     '    textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"' + '\n' +
                     '    textViewMusicVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))' + '\n' +
-                    `    textViewMusicVolume.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
+                    `    textViewMusicVolume.setTextColor(0xFF${menu.textColor}.toInt())` + '\n\n' +
 
                     '    val layoutParamsTextMusicVolume = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -711,7 +1208,7 @@ function make(options) {
                     '    val textViewSEffectVolume = TextView(this)' + '\n' +
                     '    textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"' + '\n' +
                     '    textViewSEffectVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))' + '\n' +
-                    `    textViewSEffectVolume.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
+                    `    textViewSEffectVolume.setTextColor(0xFF${menu.textColor}.toInt())` + '\n\n' +
 
                     '    val layoutParamsTextSEffectVolume = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -780,7 +1277,7 @@ function make(options) {
                     '    val textViewSceneMusic = TextView(this)' + '\n' +
                     '    textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"' + '\n' +
                     '    textViewSceneMusic.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))' + '\n' +
-                    `    textViewSceneMusic.setTextColor(0xFF${options.textColor}.toInt())` + '\n\n' +
+                    `    textViewSceneMusic.setTextColor(0xFF${menu.textColor}.toInt())` + '\n\n' +
 
                     '    val layoutParamsTextSceneMusic = LayoutParams(' + '\n' +
                     '      LayoutParams.WRAP_CONTENT,' + '\n' +
@@ -844,9 +1341,13 @@ function make(options) {
                     '      override fun onStartTrackingTouch(seekBar: SeekBar?) {}' + '\n\n' +
 
                     '      override fun onStopTrackingTouch(seekBar: SeekBar?) {}' + '\n' +
-                    '    })' + '\n\n' +
+                    '    })' + '\n\n'
 
-                    '    setContentView(frameLayout)' + '\n' +
+  if (menu.custom.length != 0) {
+    settingsCode += customCode
+  }
+
+  settingsCode +=   '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
   helper.writeFunction(settingsCode)
@@ -856,14 +1357,14 @@ function make(options) {
     content: '<layer-list xmlns:android="http://schemas.android.com/apk/res/android">' + '\n' +
              '  <item android:id="@android:id/background">' + '\n' +
              '    <shape android:shape="rectangle">' + '\n' +
-             `      <solid android:color="#${options.seekBar.backgroundColor}" />` + '\n' +
+             `      <solid android:color="#${menu.seekBar.backgroundColor}" />` + '\n' +
              '      <size android:height="@dimen/_13sdp" />' + '\n' +
              '    </shape>' + '\n' +
              '  </item>' + '\n' +
              '  <item android:id="@android:id/progress">' + '\n' +
              '    <clip>' + '\n' +
              '      <shape android:shape="rectangle">' + '\n' +
-             `        <solid android:color="#${options.seekBar.progressColor}" />` + '\n' +
+             `        <solid android:color="#${menu.seekBar.progressColor}" />` + '\n' +
              '        <size android:height="@dimen/_13sdp" />' + '\n' +
              '      </shape>' + '\n' +
              '    </clip>' + '\n' +
@@ -874,17 +1375,17 @@ function make(options) {
   visualNovel.customXML.push({
     path: 'drawable/custom_seekbar_thumb.xml',
     content: '<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">' + '\n' +
-             `  <solid android:color="#${options.seekBar.thumbColor}" />` + '\n' +
+             `  <solid android:color="#${menu.seekBar.thumbColor}" />` + '\n' +
              '  <size android:width="@dimen/_7sdp" android:height="@dimen/_13sdp" />' + '\n' +
              '</shape>'
   })
 
-  const saverCode = '  private fun saves(animate: Boolean) {' + '\n' +
+  let saverCode = '  private fun saves(animate: Boolean) {' + '\n' +
                     '    val frameLayout = FrameLayout(this)' + '\n' +
                     '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n' +
 
                     '    val imageView = ImageView(this)' + '\n' +
-                    `    imageView.setImageResource(R.raw.${options.background.image})` + '\n' +
+                    `    imageView.setImageResource(R.raw.${menu.background.image})` + '\n' +
                     '    imageView.scaleType = ImageView.ScaleType.FIT_CENTER' + '\n\n' +
 
                     '    frameLayout.addView(imageView)' + '\n\n' +
@@ -916,14 +1417,14 @@ function make(options) {
                     '    layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL' + '\n\n' +
 
                     '    rectangleView.layoutParams = layoutParamsRectangle' + '\n' +
-                    `    rectangleView.setAlpha(${options.footer.opacity}f)` + '\n\n' +
+                    `    rectangleView.setAlpha(${menu.footer.opacity}f)` + '\n\n' +
 
                     '    frameLayout.addView(rectangleView)' + '\n\n' +
 
                     '    val buttonStart = Button(this)' + '\n' +
                     '    buttonStart.text = "Start"' + '\n' +
                     '    buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonStart.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonStart.background = null' + '\n\n' +
 
                     '    val layoutParamsStart = LayoutParams(' + '\n' +
@@ -945,7 +1446,7 @@ function make(options) {
                     '    val buttonAbout = Button(this)' + '\n' +
                     '    buttonAbout.text = "About"' + '\n' +
                     '    buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonAbout.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonAbout.background = null' + '\n\n' +
 
                     '    val layoutParamsAbout = LayoutParams(' + '\n' +
@@ -967,7 +1468,7 @@ function make(options) {
                     '    val buttonSettings = Button(this)' + '\n' +
                     '    buttonSettings.text = "Settings"' + '\n' +
                     '    buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSettings.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSettings.background = null' + '\n\n' +
 
                     '    val layoutParamsSettings = LayoutParams(' + '\n' +
@@ -989,7 +1490,7 @@ function make(options) {
                     '    val buttonSaves = Button(this)' + '\n' +
                     '    buttonSaves.text = "Saves"' + '\n' +
                     '    buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))' + '\n' +
-                    `    buttonSaves.setTextColor(0xFF${options.footer.textColor}.toInt())` + '\n' +
+                    `    buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())` + '\n' +
                     '    buttonSaves.background = null' + '\n\n' +
 
                     '    val layoutParamsSaves = LayoutParams(' + '\n' +
@@ -1007,7 +1508,7 @@ function make(options) {
                     '    val buttonBack = Button(this)' + '\n' +
                     '    buttonBack.text = "Back"' + '\n' +
                     '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))' + '\n' +
-                    `    buttonBack.setTextColor(0xFF${options.backTextColor}.toInt())` + '\n' +
+                    `    buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())` + '\n' +
                     '    buttonBack.background = null' + '\n\n' +
 
                     '    val layoutParamsBack = LayoutParams(' + '\n' +
@@ -1149,22 +1650,31 @@ function make(options) {
 
                     '    scrollView.addView(frameLayoutScenes)' + '\n\n' +
 
-                    '    frameLayout.addView(scrollView)' + '\n\n' +
+                    '    frameLayout.addView(scrollView)' + '\n\n'
 
-                    '    setContentView(frameLayout)' + '\n' +
+  if (menu.custom.length != 0) {
+    saverCode += customCode
+  }
+
+  saverCode +=      '    setContentView(frameLayout)' + '\n' +
                     '  }'
 
   helper.writeFunction(saverCode)
 
   visualNovel.menu = {
     name: 'menu()',
-    backgroundMusic: options.background.music,
-    options
+    backgroundMusic: menu.background.music,
+    options: menu
   }
 
   helper.logOk('Main, about, settings and saves menu coded.', 'Android')
 }
 
 export default {
-  make
+  init,
+  addCustomText,
+  addCustomButton,
+  addCustomRectangle,
+  addCustomImage,
+  finalize
 }

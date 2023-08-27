@@ -13,7 +13,8 @@ scene.addTransition(scene, { duration: 1000 })
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `duration`: The duration of the transition.
+- `options`: The options of the transition. An object with the following property:
+    - `duration`: The duration of the transition.
 
 ## Return value
 

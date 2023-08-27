@@ -13,12 +13,13 @@ scene.finalize(scene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `buttonsColor`: The color of the text in the back button.
-- `footerTextColor`: The color of the text in the footer.
+- `options`: The options of the scene.
+    - `buttonsColor`: The color of the text in the back button.
+    - `footerTextColor`: The color of the text in the footer.
 
 ## Return value
 
-This function will return `null` if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return `undefined` if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 

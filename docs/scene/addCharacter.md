@@ -34,22 +34,23 @@ scene.addCharacter(scene, {
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `name`: The name of the character.
-- `image`: The image of the character.
-- `position`: The position of the character. An object with the following properties:
-  - `side`: The side of the character can be `left`, `right` or `center`.
-  - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
-    - `side`: The margin of the side of the character. (dp)
-    - `top`: The margin of the top of the character. (dp)
-- `animations`: The animation of the character. An array with objects with the following properties:
-  - `type`: The type of the animation can be `movement`, `jump`, `fadeIn`, `fadeOut`, `rotate`, `scale`. (all animations)
-  - `duration`: The duration of the animation. (all animations)
-  - `side`: The side of the character can be `left`, `right` or `center`. (movement)
-  - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center) (movement, jump)
-    - `side`: The margin of the side of the character. (dp)
-    - `top`: The margin of the top of the character. (dp)
-  - degrees: The degrees of the rotation. (rotate)
-  - scale: The scale of the character. (scale)
+- `options`: The options of the character. An object with the following properties:
+  - `name`: The name of the character.
+  - `image`: The image of the character.
+  - `position`: The position of the character. An object with the following properties:
+    - `side`: The side of the character can be `left`, `right` or `center`.
+    - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center)
+      - `side`: The margin of the side of the character. (dp)
+      - `top`: The margin of the top of the character. (dp)
+  - `animations`: The animation of the character. An array with objects with the following properties:
+    - `type`: The type of the animation can be `movement`, `jump`, `fadeIn`, `fadeOut`, `rotate`, `scale`. (all animations)
+    - `duration`: The duration of the animation. (all animations)
+    - `side`: The side of the character can be `left`, `right` or `center`. (movement)
+    - `margins`: The margin of the character can be any number. An object with the following properties:  (Not required if side == center) (movement, jump)
+      - `side`: The margin of the side of the character. (dp)
+      - `top`: The margin of the top of the character. (dp)
+    - degrees: The degrees of the rotation. (rotate)
+    - scale: The scale of the character. (scale)
 
 ## Return value
 
