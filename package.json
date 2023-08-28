@@ -1,13 +1,14 @@
 {
   "name": "@performanc/perforvnmaker",
-  "version": "1.20.2",
+  "version": "1.21.0",
   "description": "NodeJS Visual Novel Maker (code generator) ",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "node tests/vn.js"
+    "test": "node tests/vn.js",
+    "testInternals": "node tests/internals.js"
   },
   "repository": {
     "type": "git",

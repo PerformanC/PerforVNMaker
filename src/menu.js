@@ -3,51 +3,64 @@ import fs from 'fs'
 import helper from './helper.js'
 
 function init(options) {
-  if (!options?.textColor)
-    helper.logFatal('Menu text color not provided.')
-
-  if (!options.backTextColor)
-    helper.logFatal('Menu "back" text color not provided.')
-
-  if (!options.textSpeed)
-    helper.logFatal('(Menu config) Scenes text speed not provided.')
-
-  if (!options.seekBar?.backgroundColor)
-    helper.logFatal('Seek bar background color not provided.')
-
-  if (!options.seekBar.progressColor)
-    helper.logFatal('Seek bar progress color not provided.')
-
-  if (!options.seekBar.thumbColor)
-    helper.logFatal('Seek bar thumb color not provided.')
-
-  if (!options.background?.image)
-    helper.logFatal('Menu background image not provided.')
-
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.image)))
-    helper.logFatal('Menu background image not found in provided path.')
-
-  if (options.background.music) {
-    if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.background.music)))
-      helper.logFatal('Menu background music not found in provided path.')
-
-    visualNovel.internalInfo.menuMusic = true
+  const checks = {
+    'textColor': {
+      type: 'string'
+    },
+    'backTextColor': {
+      type: 'string'
+    },
+    'textSpeed': {
+      type: 'number'
+    },
+    'aboutText': {
+      type: 'string'
+    },
+    'seekBar': {
+      type: 'object',
+      params: {
+        'backgroundColor': {
+          type: 'string'
+        },
+        'progressColor': {
+          type: 'string'
+        },
+        'thumbColor': {
+          type: 'string'
+        }
+      }
+    },
+    'background': {
+      type: 'object',
+      params: {
+        'image': {
+          type: 'string'
+        },
+        'music': {
+          type: 'string',
+          required: false
+        }
+      }
+    },
+    'footer': {
+      type: 'object',
+      params: {
+        'color': {
+          type: 'string'
+        },
+        'textColor': {
+          type: 'string'
+        },
+        'opacity': {
+          type: 'number',
+          min: 0,
+          max: 1
+        }
+      }
+    }
   }
 
-  if (!options.footer?.color)
-    helper.logFatal('Menu footer color not provided.')
-
-  if (!options.footer.textColor)
-    helper.logFatal('Menu text color not provided.')
-
-  if (!options.footer.opacity)
-    helper.logFatal('Menu footer opacity not provided.')
-
-  if (typeof options.footer.opacity != 'number')
-    helper.logFatal('Menu footer opacity must be a number.')
-
-  if (options.footer.opacity < 0 || options.footer.opacity > 1)
-    helper.logFatal('Menu footer opacity must be between 0 and 1.')
+  helper.verifyParams(checks, options)
 
   return {
     ...options,
@@ -57,40 +70,41 @@ function init(options) {
 
 
 function addCustomText(menu, options) {
-  if (!options?.text)
-    helper.logFatal('Custom text not provided.')
+  const checks = {
+    'text': {
+      type: 'string'
+    },
+    'color': {
+      type: 'string'
+    },
+    'fontSize': {
+      type: 'number'
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  helper.verifyParams(checks, options)
 
-  if (!options.color)
-    helper.logFatal('Custom text color not provided.')
-
-  if (!options.fontSize)
-    helper.logFatal('Custom text font size not provided.')
-
-  if (typeof options.fontSize != 'number')
-    helper.logFatal('Custom text font size must be a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom text position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom text position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom text position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom text position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom text position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom text position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom text position top margin must be a number.')
-
-    menu.custom.push({
+  menu.custom.push({
     type: 'text',
     ...options
   })
@@ -99,52 +113,55 @@ function addCustomText(menu, options) {
 }
 
 function addCustomButton(menu, options) {
-  if (!options?.text)
-    helper.logFatal('Custom button text not provided.')
+  const checks = {
+    'text': {
+      type: 'string'
+    },
+    'color': {
+      type: 'string'
+    },
+    'fontSize': {
+      type: 'number'
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options.color)
-    helper.logFatal('Custom button text color not provided.')
+  helper.verifyParams(checks, options)
 
-  if (!options.fontSize)
-    helper.logFatal('Custom button text font size not provided.')
-
-  if (typeof options.fontSize != 'number')
-    helper.logFatal('Custom button text font size must be a number.')
-
-    if (!options.height)
-    helper.logFatal('Custom button height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom button height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom button width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom button width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom button position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom button position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom button position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom button position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom button position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom button position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom button position top margin must be a number.')
-
-    menu.custom.push({
+  menu.custom.push({
     type: 'button',
     ...options
   })
@@ -153,49 +170,54 @@ function addCustomButton(menu, options) {
 }
 
 function addCustomRectangle(menu, options) {
-  if (!options?.color)
-    helper.logFatal('Custom rectangle color not provided.')
+  const checks = {
+    'color': {
+      type: 'string'
+    },
+    'opacity': {
+      type: 'number',
+      min: 0,
+      max: 1
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options.opacity)
-    helper.logFatal('Custom rectangle opacity not provided.')
+  helper.verifyParams(checks, options)
 
-  if (typeof options.opacity != 'number')
-    helper.logFatal('Custom rectangle opacity must be a number.')
-
-    if (!options.height)
-    helper.logFatal('Custom rectangle height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom rectangle height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom rectangle width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom rectangle width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom rectangle position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom rectangle position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom rectangle position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom rectangle position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom rectangle position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom rectangle position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom rectangle position top margin must be a number.')
-
-    menu.custom.push({
+  menu.custom.push({
     type: 'rectangle',
     ...options
   })
@@ -204,46 +226,50 @@ function addCustomRectangle(menu, options) {
 }
 
 function addCustomImage(menu, options) {
-  if (!options?.image)
-    helper.logFatal('Custom image not provided.')
+  const checks = {
+    'image': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    helper.logFatal('Custom image not found in provided path.')
+  helper.verifyParams(checks, options)
 
-    if (!options.height)
-    helper.logFatal('Custom image height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom image height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom image width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom image width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom image position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom image position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom image position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom image position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom image position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom image position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom image position top margin must be a number.')
-
-    menu.custom.push({
+  menu.custom.push({
     type: 'image',
     ...options
   })

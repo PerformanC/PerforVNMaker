@@ -1,12 +1,16 @@
 function init(options) {
-  if (!options?.name)
-    helper.logFatal('Scene name not provided.')
+  const checks = {
+    'name': {
+      type: 'string',
+      notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
+      extraVerification: (param) => {
+        if (visualNovel.subScenes.find((subScene) => subScene.name == param))
+          helper.logFatal('A scene already exists with this name.')
+      }
+    }
+  }
 
-  if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options.name))
-    helper.logFatal('Scene name is already in usage by PerforVNM internals.')
-
-  if (visualNovel.scenes.find(scene => scene.name == options.name))
-    helper.logFatal('A scene already exists with this name.')
+  helper.verifyParams(checks, options)
 
   return { name: options.name, type: 'subScene', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
 }

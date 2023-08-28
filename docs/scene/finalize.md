@@ -7,15 +7,23 @@ Finalizes the code and adds the scene code to the main code of the VN.
 ## Syntax
 
 ```js
-scene.finalize(scene, { buttonsColor: 'FFFFFF', footerTextColor: 'FFFFFF' })
+scene.finalize(scene, {
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  buttonsColor: 'FFFFFF',
+  footerTextColor: 'FFFFFF'
+})
 ```
 
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
 - `options`: The options of the scene.
-    - `buttonsColor`: The color of the text in the back button.
-    - `footerTextColor`: The color of the text in the footer.
+  - `textColor`: The color of the text in the scene.
+  - `backTextColor`: The color of the text in the back button.
+  - `buttonsColor`: The color of the buttons in the scene.
+  - `footerTextColor`: The color of the text in the footer.
+
 
 ## Return value
 
