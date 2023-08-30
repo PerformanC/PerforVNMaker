@@ -891,10 +891,12 @@ function finalize(menu) {
                     `          startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("${PerforVNM.repository}")))` + '\n' +
                     '        }' + '\n' +
                     '      }, length - "PerforVNM".length, length, 0)' + '\n' +
-                    `      append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).")` + '\n'
+                    `      append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`
 
   if (menu.aboutText) {
-    aboutCode += `      append("\\n\\n${JSON.stringify(menu.aboutText).slice(1, -1)}")` + '\n'
+    aboutCode += `\\n\\n${JSON.stringify(menu.aboutText).slice(1, -1)}")` + '\n'
+  } else {
+    aboutCode += '")' + '\n'
   }
 
   aboutCode += '    }' + '\n' +
