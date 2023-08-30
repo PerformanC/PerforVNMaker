@@ -3,133 +3,119 @@ import fs from 'fs'
 import helper from './helper.js'
 
 function init(options) {
-  if (!options?.name)
-    helper.logFatal('Scene name not provided.')
+  const checks = {
+    'name': {
+      type: 'string',
+      notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
+      extraVerification: (param) => {
+        if (visualNovel.scenes.find((scene) => scene.name == param))
+          helper.logFatal('A scene already exists with this name.')
+      }
+    }
+  }
 
-  if (['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'].includes(options.name))
-    helper.logFatal('Scene name is already in usage by PerforVNM internals.')
-
-  if (visualNovel.scenes.find(scene => scene.name == options.name))
-    helper.logFatal('A scene already exists with this name.')
+  helper.verifyParams(checks, options)
 
   return { name: options.name, type: 'normal', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
 }
 
 function addCharacter(scene, options) {
-  if (!options?.name)
-    helper.logFatal('Character name not provided.')
-
-  if (scene.characters.find(character => character.name == options.name))
-    helper.logFatal('A character already exists with this name.')
-
-  if (!options.image)
-    helper.logFatal('Character image not provided.')
-
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    helper.logFatal('Character image not found in provided path.')
-
-  if (!options.position?.side)
-    helper.logFatal('Character position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Character position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Character position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Character position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Character position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Character position top margin must be a number.')
-
-  if (options.animations) {
-    if (!Array.isArray(options.animations))
-      helper.logFatal('Character animations must be an array.')
-
-    for (let animation of options.animations) {
-      if (!animation.type)
-        helper.logFatal('Character animation type not provided.')
-
-      if (!['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale'].includes(animation.type))
-        helper.logFatal('Character animation type not valid, it must be either movement, jump, fade, rotate or scale.')
-
-      switch (animation.type) {
-        case 'movement': {
-          if (!animation.side)
-            helper.logFatal('Character animation movement side not provided.')
-
-          if (!['center', 'left', 'right'].includes(animation.side))
-            helper.logFatal('Character animation movement side not valid, it must be either center, left or right.')
-
-          if (animation.side != 'center' && animation.margins?.side == null)
-            helper.logFatal('Character animation movement side margin not provided.')
-
-          if (animation.side != 'center' && typeof animation.margins?.side != 'number')
-            helper.logFatal('Character animation movement side margin must be a number.')
-
-          if (animation.side != 'center' && animation.margins.top == null)
-            helper.logFatal('Character animation movement top margin not provided.')
-
-          if (animation.side != 'center' && typeof animation.margins?.top != 'number')
-            helper.logFatal('Character animation top margin must be a number.')
-
-          break
-        }
-        case 'jump': {
-          if (animation.margins?.top == null)
-            helper.logFatal('Character animation top margin not provided.')
-
-          if (typeof animation.margins?.top != 'number')
-            helper.logFatal('Character animation top margin must be a number.')
-
-          break
-        }
-        case 'fadeIn': {
-          break
-        }
-        case 'fadeOut': {
-          break
-        }
-        case 'rotate': {
-          if (animation.degrees == null)
-            helper.logFatal('Character animation degrees not provided.')
-
-          if (typeof animation.degrees != 'number')
-            helper.logFatal('Character animation degrees must be a number.')
-
-          break
-        }
-        case 'scale': {
-          if (animation.scale == null)
-            helper.logFatal('Character animation scale not provided.')
-
-          if (typeof animation.scale != 'number')
-            helper.logFatal('Character animation scale must be a number.')
-
-          break
+  const checks = {
+    'name': {
+      type: 'string',
+      extraVerification: (param) => {
+        if (scene.characters.find(character => character.name == param))
+          helper.logFatal('A character already exists with this name.')
+      }
+    },
+    'image': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: ['center', 'left', 'right']
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          },
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.position.side != 'center'
+          }
         }
       }
-
-      if (animation.duration == null)
-        helper.logFatal('Character animation duratiton not provided.')
-
-      if (typeof animation.duration != 'number')
-        helper.logFatal('Character animation duratiton must be a number.')
-
-      if (animation.delay == null)
-        helper.logFatal('Character animation delay not provided.')
-
-      if (typeof animation.delay != 'number')
-        helper.logFatal('Character animation delay must be a number.')
-
-      if (animation.delay != 0)
-        visualNovel.internalInfo.hasDelayedAnimation = true
+    },
+    'animations': {
+      type: 'array',
+      params: {
+        'type': {
+          type: 'string',
+          values: ['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale']
+        },
+        'side': {
+          type: 'string',
+          values: ['center', 'left', 'right'],
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.animations[additionalinfo.index].type == 'movement'
+          }
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          },
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.animations[additionalinfo.index].type == 'movement'
+          },
+          required: false
+        },
+        'degrees': {
+          type: 'number',
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.animations[additionalinfo.index].type == 'rotate'
+          }
+        },
+        'scale': {
+          type: 'number',
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.animations[additionalinfo.index].type == 'scale'
+          }
+        },
+        'duration': {
+          type: 'number',
+          shouldCheck: (param, additionalinfo) => {
+            return additionalinfo.parent.animations[additionalinfo.index].type != 'jump'
+          }
+        },
+        'delay': {
+          type: 'number',
+          required: false
+        }
+      },
+      extraVerification: (param) => {
+        if (param.delay != 0)
+          visualNovel.internalInfo.hasDelayedAnimation = true
+      },
+      required: false
     }
   }
+
+  helper.verifyParams(checks, options)
 
   scene.characters.push({ name: options.name, image: options.image, position: options.position, animations: options.animations })
 
@@ -137,11 +123,14 @@ function addCharacter(scene, options) {
 }
 
 function addScenario(scene, options) {
-  if (!options?.image)
-    helper.logFatal('Scenario image not provided.')
+  const checks = {
+    'image': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    }
+  }
 
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    helper.logFatal('Scenario image not found in provided path.')
+  helper.verifyParams(checks, options)
 
   scene.background = options.image
 
@@ -149,38 +138,57 @@ function addScenario(scene, options) {
 }
 
 function addSpeech(scene, options) {
-  if (options.author?.name && !options.author.textColor)
-    helper.logFatal('Speech author text color not provided.')
+  const checks = {
+    'author': {
+      type: 'object',
+      params: {
+        'name': {
+          type: 'string'
+        },
+        'textColor': {
+          type: 'string'
+        },
+        'rectangle': {
+          type: 'object',
+          params: {
+            'color': {
+              type: 'string'
+            },
+            'opacity': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    },
+    'text': {
+      type: 'object',
+      params: {
+        'content': {
+          type: 'string'
+        },
+        'color': {
+          type: 'string'
+        },
+        'fontSize': {
+          type: 'number'
+        },
+        'rectangle': {
+          type: 'object',
+          params: {
+            'color': {
+              type: 'string'
+            },
+            'opacity': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options?.author?.rectangle?.color)
-    helper.logFatal('Speech author rectangle color not provided.')
-
-  if (!options?.author?.rectangle?.opacity)
-    helper.logFatal('Speech author rectangle opacity not provided.')
-
-  if (typeof options.author.rectangle.opacity != 'number')
-    helper.logFatal('Speech author rectangle opacity must be a number.')
-
-  if (!options.text?.content)
-    helper.logFatal('Speech text content not provided.')
-
-  if (!options.text.color)
-    helper.logFatal('Speech text color not provided.')
-
-  if (!options.text.fontSize)
-    helper.logFatal('Speech text font size not provided.')
-
-  if (typeof options.text.fontSize != 'number')
-    helper.logFatal('Speech text font size must be a number.')
-
-  if (!options.text.rectangle?.color)
-    helper.logFatal('Speech text rectangle color not provided.')
-
-  if (!options.text.rectangle?.opacity)
-    helper.logFatal('Speech text rectangle opacity not provided.')
-
-  if (typeof options.text.rectangle.opacity != 'number')
-    helper.logFatal('Speech text rectangle opacity must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.speech = options
   scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
@@ -194,22 +202,22 @@ function addSoundEffects(scene, options) {
   if (!Array.isArray(options))
     helper.logFatal('Sound effects must be an array.')
 
-  for (let sound of options) {
-    if (!sound?.sound)
-      helper.logFatal('Sound effects sound not provided.')
-
-    if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(sound.sound)))
-      helper.logFatal('Sound effects sound not found.')
-
-    if (sound?.delay == null)
-      helper.logFatal('Sound effects delay not provided.')
-
-    if (typeof sound.delay != 'number')
-      helper.logFatal('Sound effects delay must be a number.')
-
-    if (sound.delay != 0)
-      visualNovel.internalInfo.hasDelayedSoundEffect = true
+  const checks = {
+    'sound': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    },
+    'delay': {
+      type: 'number',
+      extraVerification: (param) => {
+        if (param != 0)
+          visualNovel.internalInfo.hasDelayedSoundEffect = true
+      },
+      required: false
+    }
   }
+
+  helper.verifyParams(checks, options)
 
   scene.effect = options
 
@@ -219,17 +227,22 @@ function addSoundEffects(scene, options) {
 }
 
 function addMusic(scene, options) {
-  if (!options?.music)
-    helper.logFatal('Scene music not provided.')
+  const checks = {
+    'music': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    },
+    'delay': {
+      type: 'number',
+      extraVerification: (param) => {
+        if (param != 0)
+          visualNovel.internalInfo.hasDelayedMusic = true
+      },
+      required: false
+    }
+  }
 
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.music)))
-    helper.logFatal('Scene music not found in provided path.')
-
-  if (options?.delay == null)
-    helper.logFatal('Scene music delay not provided.')
-
-  if (options.delay && typeof options.delay != 'number')
-    helper.logFatal('Scene music delay must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.music = options
 
@@ -239,11 +252,13 @@ function addMusic(scene, options) {
 }
 
 function addTransition(scene, options) {
-  if (!options?.duration)
-    helper.logFatal('Scene transition duration not provided.')
+  const checks = {
+    'duration': {
+      type: 'number'
+    }
+  }
 
-  if (typeof options.duration != 'number')
-    helper.logFatal('Scene transition duration must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.transition = options
 
@@ -251,25 +266,34 @@ function addTransition(scene, options) {
 }
 
 function setNextScene(scene, options) {
-  if (!options)
-    helper.logFatal('Scene next not provided.')
+  const checks = {
+    'scene': {
+      type: 'string'
+    }
+  }
 
-  if (typeof options != 'string')
-    helper.logFatal('Scene next must be a string.')
+  helper.verifyParams(checks, options)
 
-  scene.next = options
+  scene.next = options.scene
 
   return scene
 }
 
 function addSubScenes(scene, options) {
-  options.forEach((subScene) => {
-    if (!subScene?.text)
-      helper.logFatal('Sub-scene options text not provided.')
+  const checks = {
+    'text': {
+      type: 'string'
+    },
+    'scene': {
+      type: 'string',
+      extraVerification: (param) => {
+        if (visualNovel.subScenes.find((subScene) => subScene.name == param))
+          helper.logFatal('A sub-scene already exists with this name.')
+      }
+    }
+  }
 
-    if (scene.subScenes.find((subScene) => subScene.scene == subScene))
-      helper.logFatal('A sub-scene already exists with this name.')
-  })
+  helper.verifyParams(checks, options)
 
   scene.subScenes = options
 
@@ -277,38 +301,41 @@ function addSubScenes(scene, options) {
 }
 
 function addCustomText(scene, options) {
-  if (!options?.text)
-    helper.logFatal('Custom text not provided.')
+  const checks = {
+    'text': {
+      type: 'string'
+    },
+    'color': {
+      type: 'string'
+    },
+    'fontSize': {
+      type: 'number'
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options.color)
-    helper.logFatal('Custom text color not provided.')
-
-  if (!options.fontSize)
-    helper.logFatal('Custom text font size not provided.')
-
-  if (typeof options.fontSize != 'number')
-    helper.logFatal('Custom text font size must be a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom text position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom text position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom text position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom text position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom text position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom text position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom text position top margin must be a number.')
+  console.log('oof')
+  
+  helper.verifyParams(checks, options)
 
   scene.custom.push({
     type: 'text',
@@ -319,50 +346,53 @@ function addCustomText(scene, options) {
 }
 
 function addCustomButton(scene, options) {
-  if (!options?.text)
-    helper.logFatal('Custom button text not provided.')
+  const checks = {
+    'text': {
+      type: 'string'
+    },
+    'color': {
+      type: 'string'
+    },
+    'fontSize': {
+      type: 'number'
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options.color)
-    helper.logFatal('Custom button text color not provided.')
-
-  if (!options.fontSize)
-    helper.logFatal('Custom button text font size not provided.')
-
-  if (typeof options.fontSize != 'number')
-    helper.logFatal('Custom button text font size must be a number.')
-
-  if (!options.height)
-    helper.logFatal('Custom button height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom button height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom button width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom button width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom button position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom button position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom button position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom button position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom button position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom button position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom button position top margin must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.custom.push({
     type: 'button',
@@ -373,47 +403,52 @@ function addCustomButton(scene, options) {
 }
 
 function addCustomRectangle(scene, options) {
-  if (!options?.color)
-    helper.logFatal('Custom rectangle color not provided.')
+  const checks = {
+    'color': {
+      type: 'string'
+    },
+    'opacity': {
+      type: 'number',
+      min: 0,
+      max: 1
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!options.opacity)
-    helper.logFatal('Custom rectangle opacity not provided.')
-
-  if (typeof options.opacity != 'number')
-    helper.logFatal('Custom rectangle opacity must be a number.')
-
-  if (!options.height)
-    helper.logFatal('Custom rectangle height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom rectangle height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom rectangle width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom rectangle width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom rectangle position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom rectangle position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom rectangle position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom rectangle position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom rectangle position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom rectangle position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom rectangle position top margin must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.custom.push({
     type: 'rectangle',
@@ -424,44 +459,48 @@ function addCustomRectangle(scene, options) {
 }
 
 function addCustomImage(scene, options) {
-  if (!options?.image)
-    helper.logFatal('Custom image not provided.')
+  const checks = {
+    'image': {
+      type: 'fileInitial',
+      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
+    },
+    'height': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'width': {
+      type: 'number',
+      shouldCheckValues: (value) => {
+        return typeof value != 'number'
+      },
+      values: [ 'match', 'wrap' ]
+    },
+    'position': {
+      type: 'object',
+      params: {
+        'side': {
+          type: 'string',
+          values: [ 'center', 'left', 'right' ]
+        },
+        'margins': {
+          type: 'object',
+          params: {
+            'side': {
+              type: 'number'
+            },
+            'top': {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  }
 
-  if (!fs.readdirSync(`${visualNovel.info.paths.android}/app/src/main/res/raw`).find((file) => file.startsWith(options.image)))
-    helper.logFatal('Custom image not found in provided path.')
-
-  if (!options.height)
-    helper.logFatal('Custom image height not provided.')
-
-  if (typeof options.height != 'number' && !['match', 'wrap'].includes(options.height))
-    helper.logFatal('Custom image height must be either match, wrap or a number.')
-
-  if (!options.width)
-    helper.logFatal('Custom image width not provided.')
-
-  if (typeof options.width != 'number' && !['match', 'wrap'].includes(options.width))
-    helper.logFatal('Custom image width must be either match, wrap or a number.')
-
-  if (!options.position)
-    helper.logFatal('Custom image position not provided.')
-
-  if (options.position?.side == null)
-    helper.logFatal('Custom image position side not provided.')
-
-  if (!['center', 'left', 'right'].includes(options.position.side))
-    helper.logFatal('Custom image position side not valid, it must be either center, left or right.')
-
-  if (options.position.side != 'center' && options.position.margins?.side == null)
-    helper.logFatal('Custom image position side margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.side != 'number')
-    helper.logFatal('Custom image position margin must be a number.')
-
-  if (options.position.side != 'center' && options.position.margins?.top == null)
-    helper.logFatal('Custom image position top margin not provided.')
-
-  if (options.position.side != 'center' && typeof options.position.margins?.top != 'number')
-    helper.logFatal('Custom image position top margin must be a number.')
+  helper.verifyParams(checks, options)
 
   scene.custom.push({
     type: 'image',
@@ -472,11 +511,22 @@ function addCustomImage(scene, options) {
 }
 
 function finalize(scene, options) {
-  if (!options?.buttonsColor)
-    helper.logFatal('Scene "back" text color not provided.')
+  const checks = {
+    'textColor': {
+      type: 'string'
+    },
+    'backTextColor': {
+      type: 'string'
+    },
+    'buttonsColor': {
+      type: 'string'
+    },
+    'footerTextColor': {
+      type: 'string'
+    }
+  }
 
-  if (!options.footerTextColor)
-    helper.logFatal('Scene text color not provided.')
+  helper.verifyParams(checks, options)
 
   let sceneCode = `  private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {` + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +

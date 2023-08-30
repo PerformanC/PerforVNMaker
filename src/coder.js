@@ -4,7 +4,7 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.20.2',
+  codeGeneratorVersion: '1.21.0',
   generatedCodeVersion: '1.18.8',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
@@ -12,20 +12,30 @@ global.PerforVNM = {
 function init(options) {
   helper.logOk('Starting VN, coding main code.', 'Android')
 
-  if (!options?.name)
-    helper.logFatal('No name provided.')
+  const checks = {
+    'name': {
+      type: 'string'
+    },
+    'fullName': {
+      type: 'string'
+    },
+    'version': {
+      type: 'string'
+    },
+    'applicationId': {
+      type: 'string'
+    },
+    'paths': {
+      type: 'object',
+      params: {
+        'android': {
+          type: 'string'
+        }
+      }
+    }
+  }
 
-  if (!options.fullName)
-    helper.logFatal('No fullName provided.')
-
-  if (!options.version)
-    helper.logFatal('No version provided.')
-
-  if (!options.applicationId)
-    helper.logFatal('No applicationId provided.')
-
-  if (!options.paths?.android)
-    helper.logFatal('No path provided.')
+  helper.verifyParams(checks, options)
 
   visualNovel.info = options
 
@@ -519,7 +529,7 @@ function finalize() {
   }
 
   let addHeaders = ''
-  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.SceneMusic || visualNovel.internalInfo.hasDelayedAnimation)
+  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)
