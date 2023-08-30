@@ -1135,10 +1135,15 @@ function finalize(scene) {
       sceneCode += '    buttonBack.setOnClickListener {\n'
     }
 
-      sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n' +
-                   '    }' + '\n\n' +
+    if (visualNovel.subScenes.find((subScene) => subScene.next == scene.name)) {
+      sceneCode += `      switchScene(lastScene!!)` + '\n'
+    } else {
+      sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n'
+    }
 
-                   '    frameLayout.addView(buttonBack)' + '\n\n'
+    sceneCode += '    }' + '\n\n' +
+
+                 '    frameLayout.addView(buttonBack)' + '\n\n'
   }
 
   if (scene.subScenes.length == 2) {
@@ -1166,6 +1171,8 @@ function finalize(scene) {
     if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
 
     sceneCode += '    buttonSubScenes.setOnClickListener {' + '\n' +
+                 `      lastScene = "${scene.name}"` + '\n\n' +
+
                  '      __PERFORVNM_SUBSCENE_1__' + '\n' +
                  '    }' + '\n\n' +
 
@@ -1190,6 +1197,8 @@ function finalize(scene) {
                  '    buttonSubScenes2.layoutParams = layoutParamsSubScenes2' + '\n\n' +
 
                  '    buttonSubScenes2.setOnClickListener {' + '\n' +
+                 `      lastScene = "${scene.name}"` + '\n\n' +
+
                  '      __PERFORVNM_SUBSCENE_2__' + '\n' +
                  '    }' + '\n\n' +
 
@@ -1486,7 +1495,9 @@ function finalize(scene) {
   } else {
     if (scene.next) {
       sceneCode += '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                   '      ' + scene.next + '(__PERFORVNM_NEXT_SCENE_PARAMS__)' + '\n' +
+                   `      lastScene = "${scene.name}"` + '\n\n' +
+
+                   `      ${scene.next}(__PERFORVNM_NEXT_SCENE_PARAMS__)` + '\n' +
                    '    }' + '\n\n' +
 
                    '    setContentView(frameLayout)' + '\n' +

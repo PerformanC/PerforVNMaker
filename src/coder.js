@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.21.0',
-  generatedCodeVersion: '1.18.8',
+  codeGeneratorVersion: '1.22.0',
+  generatedCodeVersion: '1.19.8',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -114,10 +114,11 @@ function init(options) {
 function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
 
-  let switchesCode = 'when (buttonData.getString("scene")) {'
+  let switchesCode = '  private fun switchScene(scene: String) {' + '\n' +
+                     '    when (scene) {'
 
   if (visualNovel.scenes.length) {
-    let scenesCode = []
+    let scenesCode = ''
 
     visualNovel.scenes.forEach((scene, i) => {
       if (i != visualNovel.scenes.length - 1) {
@@ -192,7 +193,7 @@ function finalize() {
                     '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
                     '      })' + '\n'
           } else {
-            code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
+            code += `      ${nextScene.name}(${functionParams.join(', ')})` + '\n'
           }
 
           code += '    }'
@@ -240,7 +241,7 @@ function finalize() {
           functionParams2.switch.push('true')
         }
 
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+        switchesCode += '\n' + `      "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -306,7 +307,7 @@ function finalize() {
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', subScene2.name + '(' + subFunctionParams2.switch.join(', ') + ')')
         }
 
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
+        switchesCode += '\n' + `      "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -328,7 +329,7 @@ function finalize() {
         }
       }
 
-      scenesCode.push('\n\n' + scene.code)
+      scenesCode += '\n\n' + scene.code
     })
 
     visualNovel.subScenes.forEach((scene, i) => {
@@ -407,7 +408,7 @@ function finalize() {
                   '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
                   '      })' + '\n'
         } else {
-          code += '      ' + nextScene.name + '(' + functionParams.join(', ') + ')' + '\n'
+          code += `      ${nextScene.name}(${functionParams.join(', ')})` + '\n'
         }
 
         code += '    }'
@@ -425,7 +426,7 @@ function finalize() {
         }
 
         scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+        switchesCode += '\n' + `      "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -464,7 +465,7 @@ function finalize() {
           functionParams.switch.push('true')
         }
 
-        switchesCode += '\n' + `          "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
+        switchesCode += '\n' + `      "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_' + scene.name.toUpperCase() + '__', '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -486,12 +487,18 @@ function finalize() {
         }
       }
 
-      scenesCode.push('\n\n' + scene.code)
+      scenesCode += '\n\n' + scene.code
     })
 
-    helper.replace('__PERFORVNM_SCENES__', scenesCode.join(''))
-  } else helper.replace('__PERFORVNM_SCENES__', '')
+    helper.replace('__PERFORVNM_SCENES__', scenesCode + '__PERFORVNM_SCENES__')
+  }
 
+  switchesCode += '\n' + '    }' + '\n' +
+                  '  }'
+
+  helper.writeFunction(switchesCode)
+
+  helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
 
@@ -523,12 +530,14 @@ function finalize() {
 
     helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
 
-    switchesCode += '\n' + '        }'
-
-    helper.replace(/__PERFORVNM_SWITCHES__/g, switchesCode)
+    helper.replace('__PERFORVNM_SWITCHES__', 'switchScene(buttonData.getString("scene"))')
   }
 
   let addHeaders = ''
+
+  /* TODO: Use lastScene only when necessary (only when sub-scenes are added) */
+  addHeaders += '  private var lastScene: String? = null' + '\n'
+
   if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
 

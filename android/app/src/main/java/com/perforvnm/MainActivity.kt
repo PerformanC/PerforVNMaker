@@ -36,6 +36,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class MainActivity : Activity() {
+  private var lastScene: String? = null
   private val handler = Handler(Looper.getMainLooper())
   private var textSpeed = 1000L
   private var sEffectVolume = 1f
@@ -1097,12 +1098,7 @@ class MainActivity : Activity() {
           mediaPlayer = null
         }
 
-        when (buttonData.getString("scene")) {
-          "scene1" -> scene1()
-          "scene4" -> scene4(true)
-          "scene2" -> scene2(true)
-          "scene3" -> scene3(true)
-        }
+        switchScene(buttonData.getString("scene"))
       }
 
       frameLayoutScenes.addView(savesBackground)
@@ -1361,6 +1357,8 @@ class MainActivity : Activity() {
     buttonSubScenes.layoutParams = layoutParamsSubScenes
 
     buttonSubScenes.setOnClickListener {
+      lastScene = "scene1"
+
       scene2(true)
     }
 
@@ -1385,6 +1383,8 @@ class MainActivity : Activity() {
     buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
     buttonSubScenes2.setOnClickListener {
+      lastScene = "scene1"
+
       scene3(true)
     }
 
@@ -1619,7 +1619,7 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene1()
+      switchScene(lastScene!!)
     }
 
     frameLayout.addView(buttonBack)
@@ -1863,6 +1863,8 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      lastScene = "scene2"
+
       scene4(true)
     }
 
@@ -2105,10 +2107,21 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      lastScene = "scene3"
+
       scene4(true)
     }
 
     setContentView(frameLayout)
+  }
+
+  private fun switchScene(scene: String) {
+    when (scene) {
+      "scene1" -> scene1()
+      "scene4" -> scene4(true)
+      "scene2" -> scene2(true)
+      "scene3" -> scene3(true)
+    }
   }
 }
 
