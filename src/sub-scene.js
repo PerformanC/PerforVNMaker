@@ -1,3 +1,5 @@
+import helper from './helper.js'
+
 function init(options) {
   const checks = {
     'name': {
