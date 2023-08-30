@@ -9,12 +9,42 @@ function init(options) {
         if (visualNovel.subScenes.find((subScene) => subScene.name == param))
           helper.logFatal('A scene already exists with this name.')
       }
+    },
+    'textColor': {
+      type: 'string'
+    },
+    'backTextColor': {
+      type: 'string'
+    },
+    'buttonsColor': {
+      type: 'string'
+    },
+    'footerTextColor': {
+      type: 'string'
     }
   }
 
   helper.verifyParams(checks, options)
 
-  return { name: options.name, type: 'subScene', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
+  return {
+    name: options.name,
+    type: 'subScene',
+    options: {
+      textColor: options.textColor,
+      backTextColor: options.backTextColor,
+      buttonsColor: options.buttonsColor,
+      footerTextColor: options.footerTextColor
+    },
+    next: null,
+    characters: [],
+    subScenes: [],
+    background: null,
+    speech: null,
+    effect: null,
+    music: null,
+    transition: null,
+    custom: []
+  }
 }
 
 export default {

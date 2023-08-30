@@ -11,12 +11,42 @@ function init(options) {
         if (visualNovel.scenes.find((scene) => scene.name == param))
           helper.logFatal('A scene already exists with this name.')
       }
+    },
+    'textColor': {
+      type: 'string'
+    },
+    'backTextColor': {
+      type: 'string'
+    },
+    'buttonsColor': {
+      type: 'string'
+    },
+    'footerTextColor': {
+      type: 'string'
     }
   }
 
   helper.verifyParams(checks, options)
 
-  return { name: options.name, type: 'normal', next: null, characters: [], subScenes: [], background: null, speech: null, effect: null, music: null, transition: null, custom: [] }
+  return {
+    name: options.name,
+    type: 'normal',
+    options: {
+      textColor: options.textColor,
+      backTextColor: options.backTextColor,
+      buttonsColor: options.buttonsColor,
+      footerTextColor: options.footerTextColor
+    },
+    next: null,
+    characters: [],
+    subScenes: [],
+    background: null,
+    speech: null,
+    effect: null,
+    music: null,
+    transition: null,
+    custom: []
+  }
 }
 
 function addCharacter(scene, options) {
@@ -510,24 +540,7 @@ function addCustomImage(scene, options) {
   return scene
 }
 
-function finalize(scene, options) {
-  const checks = {
-    'textColor': {
-      type: 'string'
-    },
-    'backTextColor': {
-      type: 'string'
-    },
-    'buttonsColor': {
-      type: 'string'
-    },
-    'footerTextColor': {
-      type: 'string'
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
+function finalize(scene) {
   let sceneCode = `  private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {` + '\n' +
                   '    val frameLayout = FrameLayout(this)' + '\n' +
                   '    frameLayout.setBackgroundColor(0xFF000000.toInt())' + '\n\n'
@@ -997,7 +1010,7 @@ function finalize(scene, options) {
   sceneCode += '\n' + '    val buttonSave = Button(this)' + '\n' +
                '    buttonSave.text = "Save"' + '\n' +
                '    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-               `    buttonSave.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+               `    buttonSave.setTextColor(0xFF${scene.options.buttonsColor}.toInt())` + '\n' +
                '    buttonSave.background = null' + '\n\n' +
 
                '    val layoutParamsSave = LayoutParams(' + '\n' +
@@ -1067,7 +1080,7 @@ function finalize(scene, options) {
                '    val buttonMenu = Button(this)' + '\n' +
                '    buttonMenu.text = "Menu"' + '\n' +
                '    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-               `    buttonMenu.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+               `    buttonMenu.setTextColor(0xFF${scene.options.buttonsColor}.toInt())` + '\n' +
                '    buttonMenu.background = null' + '\n\n' +
 
                '    val layoutParamsMenu = LayoutParams(' + '\n' +
@@ -1100,7 +1113,7 @@ function finalize(scene, options) {
     sceneCode += '    val buttonBack = Button(this)' + '\n' +
                  '    buttonBack.text = "Back"' + '\n' +
                  '    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))' + '\n' +
-                 `    buttonBack.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                 `    buttonBack.setTextColor(0xFF${scene.options.buttonsColor}.toInt())` + '\n' +
                  '    buttonBack.background = null' + '\n\n' +
 
                  '    val layoutParamsBack = LayoutParams(' + '\n' +
@@ -1132,7 +1145,7 @@ function finalize(scene, options) {
     sceneCode += '    val buttonSubScenes = Button(this)' + '\n' +
                  `    buttonSubScenes.text = "${scene.subScenes[0].text}"` + '\n' +
                  '    buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))' + '\n' +
-                 `    buttonSubScenes.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                 `    buttonSubScenes.setTextColor(0xFF${scene.options.buttonsColor}.toInt())` + '\n' +
                  '    buttonSubScenes.background = null' + '\n\n' +
 
                  '    val layoutParamsSubScenes = LayoutParams(' + '\n' +
@@ -1161,7 +1174,7 @@ function finalize(scene, options) {
                  '    val buttonSubScenes2 = Button(this)' + '\n' +
                  `    buttonSubScenes2.text = "${scene.subScenes[1].text}"` + '\n' +
                  '    buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._12ssp))' + '\n' +
-                 `    buttonSubScenes2.setTextColor(0xFF${options.buttonsColor}.toInt())` + '\n' +
+                 `    buttonSubScenes2.setTextColor(0xFF${scene.options.buttonsColor}.toInt())` + '\n' +
                  '    buttonSubScenes2.background = null' + '\n\n' +
 
                  '    val layoutParamsSubScenes2 = LayoutParams(' + '\n' +

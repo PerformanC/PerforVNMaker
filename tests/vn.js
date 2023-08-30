@@ -49,7 +49,13 @@ menu = perfor.menu.addCustomRectangle(menu, {
 
 perfor.menu.finalize(menu) /* Generates the menu */
 
-let firstScene = perfor.scene.init({ name: 'scene1' }) /* Initializes a scene */
+let firstScene = perfor.scene.init({
+  name: 'scene1',
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  buttonsColor: 'FFFFFF',
+  footerTextColor: 'FFFFFF'
+}) /* Initializes a scene */
 firstScene = perfor.scene.addCharacter(firstScene, {
   name: 'Pedro',
   image: 'pedro_staring',
@@ -78,14 +84,15 @@ firstScene = perfor.scene.addScenario(firstScene, { image: 'background_thanking'
 firstScene = perfor.scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
 firstScene = perfor.scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
 firstScene = perfor.scene.addSubScenes(firstScene, [{ text: 'second', scene: 'scene2' }, { text: 'third', scene: 'scene3' }]) /* Adds the subscenes to the first scene */
-perfor.scene.finalize(firstScene, {
+perfor.scene.finalize(firstScene) /* Finishes up the scene */
+
+let secondScene = perfor.subScene.init({
+  name: 'scene2',
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   buttonsColor: 'FFFFFF',
   footerTextColor: 'FFFFFF'
-}) /* Finishes up the scene */
-
-let secondScene = perfor.subScene.init({ name: 'scene2' })
+})
 secondScene = perfor.scene.addCharacter(secondScene, {
   name: 'Pedro',
   image: 'pedro_staring',
@@ -134,14 +141,15 @@ secondScene = perfor.scene.addCustomRectangle(secondScene, {
 })
 */
 
-perfor.scene.finalize(secondScene, {
+perfor.scene.finalize(secondScene)
+
+let thirdScene = perfor.subScene.init({
+  name: 'scene3',
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   buttonsColor: 'FFFFFF',
   footerTextColor: 'FFFFFF'
 })
-
-let thirdScene = perfor.subScene.init({ name: 'scene3' })
 thirdScene = perfor.scene.addCharacter(thirdScene, {
   name: 'Pedro',
   image: 'pedro_staring',
@@ -174,14 +182,15 @@ thirdScene = perfor.scene.addSpeech(thirdScene, {
   }
 })
 thirdScene = perfor.scene.setNextScene(thirdScene, { scene: 'scene4' })
-perfor.scene.finalize(thirdScene, {
+perfor.scene.finalize(thirdScene)
+
+let fourthScene = perfor.scene.init({
+  name: 'scene4',
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
   buttonsColor: 'FFFFFF',
   footerTextColor: 'FFFFFF'
 })
-
-let fourthScene = perfor.scene.init({ name: 'scene4' })
 fourthScene = perfor.scene.addCharacter(fourthScene, {
   name: 'Pedro',
   image: 'pedro_staring',
@@ -213,11 +222,6 @@ fourthScene = perfor.scene.addSpeech(fourthScene, {
     }
   }
 })
-perfor.scene.finalize(fourthScene, {
-  textColor: 'FFFFFF',
-  backTextColor: 'FFFFFF',
-  buttonsColor: 'FFFFFF',
-  footerTextColor: 'FFFFFF'
-})
+perfor.scene.finalize(fourthScene)
 
 perfor.coder.finalize() /* Finishes up the code */
