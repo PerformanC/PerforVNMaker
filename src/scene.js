@@ -1136,9 +1136,21 @@ function finalize(scene) {
     }
 
     if (visualNovel.subScenes.find((subScene) => subScene.next == scene.name)) {
-      sceneCode += `      switchScene(lastScene!!)` + '\n'
+      sceneCode += '      val scene = scenes.get(scenesLength - 1)' + '\n\n' +
+
+                   '      scenesLength--' + '\n' +
+                   '      scenes.set(scenesLength, "")' + '\n\n' +
+
+                   '      switchScene(scene)' + '\n'
     } else {
-      sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n'
+      if (visualNovel.scenes.length == 1) {
+        sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n'
+      } else {
+        sceneCode += '      scenesLength--' + '\n' +
+                     '      scenes.set(scenesLength, "")' + '\n\n' +
+
+                     `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n'
+      }
     }
 
     sceneCode += '    }' + '\n\n' +
@@ -1171,8 +1183,6 @@ function finalize(scene) {
     if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
 
     sceneCode += '    buttonSubScenes.setOnClickListener {' + '\n' +
-                 `      lastScene = "${scene.name}"` + '\n\n' +
-
                  '      __PERFORVNM_SUBSCENE_1__' + '\n' +
                  '    }' + '\n\n' +
 
@@ -1197,8 +1207,6 @@ function finalize(scene) {
                  '    buttonSubScenes2.layoutParams = layoutParamsSubScenes2' + '\n\n' +
 
                  '    buttonSubScenes2.setOnClickListener {' + '\n' +
-                 `      lastScene = "${scene.name}"` + '\n\n' +
-
                  '      __PERFORVNM_SUBSCENE_2__' + '\n' +
                  '    }' + '\n\n' +
 
@@ -1495,7 +1503,8 @@ function finalize(scene) {
   } else {
     if (scene.next) {
       sceneCode += '    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {' + '\n' +
-                   `      lastScene = "${scene.name}"` + '\n\n' +
+                   `      scenes.set(scenesLength, "${scene.name}")` + '\n' +
+                   '      scenesLength++' + '\n\n' +
 
                    `      ${scene.next}(__PERFORVNM_NEXT_SCENE_PARAMS__)` + '\n' +
                    '    }' + '\n\n' +

@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.22.0',
-  generatedCodeVersion: '1.19.8',
+  codeGeneratorVersion: '1.21.1',
+  generatedCodeVersion: '1.19.1',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -94,6 +94,8 @@ function init(options) {
   '        or View.SYSTEM_UI_FLAG_LOW_PROFILE' + '\n' +
   '      )' + '\n' +
   '    }' + '\n\n' +
+
+  '    __PERFORVNM_MULTI_PATH__' + '\n\n' +
 
   '    __PERFORVNM_MENU__' + '\n' +
   '  }' + '__PERFORVNM_SCENES__' + '\n' +
@@ -187,13 +189,19 @@ function finalize() {
                     '        override fun onAnimationStart(animation: Animation?) {}' + '\n\n' +
 
                     '        override fun onAnimationEnd(animation: Animation?) {' + '\n' +
+                    `          scenes.set(scenesLength, "${scene.name}")` + '\n' +
+                    '          scenesLength++' + '\n\n' +
+
                     `          ${nextScene.name}(${functionParams.join(', ')})` + '\n' +
                     '        }' + '\n\n' +
 
                     '        override fun onAnimationRepeat(animation: Animation?) {}' + '\n' +
                     '      })' + '\n'
           } else {
-            code += `      ${nextScene.name}(${functionParams.join(', ')})` + '\n'
+            code += `      scenes.set(scenesLength, "${scene.name}")` + '\n' +
+                    '      scenesLength++' + '\n\n' +
+
+                    `      ${nextScene.name}(${functionParams.join(', ')})` + '\n'
           }
 
           code += '    }'
@@ -501,6 +509,7 @@ function finalize() {
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
+  helper.replace('__PERFORVNM_MULTI_PATH__', `      ${visualNovel.scenes.length != 0 ? `scenes.set(0, "${visualNovel.scenes[0].name}")` : '// No scenes created.'}`)
 
   if (visualNovel.menu) {
     let menuCode = 'buttonStart.setOnClickListener {' + '\n'
@@ -536,7 +545,8 @@ function finalize() {
   let addHeaders = ''
 
   /* TODO: Use lastScene only when necessary (only when sub-scenes are added) */
-  addHeaders += '  private var lastScene: String? = null' + '\n'
+  addHeaders += `  private var scenes = MutableList<String>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { "" }` + '\n' +
+                '  private var scenesLength = 1' + '\n'
 
   if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += '  private val handler = Handler(Looper.getMainLooper())' + '\n'
