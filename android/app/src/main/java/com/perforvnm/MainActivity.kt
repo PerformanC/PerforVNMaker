@@ -89,7 +89,7 @@ class MainActivity : Activity() {
       )
     }
 
-          scenes.set(0, "scene1")
+    scenes.set(0, "scene1")
 
     val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -408,7 +408,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.22.0 (code generator), 1.19.8 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
+      append(" 1.21.1 (code generator), 1.19.1 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
     textView.setTextColor(0xFFFFFFFF.toInt())
@@ -1074,7 +1074,6 @@ class MainActivity : Activity() {
       try {
         savesBackground = ImageView(this)
         savesBackground.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))
-
       } catch (e: Exception) {
         savesBackground = RectangleView(this)
 
@@ -1135,6 +1134,7 @@ class MainActivity : Activity() {
           }
           "right" -> {
             val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
             layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
           }
           "rightTop" -> {
@@ -2352,6 +2352,18 @@ class MainActivity : Activity() {
       "scene2" -> scene2(true)
       "scene3" -> scene3(true)
     }
+  }
+
+  private fun scenesToJson(): String {
+    var json = "["
+
+    for (i in 0 until scenesLength) {
+      json += scenes.get(i) + ","
+    }
+
+    json = json.dropLast(1) + "]"
+
+    return json
   }
 }
 
