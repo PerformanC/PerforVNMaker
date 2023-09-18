@@ -1140,10 +1140,11 @@ function finalize(scene) {
   }
 
   sceneCode += 
-    `      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -1)}"\n\n` +
+    `      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() + "}"\n\n` +
 
     helper.codePrepare(`
-        saves = saves.dropLast(1) + "," + newSave + "]"
+        if (saves == "[]") saves = "[" + newSave + "]"
+        else saves = saves.dropLast(1) + "," + newSave + "]"
 
         val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
         outputStream.write(saves.toByteArray())

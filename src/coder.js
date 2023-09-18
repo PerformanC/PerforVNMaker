@@ -555,7 +555,7 @@ function finalize() {
           var json = "["
     
           for (i in 0 until scenesLength) {
-            json += scenes.get(i) + ","
+            json += "\\"" + scenes.get(i) + "\\","
           }
     
           json = json.dropLast(1) + "]"
@@ -594,21 +594,28 @@ function finalize() {
     let releaseCode;
 
     if (visualNovel.menu.options.background.music) {
-      releaseCode =
-
-        'if (mediaPlayer != null) {\n' +
-        
-        helper.codePrepare(`
-            mediaPlayer!!.stop()
-            mediaPlayer!!.release()
-            mediaPlayer = null
-          }`, 2, true
-        )
+      releaseCode = helper.codePrepare(`
+        if (mediaPlayer != null) {
+          mediaPlayer!!.stop()
+          mediaPlayer!!.release()
+          mediaPlayer = null
+        }`, 0, true
+      )
     } else releaseCode = '// No music to release.'
 
     helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
 
-    helper.replace('__PERFORVNM_SWITCHES__', 'switchScene(buttonData.getString("scene"))')
+    const savesCode = helper.codePrepare(`
+        val historyScenes = buttonData.getJSONArray("history")
+        for (j in 0 until historyScenes.length()) {
+          scenes.set(j, historyScenes.getString(j))
+        }
+        scenesLength = historyScenes.length()
+        
+        switchScene(buttonData.getString("scene"))`, 0, true
+    )
+
+    helper.replace('__PERFORVNM_SWITCHES__', savesCode)
   }
 
   let addHeaders = ''

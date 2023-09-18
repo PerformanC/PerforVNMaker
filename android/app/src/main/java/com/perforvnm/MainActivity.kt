@@ -1100,6 +1100,12 @@ class MainActivity : Activity() {
           mediaPlayer = null
         }
 
+        val historyScenes = buttonData.getJSONArray("history")
+        for (j in 0 until historyScenes.length()) {
+          scenes.set(j, historyScenes.getString(j))
+        }
+        scenesLength = historyScenes.length()
+        
         switchScene(buttonData.getString("scene"))
       }
 
@@ -1283,9 +1289,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -1547,9 +1554,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene4\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene4\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -1768,9 +1776,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene5\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene5\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -2009,9 +2018,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -2254,9 +2264,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -2358,7 +2369,7 @@ class MainActivity : Activity() {
     var json = "["
 
     for (i in 0 until scenesLength) {
-      json += scenes.get(i) + ","
+      json += "\"" + scenes.get(i) + "\","
     }
 
     json = json.dropLast(1) + "]"

@@ -1653,9 +1653,9 @@ function finalize(menu) {
         savesBackground.layoutParams = layoutParamsSavesBackground
 
         savesBackground.setOnClickListener {
-          __PERFORVNM_RELEASE_MEDIA_PLAYER__
+  __PERFORVNM_RELEASE_MEDIA_PLAYER__
 
-          __PERFORVNM_SWITCHES__
+  __PERFORVNM_SWITCHES__
         }
 
         frameLayoutScenes.addView(savesBackground)
