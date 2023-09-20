@@ -36,6 +36,8 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class MainActivity : Activity() {
+  private var scenes = MutableList<String>(5) { "" }
+  private var scenesLength = 1
   private val handler = Handler(Looper.getMainLooper())
   private var textSpeed = 1000L
   private var sEffectVolume = 1f
@@ -86,6 +88,8 @@ class MainActivity : Activity() {
         or View.SYSTEM_UI_FLAG_LOW_PROFILE
       )
     }
+
+    scenes.set(0, "scene1")
 
     val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -404,7 +408,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.21.0 (code generator), 1.18.8 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
+      append(" 1.21.1 (code generator), 1.19.1 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
     textView.setTextColor(0xFFFFFFFF.toInt())
@@ -1070,7 +1074,6 @@ class MainActivity : Activity() {
       try {
         savesBackground = ImageView(this)
         savesBackground.setImageResource(resources.getIdentifier(buttonData.getString("scenario"), "raw", getPackageName()))
-
       } catch (e: Exception) {
         savesBackground = RectangleView(this)
 
@@ -1097,12 +1100,13 @@ class MainActivity : Activity() {
           mediaPlayer = null
         }
 
-        when (buttonData.getString("scene")) {
-          "scene1" -> scene1()
-          "scene4" -> scene4(true)
-          "scene2" -> scene2(true)
-          "scene3" -> scene3(true)
+        val historyScenes = buttonData.getJSONArray("history")
+        for (j in 0 until historyScenes.length()) {
+          scenes.set(j, historyScenes.getString(j))
         }
+        scenesLength = historyScenes.length()
+        
+        switchScene(buttonData.getString("scene"))
       }
 
       frameLayoutScenes.addView(savesBackground)
@@ -1136,6 +1140,7 @@ class MainActivity : Activity() {
           }
           "right" -> {
             val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
             layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
           }
           "rightTop" -> {
@@ -1284,9 +1289,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -1459,17 +1465,21 @@ class MainActivity : Activity() {
     textViewSpeech.layoutParams = layoutParamsSpeech
 
     var speechText = "\"Paths are incredible, don't you think?\" says in a happy tone"
-    var i = 0
+    if (animate) {
+      var i = 0
 
-    handler.postDelayed(object : Runnable {
-      override fun run() {
-        if (i < speechText.length) {
-          textViewSpeech.text = speechText.substring(0, i + 1)
-          i++
-          handler.postDelayed(this, textSpeed)
+      handler.postDelayed(object : Runnable {
+        override fun run() {
+          if (i < speechText.length) {
+            textViewSpeech.text = speechText.substring(0, i + 1)
+            i++
+            handler.postDelayed(this, textSpeed)
+          }
         }
-      }
-    }, textSpeed)
+      }, textSpeed)
+    } else {
+      textViewSpeech.text = speechText
+    }
 
     frameLayout.addView(textViewSpeech)
 
@@ -1544,9 +1554,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene4\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene4\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -1619,7 +1630,232 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene1()
+      val scene = scenes.get(scenesLength - 1)
+
+      scenesLength--
+      scenes.set(scenesLength, "")
+
+      switchScene(scene)
+    }
+
+    frameLayout.addView(buttonBack)
+
+    setContentView(frameLayout)
+
+    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+      it.setOnClickListener(null)
+
+      scenes.set(scenesLength, "scene4")
+      scenesLength++
+
+      scene5()
+    }
+  }
+
+  private fun scene5() {
+    val frameLayout = FrameLayout(this)
+    frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+    val imageView_scenario = ImageView(this)
+    imageView_scenario.setImageResource(R.raw.background_thanking)
+    imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    frameLayout.addView(imageView_scenario)
+
+    val imageView_Pedro = ImageView(this)
+    imageView_Pedro.setImageResource(R.raw.pedro_staring)
+    imageView_Pedro.scaleType = ImageView.ScaleType.FIT_CENTER
+
+    val layoutParams_Pedro = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDp_Pedro = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp)
+
+    layoutParams_Pedro.gravity = Gravity.CENTER
+    layoutParams_Pedro.setMargins(leftDp_Pedro, 0, 0, 0)
+
+    imageView_Pedro.layoutParams = layoutParams_Pedro
+
+    frameLayout.addView(imageView_Pedro)
+
+    val rectangleViewSpeech = RectangleView(this)
+
+    val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
+
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
+    layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+    rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
+    rectangleViewSpeech.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewSpeech)
+
+    val textViewSpeech = TextView(this)
+    textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._9ssp))
+    textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsSpeech = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
+
+    textViewSpeech.layoutParams = layoutParamsSpeech
+
+    var speechText = "\"And our multi path feature.. amazing.\""
+    var i = 0
+
+    handler.postDelayed(object : Runnable {
+      override fun run() {
+        if (i < speechText.length) {
+          textViewSpeech.text = speechText.substring(0, i + 1)
+          i++
+          handler.postDelayed(this, textSpeed)
+        }
+      }
+    }, textSpeed)
+
+    frameLayout.addView(textViewSpeech)
+
+    val rectangleViewAuthor = RectangleView(this)
+
+    val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
+    layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
+
+    rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.6f)
+    rectangleViewAuthor.setColor(0xFF000000.toInt())
+
+    frameLayout.addView(rectangleViewAuthor)
+
+    val textViewAuthor = TextView(this)
+    textViewAuthor.text = "Pedro"
+    textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+    textViewAuthor.setTextColor(0xFFFFFFFF.toInt())
+
+    val layoutParamsAuthor = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
+
+    textViewAuthor.layoutParams = layoutParamsAuthor
+
+    frameLayout.addView(textViewAuthor)
+
+    val buttonSave = Button(this)
+    buttonSave.text = "Save"
+    buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonSave.setTextColor(0xFFFFFFFF.toInt())
+    buttonSave.background = null
+
+    val layoutParamsSave = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
+
+    layoutParamsSave.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)
+
+    buttonSave.layoutParams = layoutParamsSave
+
+    buttonSave.setOnClickListener {
+      val inputStream = openFileInput("saves.json")
+      var saves = inputStream.bufferedReader().use { it.readText() }
+      inputStream.close()
+
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene5\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
+
+      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
+      outputStream.write(saves.toByteArray())
+      outputStream.close()
+    }
+
+    frameLayout.addView(buttonSave)
+
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonMenu.setTextColor(0xFFFFFFFF.toInt())
+    buttonMenu.background = null
+
+    val layoutParamsMenu = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
+
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
+
+    buttonMenu.layoutParams = layoutParamsMenu
+
+    buttonMenu.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
+      mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
+
+      if (mediaPlayer != null) {
+        mediaPlayer!!.start()
+
+        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+        mediaPlayer!!.setVolume(volume, volume)
+
+        mediaPlayer!!.setOnCompletionListener {
+          mediaPlayer!!.start()
+        }
+      }
+
+      menu()
+    }
+
+    frameLayout.addView(buttonMenu)
+
+    val buttonBack = Button(this)
+    buttonBack.text = "Back"
+    buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonBack.setTextColor(0xFFFFFFFF.toInt())
+    buttonBack.background = null
+
+    val layoutParamsBack = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
+
+    val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)
+
+    layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+    layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
+
+    buttonBack.layoutParams = layoutParamsBack
+
+    buttonBack.setOnClickListener {
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
+      scenesLength--
+      scenes.set(scenesLength, "")
+
+      scene4(false)
     }
 
     frameLayout.addView(buttonBack)
@@ -1782,9 +2018,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -1863,6 +2100,9 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      scenes.set(scenesLength, "scene2")
+      scenesLength++
+
       scene4(true)
     }
 
@@ -2024,9 +2264,10 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}]}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
-      saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
       val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
       outputStream.write(saves.toByteArray())
@@ -2105,10 +2346,35 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+      scenes.set(scenesLength, "scene3")
+      scenesLength++
+
       scene4(true)
     }
 
     setContentView(frameLayout)
+  }
+
+  private fun switchScene(scene: String) {
+    when (scene) {
+      "scene1" -> scene1()
+      "scene4" -> scene4(true)
+      "scene5" -> scene5()
+      "scene2" -> scene2(true)
+      "scene3" -> scene3(true)
+    }
+  }
+
+  private fun scenesToJson(): String {
+    var json = "["
+
+    for (i in 0 until scenesLength) {
+      json += "\"" + scenes.get(i) + "\","
+    }
+
+    json = json.dropLast(1) + "]"
+
+    return json
   }
 }
 

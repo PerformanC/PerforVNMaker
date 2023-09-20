@@ -222,6 +222,47 @@ fourthScene = perfor.scene.addSpeech(fourthScene, {
     }
   }
 })
+fourthScene = perfor.scene.setNextScene(fourthScene, { scene: 'scene5' })
 perfor.scene.finalize(fourthScene)
+
+let fifthScene = perfor.scene.init({
+  name: 'scene5',
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  buttonsColor: 'FFFFFF',
+  footerTextColor: 'FFFFFF'
+})
+fifthScene = perfor.scene.addCharacter(fifthScene, {
+  name: 'Pedro',
+  image: 'pedro_staring',
+  position: {
+    side: 'left',
+    margins: {
+      side: 20,
+      top: 0
+    }
+  }
+})
+fifthScene = perfor.scene.addScenario(fifthScene, { image: 'background_thanking' })
+fifthScene = perfor.scene.addSpeech(fifthScene, {
+  author: {
+    name: 'Pedro',
+    textColor: 'FFFFFF',
+    rectangle: {
+      color: '000000',
+      opacity: 0.6
+    }
+  },
+  text: {
+    content: '"And our multi path feature.. amazing."',
+    color: 'FFFFFF',
+    fontSize: 9,
+    rectangle: {
+      color: '000000',
+      opacity: 0.8
+    }
+  }
+})
+perfor.scene.finalize(fifthScene)
 
 perfor.coder.finalize() /* Finishes up the code */

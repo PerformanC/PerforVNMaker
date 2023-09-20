@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 function writeFunction(sceneCode) {
-  const writenCode = '\n\n' + sceneCode + '__PERFORVNM_SCENES__'
+  const writenCode = `\n\n${sceneCode}__PERFORVNM_SCENES__`
 
   visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', writenCode)
 }
@@ -136,7 +136,7 @@ function verifyParams(check, params, additionalinfo = {}) {
         logFatal(`The file "${param}" does not exist.`)
       }
     } else {
-      if (checkKey.type != type) {
+      if (!checkKey.type.includes(type)) {
         logFatal(`The parameter "${key}" must be a ${checkKey.type}.`)
       }
     }
@@ -167,6 +167,18 @@ function verifyParams(check, params, additionalinfo = {}) {
   })
 }
 
+function codePrepare(code, removeSpaceAmount = 0, removeFirstLine = false) {
+  const lines = code.split('\n')
+
+  if (removeFirstLine) lines.shift()
+
+  lines.forEach((line, index) => {
+    lines[index] = line.substring(removeSpaceAmount)
+  })
+
+  return lines.join('\n')
+}
+
 export default {
   writeFunction,
   replace,
@@ -175,5 +187,6 @@ export default {
   logOk,
   logWarning,
   lastMessage,
-  verifyParams
+  verifyParams,
+  codePrepare
 }
