@@ -1,6 +1,6 @@
 {
   "name": "@performanc/perforvnmaker",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "description": "NodeJS Visual Novel Maker (code generator) ",
   "main": "index.js",
   "directories": {
