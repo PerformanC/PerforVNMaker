@@ -57,9 +57,11 @@ function verifyParams(check, params, additionalinfo = {}) {
     logFatal('The parameters object must be an object.')
   }
 
-  if (Array.isArray(params)) {
-    params.forEach((item) => {
+  const isArray = Array.isArray(params)
+  if (isArray) {
+    params.forEach((item, index) => {
       additionalinfo.parent = params
+      additionalinfo.index = index
 
       verifyParams(check, item, additionalinfo)
     })
@@ -72,7 +74,7 @@ function verifyParams(check, params, additionalinfo = {}) {
 
     if (checkKey.shouldCheck && !checkKey.shouldCheck(params[key], additionalinfo)) return;
 
-    if ((checkKey.required === undefined || checkKey.required) && params[key] === undefined) {
+    if (checkKey.required == true && params[key] === undefined) {
       logFatal(`The parameter "${key}" is required.`)
     }
   })
@@ -89,55 +91,49 @@ function verifyParams(check, params, additionalinfo = {}) {
 
     if (checkKey.shouldCheck && !checkKey.shouldCheck(param, additionalinfo)) return;
 
-    let type = typeof param
-    let isArray = false
-    if (type == 'object' && Array.isArray(param)) {
-      isArray = true
-      type = 'array'
-    }
+    const type = isArray ? 'array' : typeof param
 
     if (checkKey.params) {
-      if (type != 'object' && isArray == false) {
+      if (type != 'object') {
         logFatal(`The parameter "${key}" must be an object or an array.`)
       }
 
-      if (isArray == true && param.length == 0) {
+      if (isArray == true && param.length == 0 && checkKey.required == true) {
         logFatal(`The parameter "${key}" must not be empty.`)
       }
 
-      if (type == 'object') {
-        additionalinfo.parent = params
+      additionalinfo.parent = params
 
-        verifyParams(checkKey.params, param, additionalinfo)
-      } else {
-        param.forEach((item, index) => {
-          additionalinfo.parent = params
-          additionalinfo.index = index
-
-          verifyParams(checkKey.params, item, additionalinfo)
-        })
-      }
+      verifyParams(checkKey.params, param, additionalinfo)
     }
 
-    if (checkKey.type == 'file') {
-      try {
-        fs.accessSync((checkKey.basePath || './') + param, fs.constants.F_OK)
-      } catch {
-        logFatal(`The file "${param}" does not exist.`)
-      }
-    } else if (checkKey.type == 'fileInitial') {
-      try {
-        if (!fs.readdirSync((checkKey.basePath || './')).find((file) => {
-          return file.startsWith(param)
-        })) {
+    switch (checkKey.type) {
+      case 'file': {
+        try {
+          fs.accessSync((checkKey.basePath || './') + param, fs.constants.F_OK)
+        } catch {
           logFatal(`The file "${param}" does not exist.`)
         }
-      } catch {
-        logFatal(`The file "${param}" does not exist.`)
+
+        break
       }
-    } else {
-      if (!checkKey.type.includes(type)) {
-        logFatal(`The parameter "${key}" must be a ${checkKey.type}.`)
+      case 'fileInitial': {
+        try {
+          if (!fs.readdirSync((checkKey.basePath || './')).find((file) => {
+            return file.startsWith(param)
+          })) {
+            logFatal(`The file "${param}" does not exist.`)
+          }
+        } catch {
+          logFatal(`The file "${param}" does not exist.`)
+        }
+
+        break
+      }
+      default: {
+        if (!checkKey.type.includes(Array.isArray(param) ? 'array' : typeof param)) {
+          logFatal(`The parameter "${key}" must be a ${checkKey.type}.`)
+        }
       }
     }
 

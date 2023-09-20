@@ -94,7 +94,7 @@ function addCharacter(scene, options) {
           type: 'string',
           values: ['center', 'left', 'right'],
           shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.animations[additionalinfo.index].type == 'movement'
+            return additionalinfo.parent[additionalinfo.index].type == 'movement'
           }
         },
         'margins': {
@@ -108,26 +108,26 @@ function addCharacter(scene, options) {
             }
           },
           shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.animations[additionalinfo.index].type == 'movement'
+            return additionalinfo.parent[additionalinfo.index].type == 'movement'
           },
           required: false
         },
         'degrees': {
           type: 'number',
           shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.animations[additionalinfo.index].type == 'rotate'
+            return additionalinfo.parent[additionalinfo.index].type == 'rotate'
           }
         },
         'scale': {
           type: 'number',
           shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.animations[additionalinfo.index].type == 'scale'
+            return additionalinfo.parent[additionalinfo.index].type == 'scale'
           }
         },
         'duration': {
           type: 'number',
           shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.animations[additionalinfo.index].type != 'jump'
+            return additionalinfo.parent[additionalinfo.index].type != 'jump'
           }
         },
         'delay': {

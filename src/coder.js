@@ -4,8 +4,8 @@ import helper from './helper.js'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.21.1',
-  generatedCodeVersion: '1.19.1',
+  codeGeneratorVersion: '1.22.0',
+  generatedCodeVersion: '1.20.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
