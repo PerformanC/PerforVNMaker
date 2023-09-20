@@ -41,6 +41,9 @@ function lastMessage(finished) {
   if (!finished[0] || !finished[1]) return;
 
   console.log('\n\n\u001b[34mOK\u001b[0m: The visual novel has been successfully generated. If you liked our work, please give us a star in our repository.')
+
+  if (visualNovel.optimizations.useIntForSwitch)
+    console.log('\n\n\u001b[34mOK\u001b[0m: The "useIntForSwitch" aggressive optimization has been enabled. Saves backward compability are not supported, use only for the final release.')
 }
 
 /*
@@ -163,13 +166,26 @@ function verifyParams(check, params, additionalinfo = {}) {
   })
 }
 
-function codePrepare(code, removeSpaceAmount = 0, removeFirstLine = false) {
+function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirstLine = true) {
   const lines = code.split('\n')
 
   if (removeFirstLine) lines.shift()
 
+  let addedSpaces = ''
+  for (let i = 0; i < addSpaceAmount; i++) {
+    addedSpaces += ' '
+  }
+
   lines.forEach((line, index) => {
-    lines[index] = line.substring(removeSpaceAmount)
+    if (line == '') return;
+
+    if (visualNovel.optimizations.minify) {
+      lines[index] = line.trim()
+
+      return;
+    }
+
+    lines[index] = addedSpaces + line.substring(removeSpaceAmount)
   })
 
   return lines.join('\n')

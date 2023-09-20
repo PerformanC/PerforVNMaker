@@ -289,7 +289,7 @@ function finalize(menu) {
           val layoutParamsCustomText${index} = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
-          )\n\n`, 6, true
+          )\n\n`, 6
         )
 
         switch (custom.position.side) {
@@ -313,7 +313,7 @@ function finalize(menu) {
 
                 textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-                frameLayout.addView(textViewCustomText${index})\n\n`, 12, true
+                frameLayout.addView(textViewCustomText${index})\n\n`, 12
               )
 
             break
@@ -324,7 +324,7 @@ function finalize(menu) {
 
               textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-              frameLayout.addView(textViewCustomText${index})\n\n`, 10, true
+              frameLayout.addView(textViewCustomText${index})\n\n`, 10
             )
 
             break
@@ -341,7 +341,7 @@ function finalize(menu) {
           buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
           buttonCustomButton${index}.background = null
 
-          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
@@ -399,7 +399,7 @@ function finalize(menu) {
 
                 buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-                frameLayout.addView(buttonCustomButton${index})\n\n`, 12, true
+                frameLayout.addView(buttonCustomButton${index})\n\n`, 12
               )
 
             break
@@ -410,7 +410,7 @@ function finalize(menu) {
 
               buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-              frameLayout.addView(buttonCustomButton${index})\n\n`, 10, true
+              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
             )
 
             break
@@ -423,7 +423,7 @@ function finalize(menu) {
         customCode += helper.codePrepare(`
           val rectangleViewCustomRectangle${index} = RectangleView(this)
 
-          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
@@ -481,7 +481,7 @@ function finalize(menu) {
 
                 rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-                frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 12, true
+                frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 12
               )
 
             break
@@ -492,7 +492,7 @@ function finalize(menu) {
 
               rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10, true
+              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
             )
 
             break
@@ -506,7 +506,7 @@ function finalize(menu) {
           val imageViewCustomImage${index} = ImageView(this)
           imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})
 
-          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
@@ -564,7 +564,7 @@ function finalize(menu) {
 
                 imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-                frameLayout.addView(imageViewCustomImage${index})\n\n`, 12, true
+                frameLayout.addView(imageViewCustomImage${index})\n\n`, 12
               )
 
             break
@@ -575,7 +575,7 @@ function finalize(menu) {
 
               imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-              frameLayout.addView(imageViewCustomImage${index})\n\n`, 10, true
+              frameLayout.addView(imageViewCustomImage${index})\n\n`, 10
             )
 
             break
@@ -602,7 +602,7 @@ function finalize(menu) {
         mediaPlayer!!.setOnCompletionListener {
           mediaPlayer!!.start()
         }
-      }\n\n`, 2, true
+      }\n\n`, 2
     )
   }
 
@@ -617,7 +617,7 @@ function finalize(menu) {
       savesFile.writeText("[]")
     }
 
-    menu()`, 0, true
+    menu()`
   )
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
@@ -729,15 +729,17 @@ function finalize(menu) {
         saves(true)
       }
 
-      frameLayout.addView(buttonSaves)\n\n`, 2, true
+      frameLayout.addView(buttonSaves)\n\n`, 2
   )
 
   if (menu.custom.length != 0) {
     menuCode += customCode
   }
 
-  menuCode += '    setContentView(frameLayout)\n' +
-              '  }'
+  menuCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(menuCode)
 
@@ -757,7 +759,7 @@ function finalize(menu) {
         val rect = canvas?.clipBounds ?: return
         canvas.drawRect(rect, paint)
       }
-    }\n`, 4, false
+    }\n`, 4, 0, false
   )
 
   helper.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
@@ -926,7 +928,7 @@ function finalize(menu) {
             startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("${PerforVNM.repository}")))
           }
         }, length - "PerforVNM".length, length, 0)
-        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`, 2, true
+        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`, 2
   )
 
   if (menu.aboutText) {
@@ -957,15 +959,17 @@ function finalize(menu) {
     textView.ellipsize = TextUtils.TruncateAt.END
     textView.movementMethod = LinkMovementMethod.getInstance()
 
-    frameLayout.addView(textView)\n\n`, 0, true
+    frameLayout.addView(textView)\n\n`
   )
 
   if (menu.custom.length != 0) {
     aboutCode += customCode
   }
 
-  aboutCode += '    setContentView(frameLayout)\n' +
-               '  }'
+  aboutCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(aboutCode)
 
@@ -1408,15 +1412,17 @@ function finalize(menu) {
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-      })\n\n`, 2, true
+      })\n\n`, 2
   )
 
   if (menu.custom.length != 0) {
     settingsCode += customCode
   }
 
-  settingsCode +=   '    setContentView(frameLayout)\n' +
-                    '  }'
+  settingsCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(settingsCode)
 
@@ -1438,7 +1444,7 @@ function finalize(menu) {
             </shape>
           </clip>
         </item>
-      </layer-list>`, 6, true
+      </layer-list>`, 6
     )
   })
 
@@ -1448,7 +1454,7 @@ function finalize(menu) {
       <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
         <solid android:color="#${menu.seekBar.thumbColor}" />
         <size android:width="@dimen/_7sdp" android:height="@dimen/_13sdp" />
-      </shape>`, 6, true
+      </shape>`, 6
     )
   })
 
@@ -1675,38 +1681,7 @@ function finalize(menu) {
 
           layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-          when (characterData.getJSONObject("position").getString("sideType")) {
-            "left" -> {
-              val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
-            }
-            "leftTop" -> {
-              val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "right" -> {
-              val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
-            }
-            "rightTop" -> {
-              val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "top" -> {
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "center" -> {
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
-            }
-          }
+  __PERFORVNM_SAVES_SWITCH__
 
           imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
 
@@ -1723,7 +1698,7 @@ function finalize(menu) {
 
       scrollView.addView(frameLayoutScenes)
 
-      frameLayout.addView(scrollView)\n\n`, 2, true
+      frameLayout.addView(scrollView)\n\n`, 2
   )
 
   if (menu.custom.length != 0) {
@@ -1732,7 +1707,7 @@ function finalize(menu) {
 
   saverCode += helper.codePrepare(`
       setContentView(frameLayout)
-    }`, 2, true
+    }`, 2
   )
 
   helper.writeFunction(saverCode)

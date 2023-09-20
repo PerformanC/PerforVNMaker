@@ -540,7 +540,7 @@ function finalize(scene) {
   let sceneCode = helper.codePrepare(`
     private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {
       val frameLayout = FrameLayout(this)
-      frameLayout.setBackgroundColor(0xFF000000.toInt())\n\n`, 2, true
+      frameLayout.setBackgroundColor(0xFF000000.toInt())\n\n`, 2
   )
 
   if ((scene.characters.length != 0 || scene.background != '') && scene.transition) {
@@ -548,7 +548,7 @@ function finalize(scene) {
       val animationFadeIn = AlphaAnimation(0f, 1f)
       animationFadeIn.duration = ${scene.transition.duration}
       animationFadeIn.interpolator = LinearInterpolator()
-      animationFadeIn.fillAfter = true\n\n`, 2, true
+      animationFadeIn.fillAfter = true\n\n`, 2
     )
   }
 
@@ -558,11 +558,11 @@ function finalize(scene) {
       imageView_scenario.setImageResource(R.raw.${scene.background})
       imageView_scenario.scaleType = ImageView.ScaleType.FIT_CENTER
 
-      frameLayout.addView(imageView_scenario)\n\n`, 2, true
+      frameLayout.addView(imageView_scenario)\n\n`, 2
     )
 
     if (scene.transition)
-      sceneCode += '    imageView_scenario.startAnimation(animationFadeIn)' + '\n\n'
+      sceneCode += helper.codePrepare('imageView_scenario.startAnimation(animationFadeIn)\n\n', 0, 4, false)
   }
 
   for (let character of scene.characters) {
@@ -571,7 +571,7 @@ function finalize(scene) {
         sceneCode += helper.codePrepare(`
           val imageView_${character.name} = ImageView(this)
           imageView_${character.name}.setImageResource(R.raw.${character.image})
-          imageView_${character.name}.scaleType = ImageView.ScaleType.FIT_CENTER\n\n`, 6, true
+          imageView_${character.name}.scaleType = ImageView.ScaleType.FIT_CENTER\n\n`, 6
         )
 
         if (character.animations) {
@@ -583,11 +583,11 @@ function finalize(scene) {
 
             layoutParams_${character.name}.gravity = Gravity.CENTER
 
-            imageView_${character.name}.layoutParams = layoutParams_${character.name}\n\n`, 8, true
+            imageView_${character.name}.layoutParams = layoutParams_${character.name}\n\n`, 8,
           )
         }
 
-        sceneCode += `    frameLayout.addView(imageView_${character.name})` + '\n'
+        sceneCode += helper.codePrepare(`frameLayout.addView(imageView_${character.name})\n`, 0, 4, false)
 
         break
       }
@@ -595,16 +595,16 @@ function finalize(scene) {
       case 'left': {
         let dpiFunctions = ''
         if (character.position.margins.side != 0) {
-          dpiFunctions += `    val ${character.position.side}Dp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.side}sdp)\n`
+          dpiFunctions += helper.codePrepare(`val ${character.position.side}Dp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.side}sdp)\n`, 0, 4, false)
         }
 
         if (character.position.margins.top != 0) {
-          dpiFunctions += `    val topDp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.top}sdp)\n`
+          dpiFunctions += helper.codePrepare(`val topDp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.top}sdp)\n`, 0, 4, false)
         }
 
         dpiFunctions += '\n'
 
-        let layoutParams = `    layoutParams_${character.name}.setMargins(`
+        let layoutParams = helper.codePrepare(`layoutParams_${character.name}.setMargins(`, 0, 4, false)
         if (character.position.margins.side != 0 && character.position.side == 'left') {
           layoutParams += `${character.position.side}Dp_${character.name}, `
         } else {
@@ -633,19 +633,19 @@ function finalize(scene) {
           val layoutParams_${character.name} = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
-          )\n\n`, 6, true
+          )\n\n`, 6
         ) +
 
         dpiFunctions +
 
-        `    layoutParams_${character.name}.gravity = Gravity.CENTER` + '\n' +
+        helper.codePrepare(`layoutParams_${character.name}.gravity = Gravity.CENTER\n`, 0, 4, false) +
 
         layoutParams + '\n\n' +
 
         helper.codePrepare(`
           imageView_${character.name}.layoutParams = layoutParams_${character.name}
 
-          frameLayout.addView(imageView_${character.name})\n`, 6, true
+          frameLayout.addView(imageView_${character.name})\n`, 6
         )
 
         break
@@ -664,7 +664,7 @@ function finalize(scene) {
         animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
           override fun onAnimationStart(animation: Animation?) {}
 
-          override fun onAnimationEnd(animation: Animation?) {`, 4, false
+          override fun onAnimationEnd(animation: Animation?) {`, 4, 0, false
       ) +
 
       finalCode.push(
@@ -672,7 +672,7 @@ function finalize(scene) {
             }
 
             override fun onAnimationRepeat(animation: Animation?) {}
-          })\n`, 4, true
+          })\n`, 4
         )
       )
     }
@@ -683,13 +683,13 @@ function finalize(scene) {
       if (animation.delay != 0) {
         sceneCode += helper.codePrepare(`
           ${SPACE}handler.postDelayed(object : Runnable {
-          ${SPACE}  override fun run() {\n`, 10, true
+          ${SPACE}  override fun run() {\n`, 10
         )
 
         finalCode.push(
           helper.codePrepare(`
             ${SPACE}  }
-            ${SPACE}}, ${animation.delay})\n`, 12, true
+            ${SPACE}}, ${animation.delay})\n`, 12
           )
         )
 
@@ -709,48 +709,48 @@ function finalize(scene) {
           ${SPACE}      imageView_${character.name}.animate()
           ${SPACE}        .translationY(0f)
           ${SPACE}        .setDuration(${animation.duration / 2})
-          ${SPACE}        .setInterpolator(OvershootInterpolator())\n`, 10, true
+          ${SPACE}        .setInterpolator(OvershootInterpolator())\n`, 10
         )
 
         finalCode.push(
           helper.codePrepare(`
-            ${SPACE}    }
+            ${SPACE}  }
 
-            ${SPACE}    override fun onAnimationCancel(animation: Animator) {}
+            ${SPACE}  override fun onAnimationCancel(animation: Animator) {}
 
-            ${SPACE}    override fun onAnimationRepeat(animation: Animator) {}
-            ${SPACE}  })\n`, 12, true
+            ${SPACE}  override fun onAnimationRepeat(animation: Animator) {}
+            ${SPACE}})\n`, 10
           )
         )
 
         SPACE += '      '
       } else {
-        sceneCode += SPACE + `imageView_${character.name}.animate()` + '\n'
+        sceneCode += helper.codePrepare(SPACE + `imageView_${character.name}.animate()\n`, 0, 0, false)
 
         switch (animation.type) {
           case 'movement': {
             sceneCode += helper.codePrepare(`
-              ${SPACE}  .translationX(${(animation.side == 'center' ? '((frameLayout.width - imageView_' + character.name + '.width) / 2).toFloat()' : animation.margins.side)}f)
-              ${SPACE}  .translationY(${(animation.side == 'center' ? '((frameLayout.height - imageView_' + character.name + '.height) / 2).toFloat()' : animation.margins.top)}f)\n`, 14, true
+              ${SPACE}.translationX(${(animation.side == 'center' ? `((frameLayout.width - imageView_${character.name}.width) / 2).toFloat()` : animation.margins.side)}f)
+              ${SPACE}.translationY(${(animation.side == 'center' ? `((frameLayout.height - imageView_${character.name}.height) / 2).toFloat()` : animation.margins.top)}f)\n`, 12
             )
 
             break
           }
           case 'fadeIn':
           case 'fadeOut': {
-            sceneCode += SPACE + `  .alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)` + '\n'
+            sceneCode += helper.codePrepare(`${SPACE}.alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)\n`, 0, 2, false)
 
             break
           }
           case 'rotate': {
-            sceneCode += SPACE + `  .rotation(${animation.degrees}f)` + '\n'
+            sceneCode += helper.codePrepare(`${SPACE}.rotation(${animation.degrees}f)\n`, 0, 2, false)
 
             break
           }
           case 'scale': {
             sceneCode += helper.codePrepare(`
-              ${SPACE}  .scaleX(${animation.scale}f)
-              ${SPACE}  .scaleY(${animation.scale}f)\n`, 14, true
+              ${SPACE}.scaleX(${animation.scale}f)
+              ${SPACE}.scaleY(${animation.scale}f)\n`, 12
             )
 
             break
@@ -759,29 +759,29 @@ function finalize(scene) {
 
         sceneCode += helper.codePrepare(`
           ${SPACE}  .setDuration(${animation.duration})
-          ${SPACE}  .setInterpolator(LinearInterpolator())\n`, 10, true
+          ${SPACE}  .setInterpolator(LinearInterpolator())\n`, 10
         )
       }
 
       if (character.animations.length - 1 == i) {
-        sceneCode += SPACE + '  .start()' + '\n'
+        sceneCode += helper.codePrepare(`${SPACE}.start()\n`, 0, 2, false)
       } else {
         sceneCode += helper.codePrepare(`
-          ${SPACE}  .setListener(object : Animator.AnimatorListener {
-          ${SPACE}    override fun onAnimationStart(animation: Animator) {}
+          ${SPACE}.setListener(object : Animator.AnimatorListener {
+          ${SPACE}  override fun onAnimationStart(animation: Animator) {}
 
-          ${SPACE}    override fun onAnimationEnd(animation: Animator) {\n`, 10, true
+          ${SPACE}  override fun onAnimationEnd(animation: Animator) {\n`, 8
         )
 
         finalCode.push(
           helper.codePrepare(`
-            ${SPACE}    }
+            ${SPACE}  }
 
-            ${SPACE}    override fun onAnimationCancel(animation: Animator) {}
+            ${SPACE}  override fun onAnimationCancel(animation: Animator) {}
 
-            ${SPACE}    override fun onAnimationRepeat(animation: Animator) {}
-            ${SPACE}  })
-            ${SPACE}  .start()\n`, 12, true
+            ${SPACE}  override fun onAnimationRepeat(animation: Animator) {}
+            ${SPACE}})
+            ${SPACE}.start()\n`, 10
           )
         )
 
@@ -807,14 +807,14 @@ function finalize(scene) {
       val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
       layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
-      rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, false
+      rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
     )
 
     if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
-      sceneCode += `    rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`
+      sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
-    sceneCode += `    rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n`
+    sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n`, 0, 4, false)
 
     if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
       sceneCode += helper.codePrepare(`
@@ -827,7 +827,7 @@ function finalize(scene) {
           rectangleViewSpeech.startAnimation(animationRectangleSpeech)
         } else {
           rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)
-        }\n\n`, 4, false
+        }\n\n`, 4, 0, false
       )
     } else {
       sceneCode += '\n'
@@ -859,14 +859,14 @@ function finalize(scene) {
       layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
       layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
 
-      rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2, true
+      rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2
     )
 
     if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
-      sceneCode += `    rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)\n`
+      sceneCode += helper.codePrepare(`rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
-    sceneCode += `    rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`
+    sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
     if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
       sceneCode += helper.codePrepare(`
@@ -879,11 +879,11 @@ function finalize(scene) {
           rectangleViewAuthor.startAnimation(animationRectangleAuthor)
         } else {
           rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)
-        }\n\n`, 4, true
+        }\n\n`, 4
       )
     }
 
-    sceneCode += '    frameLayout.addView(rectangleViewAuthor)'
+    sceneCode += helper.codePrepare('frameLayout.addView(rectangleViewAuthor)', 0, 4, false)
 
     if (scene.speech.author.name) {
       sceneCode += helper.codePrepare(`
@@ -901,7 +901,7 @@ function finalize(scene) {
         layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
         layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
 
-        textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, false
+        textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
 
       if (
@@ -913,9 +913,9 @@ function finalize(scene) {
           !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name)
         ) {
           if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) {
-            sceneCode += '    if (animateAuthor) {'
+            sceneCode += helper.codePrepare('if (animateAuthor) {', 0, 4, false)
           } else {
-            sceneCode += '    if (animate) {'
+            sceneCode += helper.codePrepare('if (animate) {', 0, 4, false)
           }
 
           sceneCode += helper.codePrepare(`
@@ -925,12 +925,12 @@ function finalize(scene) {
               animationAuthor.fillAfter = true
 
               textViewAuthor.startAnimation(animationAuthor)
-            }\n\n`, 8, false
+            }\n\n`, 8, 0, false
           )
       }
 
 
-      sceneCode += '    frameLayout.addView(textViewAuthor)'
+      sceneCode += helper.codePrepare('frameLayout.addView(textViewAuthor)', 0, 4, false)
     }
 
     sceneCode += '\n'
@@ -947,13 +947,13 @@ function finalize(scene) {
 
         sceneCode += helper.codePrepare(`
           handler.postDelayed(object : Runnable {
-            override fun run() {\n`, 6, false
+            override fun run() {\n`, 6, 0, false
         )
 
         finalCode.push(
           helper.codePrepare(`
               }
-            }, ${scene.music.delay})\n`, 6, true
+            }, ${scene.music.delay})\n`, 6
           )
         )
       } else {
@@ -975,7 +975,7 @@ function finalize(scene) {
         ${SPACE}      mediaPlayer = null
         ${SPACE}    }
         ${SPACE}  }
-        ${SPACE}}\n`, 8, true
+        ${SPACE}}\n`, 8
       )
 
       if (finalCode.length != 0) {
@@ -995,13 +995,13 @@ function finalize(scene) {
 
         sceneCode += helper.codePrepare(`
           handler.postDelayed(object : Runnable {
-            override fun run() {\n`, 6, false
+            override fun run() {\n`, 6, 0, false
         )
 
         finalCode.push(
           helper.codePrepare(`
               }
-            }, ${effect.delay}L)\n`, 6, true
+            }, ${effect.delay}L)\n`, 6
           )
         )
       } else {
@@ -1026,7 +1026,7 @@ function finalize(scene) {
         ${SPACE}      ${mediaPlayerName} = null
         ${SPACE}    }
         ${SPACE}  }
-        ${SPACE}}\n`, 8, true
+        ${SPACE}}\n`, 8
       )
 
       if (finalCode.length != 0) {
@@ -1046,7 +1046,7 @@ function finalize(scene) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 2, true
+        }`
       )
     )
   }
@@ -1058,7 +1058,7 @@ function finalize(scene) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 2, true
+        }`
       )
     )
 
@@ -1068,15 +1068,15 @@ function finalize(scene) {
           mediaPlayer2!!.stop()
           mediaPlayer2!!.release()
           mediaPlayer2 = null
-        }`, 2, true
+        }`
       )
     )
   }
 
   if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-    finishScene.push('      handler.removeCallbacksAndMessages(null)')
+    finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 8, false))
 
-  finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
+  finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 8, false))
 
   sceneCode += helper.codePrepare(`
     val buttonSave = Button(this)
@@ -1100,7 +1100,7 @@ function finalize(scene) {
     buttonSave.setOnClickListener {
       val inputStream = openFileInput("saves.json")
       var saves = inputStream.bufferedReader().use { it.readText() }
-      inputStream.close()\n\n`, 0, false
+      inputStream.close()\n\n`, 0, 0, false
   )
 
   const sceneJson = {}
@@ -1139,52 +1139,52 @@ function finalize(scene) {
     })
   }
 
-  sceneCode += 
-    `      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() + "}"\n\n` +
+  sceneCode += helper.codePrepare(`
+      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() + "}"
 
-    helper.codePrepare(`
-        if (saves == "[]") saves = "[" + newSave + "]"
-        else saves = saves.dropLast(1) + "," + newSave + "]"
+      if (saves == "[]") saves = "[" + newSave + "]"
+      else saves = saves.dropLast(1) + "," + newSave + "]"
 
-        val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
-        outputStream.write(saves.toByteArray())
-        outputStream.close()
-      }
+      val outputStream = openFileOutput("saves.json", Context.MODE_PRIVATE)
+      outputStream.write(saves.toByteArray())
+      outputStream.close()
+    }
 
-      frameLayout.addView(buttonSave)
+    frameLayout.addView(buttonSave)
 
-      val buttonMenu = Button(this)
-      buttonMenu.text = "Menu"
-      buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
-      buttonMenu.setTextColor(0xFF${scene.options.buttonsColor}.toInt())
-      buttonMenu.background = null
+    val buttonMenu = Button(this)
+    buttonMenu.text = "Menu"
+    buttonMenu.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._8ssp))
+    buttonMenu.setTextColor(0xFF${scene.options.buttonsColor}.toInt())
+    buttonMenu.background = null
 
-      val layoutParamsMenu = LayoutParams(
-        LayoutParams.WRAP_CONTENT,
-        LayoutParams.WRAP_CONTENT
-      )
+    val layoutParamsMenu = LayoutParams(
+      LayoutParams.WRAP_CONTENT,
+      LayoutParams.WRAP_CONTENT
+    )
 
-      val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
+    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
 
-      layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-      layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
+    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
 
-      buttonMenu.layoutParams = layoutParamsMenu\n\n`, 2, true
+    buttonMenu.layoutParams = layoutParamsMenu\n\n`
   )
 
   if (finishScene.length != 0) {
-    sceneCode += '    buttonMenu.setOnClickListener {\n' +
-                 finishScene.join('\n\n') + '\n' +
-                 '__PERFORVNM_START_MUSIC__\n\n'
+    sceneCode += helper.codePrepare(`
+      buttonMenu.setOnClickListener {
+${finishScene.join('\n\n')}
+  __PERFORVNM_START_MUSIC__\n\n`, 2, 0)
   } else {
-    sceneCode += '    buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n'
+    sceneCode += helper.codePrepare('buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n', 0, 4, false)
   }
 
   sceneCode += helper.codePrepare(`
       ${(visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__')}
     }
 
-    frameLayout.addView(buttonMenu)\n\n`, 0, true
+    frameLayout.addView(buttonMenu)\n\n`
   )
 
   if (visualNovel.scenes.length != 0) {
@@ -1205,14 +1205,15 @@ function finalize(scene) {
       layoutParamsBack.gravity = Gravity.TOP or Gravity.START
       layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
 
-      buttonBack.layoutParams = layoutParamsBack\n\n`, 2, true
+      buttonBack.layoutParams = layoutParamsBack\n\n`, 2
     )
 
     if (finishScene.length != 0) {
-      sceneCode += '    buttonBack.setOnClickListener {\n' +
-                   finishScene.join('\n\n') + '\n\n'
+      sceneCode += helper.codePrepare(`
+      buttonBack.setOnClickListener {
+${finishScene.join('\n\n')}\n\n`, 2, 0)
     } else {
-      sceneCode += '    buttonBack.setOnClickListener {\n'
+      sceneCode += helper.codePrepare('buttonBack.setOnClickListener {\n', 0, 2, false)
     }
 
     if (visualNovel.subScenes.find((subScene) => subScene.next == scene.name)) {
@@ -1222,17 +1223,17 @@ function finalize(scene) {
         scenesLength--
         scenes.set(scenesLength, "")
 
-        switchScene(scene)\n`, 2, true
+        switchScene(scene)\n`, 2
       )
     } else {
       if (visualNovel.scenes.length == 1) {
-        sceneCode += `      ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})` + '\n'
+        sceneCode += helper.codePrepare(`${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
           scenes.set(scenesLength, "")
 
-          ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 4, true
+          ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 4
         )
       }
     }
@@ -1240,7 +1241,7 @@ function finalize(scene) {
     sceneCode += helper.codePrepare(`
       }
 
-      frameLayout.addView(buttonBack)\n\n`, 2, true
+      frameLayout.addView(buttonBack)\n\n`, 2
     )
   }
 
@@ -1262,7 +1263,7 @@ function finalize(scene) {
       layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
       layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)
 
-      buttonSubScenes.layoutParams = layoutParamsSubScenes\n\n`, 2, true
+      buttonSubScenes.layoutParams = layoutParamsSubScenes\n\n`, 2
     )
 
     const functionParams = []
@@ -1298,7 +1299,7 @@ function finalize(scene) {
         __PERFORVNM_SUBSCENE_2__
       }
 
-      frameLayout.addView(buttonSubScenes2)\n\n`, 2, true
+      frameLayout.addView(buttonSubScenes2)\n\n`, 2
     )
   } else if (scene.subScenes.length != 0) {
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
@@ -1316,7 +1317,7 @@ function finalize(scene) {
           val layoutParamsCustomText${index} = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
-          )\n\n`, 8, true
+          )\n\n`, 8
         )
 
         switch (custom.position.side) {
@@ -1324,11 +1325,15 @@ function finalize(scene) {
           case 'right': {
             const definitions = []
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              )
             }
 
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              )
             }
 
             sceneCode +=
@@ -1340,7 +1345,7 @@ function finalize(scene) {
 
                 textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-                frameLayout.addView(textViewCustomText${index})\n\n`, 12, true
+                frameLayout.addView(textViewCustomText${index})\n\n`, 12
               )
 
             break
@@ -1351,7 +1356,7 @@ function finalize(scene) {
 
               textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-              frameLayout.addView(textViewCustomText${index})\n\n`, 12, true
+              frameLayout.addView(textViewCustomText${index})\n\n`, 12
             )
 
             break
@@ -1368,53 +1373,57 @@ function finalize(scene) {
           buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
           buttonCustomButton${index}.background = null
 
-          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
           }
         }
 
-        sceneCode += '    )\n\n'
+        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
             const definitions = []
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              )
             }
 
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              )
             }
 
             sceneCode +=
@@ -1426,7 +1435,7 @@ function finalize(scene) {
 
                 buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-                frameLayout.addView(buttonCustomButton${index})\n\n`, 12, true
+                frameLayout.addView(buttonCustomButton${index})\n\n`, 12
               )
 
             break
@@ -1437,7 +1446,7 @@ function finalize(scene) {
 
               buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-              frameLayout.addView(buttonCustomButton${index})\n\n`, 10, true
+              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
             )
 
             break
@@ -1450,53 +1459,57 @@ function finalize(scene) {
         sceneCode += helper.codePrepare(`
           val rectangleViewCustomRectangle${index} = RectangleView(this)
 
-          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
           }
         }
 
-        sceneCode += '    )\n\n'
+        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
             const definitions = []
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              )
             }
 
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              )
             }
 
             sceneCode +=
@@ -1508,7 +1521,7 @@ function finalize(scene) {
 
                 rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-                frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 12, true
+                frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 12
               )
 
             break
@@ -1519,7 +1532,7 @@ function finalize(scene) {
 
               rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10, true
+              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
             )
 
             break
@@ -1533,53 +1546,57 @@ function finalize(scene) {
           val imageViewCustomImage${index} = ImageView(this)
           imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})
 
-          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            sceneCode += '      LayoutParams.MATCH_PARENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            sceneCode += '      LayoutParams.WRAP_CONTENT,\n'
+            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            sceneCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
           }
         }
 
-        sceneCode += '    )\n\n'
+        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
             const definitions = []
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              )
             }
 
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              definitions.push(
+                helper.codePrepare(`val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              )
             }
 
             sceneCode +=
@@ -1591,7 +1608,7 @@ function finalize(scene) {
 
                 imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-                frameLayout.addView(imageViewCustomImage${index})\n\n`, 12, true
+                frameLayout.addView(imageViewCustomImage${index})\n\n`, 12
               )
 
             break
@@ -1602,7 +1619,7 @@ function finalize(scene) {
 
               imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-              frameLayout.addView(imageViewCustomImage${index})`, 10, true
+              frameLayout.addView(imageViewCustomImage${index})`, 10
             )
 
             break
@@ -1617,7 +1634,7 @@ function finalize(scene) {
   if (scene.type == 'normal') {
     sceneCode += helper.codePrepare(`
         setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__
-      }`, 4, true
+      }`, 4
     )
   } else {
     if (scene.next) {
@@ -1630,12 +1647,12 @@ function finalize(scene) {
           }
 
           setContentView(frameLayout)
-        }`, 6, true
+        }`, 6
       )
     } else {
       sceneCode += helper.codePrepare(`
           setContentView(frameLayout)
-        }`, 6, true
+        }`, 6
       )
     }
   }

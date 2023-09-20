@@ -7,6 +7,9 @@ perfor.coder.init({
   version: '1.0.0',
   paths: {
     android: './android'
+  },
+  optimizations: {
+    codeGenTimePositions: true
   }
 })
 

@@ -3,7 +3,6 @@ package com.perforvnm
 import java.io.File
 import java.io.InputStreamReader
 import org.json.JSONArray
-import kotlin.math.roundToInt
 
 import android.os.Build
 import android.os.Bundle
@@ -408,7 +407,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 1.21.1 (code generator), 1.19.1 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
+      append(" 1.22.0 (code generator), 1.20.0 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
     textView.setTextColor(0xFFFFFFFF.toInt())
@@ -1126,36 +1125,49 @@ class MainActivity : Activity() {
 
         layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-        when (characterData.getJSONObject("position").getString("sideType")) {
-          "left" -> {
-            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+        when (buttonData.getString("scenario")) {
+          "scene1" -> {
+            when (characterData.getString("name")) {
+              "Pedro" -> {
+                layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+              }
+            }
           }
-          "leftTop" -> {
-            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          "scene4" -> {
+            when (characterData.getString("name")) {
+              "Pedro" -> {
+                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
 
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+                layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+              }
+            }
           }
-          "right" -> {
-            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          "scene5" -> {
+            when (characterData.getString("name")) {
+              "Pedro" -> {
+                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
 
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
+                layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+              }
+            }
           }
-          "rightTop" -> {
-            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          "scene2" -> {
+            when (characterData.getString("name")) {
+              "Pedro" -> {
+                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
 
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+                layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+              }
+            }
           }
-          "top" -> {
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          "scene3" -> {
+            when (characterData.getString("name")) {
+              "Pedro" -> {
+                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
 
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
-          }
-          "center" -> {
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+                layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+              }
+            }
           }
         }
 
