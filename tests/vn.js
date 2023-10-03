@@ -11,7 +11,8 @@ perfor.coder.init({
   optimizations: {
     codeGenTimePositions: true,
     reuseResources: true,
-    // minify: true
+    // minify: true,
+    scenesNameHashing: true
   }
 })
 

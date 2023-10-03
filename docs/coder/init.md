@@ -14,7 +14,7 @@ coder.init({
   version: '1.0.0',
   optimizations: {
     codeGenTimePositions: true,
-    useIntForSwitch: true,
+    scenesNameHashing: true,
     minify: true,
     reuseResources: true
   }
@@ -30,7 +30,7 @@ coder.init({
   - `version`: The version of the VN, used by the system and in the About menu.
   - `optimizations`: The optimizations of the code generator.
     - `codeGenTimePositions`: If `true`, PerforVNM will generate a switch for faster `save` page loading. (high - speed)
-    - `useIntForSwitch`: If `true`, the code generator will use `int` instead of `String` for the `switch` in scenes detection. Be aware, this is an agressive optimization, not backward compatible with non-optimized save files, and should be only used if you're sure that you won't change the order of your scenes. (low - speed)
+    - `scenesNameHashing`: If `true`, the code generator, in code generation time, will hash the names of the scenes in `saves` switch page to reduce overhead of checking strings.
     - `minify`: If `true`, the code generator will minify the generated code by removing the identation spaces. (low - code size)
     - `reuseResources`: If `true`, the code generator will reuse any `sdp` and `ssp` resources that are identical in each scene. (low - speed & code size)
 

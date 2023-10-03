@@ -1688,7 +1688,7 @@ function finalize(menu) {
           frameLayoutScenes.addView(imageViewCharacter)
         }
 
-        if (i != 0 && i % 4 == 0) {
+        if (i != 0 && (i + 1).mod(4) == 0) {
           leftDp = 100
           topDp += 100
         } else {

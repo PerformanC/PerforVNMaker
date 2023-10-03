@@ -43,7 +43,7 @@ function lastMessage(finished) {
   console.log('\n\n\u001b[34mOK\u001b[0m: The visual novel has been successfully generated. If you liked our work, please give us a star in our repository.')
 
   if (visualNovel.optimizations.useIntForSwitch)
-    console.log('\n\n\u001b[34mOK\u001b[0m: The "useIntForSwitch" aggressive optimization has been enabled. Saves backward compability are not supported, use only for the final release.')
+    console.log('\n\n\u001b[34mOK\u001b[0m: The "useIntForSwitch" aggressive optimization has been enabled. Saves backward compability are not supported, use only for the final release of the VN.')
 }
 
 /*
@@ -223,6 +223,19 @@ function getSceneResource(scene, conf) {
   }
 }
 
+function hash(str) {
+  let hash = 0, i = 0
+
+  while (str.length > i) hash = hash * 37 + (str.charCodeAt(i++) & 255)
+
+  return hash % 2147483647 /* Kotlin Int max value */
+}
+
+function getSceneId(scene) {
+  if (visualNovel.optimizations.scenesNameHashing) return hash(scene)
+  else `"${scene}"`
+}
+
 export default {
   writeFunction,
   replace,
@@ -234,5 +247,7 @@ export default {
   verifyParams,
   codePrepare,
   addSceneResource,
-  getSceneResource
+  getSceneResource,
+  hash,
+  getSceneId
 }

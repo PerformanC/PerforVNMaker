@@ -35,7 +35,7 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class MainActivity : Activity() {
-  private var scenes = MutableList<String>(5) { "" }
+  private var scenes = MutableList<Int>(5) { 0 }
   private var scenesLength = 1
   private val handler = Handler(Looper.getMainLooper())
   private var textSpeed = 1000L
@@ -88,7 +88,7 @@ class MainActivity : Activity() {
       )
     }
 
-    scenes.set(0, "scene1")
+    scenes.set(0, 1722916382)
 
     val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
     mediaPlayer = MediaPlayer.create(this, R.raw.menu_music)
@@ -1101,11 +1101,11 @@ class MainActivity : Activity() {
 
         val historyScenes = buttonData.getJSONArray("history")
         for (j in 0 until historyScenes.length()) {
-          scenes.set(j, historyScenes.getString(j))
+          scenes.set(j, historyScenes.getInt(j))
         }
         scenesLength = historyScenes.length()
         
-        switchScene(buttonData.getString("scene"))
+        switchScene(buttonData.getInt("scene"))
       }
 
       frameLayoutScenes.addView(savesBackground)
@@ -1176,7 +1176,7 @@ class MainActivity : Activity() {
         frameLayoutScenes.addView(imageViewCharacter)
       }
 
-      if (i != 0 && i % 4 == 0) {
+      if (i != 0 && (i + 1).mod(4) == 0) {
         leftDp = 100
         topDp += 100
       } else {
@@ -1289,8 +1289,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -1299,7 +1300,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene1\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916382,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1322,8 +1323,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1367,8 +1369,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp120 = resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName()))
     layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
-    layoutParamsSubScenes.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSubScenes.setMargins(0, sdp120, 0, 0)
 
     buttonSubScenes.layoutParams = layoutParamsSubScenes
 
@@ -1389,8 +1392,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp150 = resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName()))
     layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
-    layoutParamsSubScenes2.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSubScenes2.setMargins(0, sdp150, 0, 0)
 
     buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
@@ -1399,34 +1403,6 @@ class MainActivity : Activity() {
     }
 
     frameLayout.addView(buttonSubScenes2)
-
-    val rectangleViewCustomRectangle0 = RectangleView(this)
-
-    val layoutParamsCustomRectangle0 = LayoutParams(
-      LayoutParams.MATCH_PARENT,
-      LayoutParams.MATCH_PARENT,
-    )
-
-    layoutParamsCustomRectangle0.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomRectangle0.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName())), 0, resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName())), 0)
-
-    rectangleViewCustomRectangle0.layoutParams = layoutParamsCustomRectangle0
-
-    frameLayout.addView(rectangleViewCustomRectangle0)
-
-    val rectangleViewCustomRectangle1 = RectangleView(this)
-
-    val layoutParamsCustomRectangle1 = LayoutParams(
-      LayoutParams.MATCH_PARENT,
-      LayoutParams.MATCH_PARENT,
-    )
-
-    layoutParamsCustomRectangle1.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomRectangle1.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName())), 0, resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName())), 0)
-
-    rectangleViewCustomRectangle1.layoutParams = layoutParamsCustomRectangle1
-
-    frameLayout.addView(rectangleViewCustomRectangle1)
 
     setContentView(frameLayout)
   }
@@ -1450,10 +1426,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    null
+    val sdp20 = resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName()))
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(sdp20, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -1461,7 +1437,8 @@ class MainActivity : Activity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1489,8 +1466,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -1517,7 +1495,7 @@ class MainActivity : Activity() {
 
     val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, sdp53)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
     rectangleViewAuthor.setColor(0xFF000000.toInt())
@@ -1545,8 +1523,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -1572,8 +1551,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -1582,7 +1562,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene4\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916385,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1605,8 +1585,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1644,8 +1625,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1657,7 +1639,7 @@ class MainActivity : Activity() {
       val scene = scenes.get(scenesLength - 1)
 
       scenesLength--
-      scenes.set(scenesLength, "")
+      scenes.set(scenesLength, 0)
 
       switchScene(scene)
     }
@@ -1671,7 +1653,7 @@ class MainActivity : Activity() {
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
       it.setOnClickListener(null)
 
-      scenes.set(scenesLength, "scene4")
+      scenes.set(scenesLength, 1722916385)
       scenesLength++
 
       scene5()
@@ -1697,10 +1679,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    null
+    val sdp20 = resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName()))
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(sdp20, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -1708,7 +1690,8 @@ class MainActivity : Activity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1726,8 +1709,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -1750,7 +1734,7 @@ class MainActivity : Activity() {
 
     val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, sdp53)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
     rectangleViewAuthor.setAlpha(0.6f)
@@ -1768,8 +1752,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -1786,8 +1771,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -1796,7 +1782,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene5\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916386,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1819,8 +1805,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1858,8 +1845,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1869,7 +1857,7 @@ class MainActivity : Activity() {
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
       scenesLength--
-      scenes.set(scenesLength, "")
+      scenes.set(scenesLength, 0)
 
       scene4(false)
     }
@@ -1898,10 +1886,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    null
+    val sdp20 = resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName()))
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(sdp20, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -1909,7 +1897,8 @@ class MainActivity : Activity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -1937,8 +1926,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -1965,7 +1955,7 @@ class MainActivity : Activity() {
 
     val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, sdp53)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
     rectangleViewAuthor.setColor(0xFF000000.toInt())
@@ -1993,8 +1983,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -2020,8 +2011,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -2030,7 +2022,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene2\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916383,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2053,8 +2045,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -2092,8 +2085,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -2108,7 +2102,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      scenes.set(scenesLength, "scene2")
+      scenes.set(scenesLength, 1722916383)
       scenesLength++
 
       scene4(true)
@@ -2136,10 +2130,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    null
+    val sdp20 = resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName()))
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(sdp20, 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -2147,7 +2141,8 @@ class MainActivity : Activity() {
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
@@ -2175,8 +2170,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -2203,7 +2199,7 @@ class MainActivity : Activity() {
 
     val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
     layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-    layoutParamsRectangleAuthor.setMargins(0, 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsRectangleAuthor.setMargins(0, 0, 0, sdp53)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
     rectangleViewAuthor.setColor(0xFF000000.toInt())
@@ -2231,8 +2227,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())))
+    layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -2258,8 +2255,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -2268,7 +2266,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":\"scene3\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916384,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2291,8 +2289,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -2330,8 +2329,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
+    val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -2346,7 +2346,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-      scenes.set(scenesLength, "scene3")
+      scenes.set(scenesLength, 1722916384)
       scenesLength++
 
       scene4(true)
@@ -2355,13 +2355,13 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun switchScene(scene: String) {
+  private fun switchScene(scene: Int) {
     when (scene) {
-      "scene1" -> scene1()
-      "scene4" -> scene4(true)
-      "scene5" -> scene5()
-      "scene2" -> scene2(true)
-      "scene3" -> scene3(true)
+      1722916382 -> scene1()
+      1722916385 -> scene4(true)
+      1722916386 -> scene5()
+      1722916383 -> scene2(true)
+      1722916384 -> scene3(true)
     }
   }
 
@@ -2369,7 +2369,7 @@ class MainActivity : Activity() {
     var json = "["
 
     for (i in 0 until scenesLength) {
-      json += "\"" + scenes.get(i) + "\","
+      json += scenes.get(i).toString() + ","
     }
 
     json = json.dropLast(1) + "]"

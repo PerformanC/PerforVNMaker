@@ -599,10 +599,9 @@ function finalize(scene) {
         let marginSideSdp = null
         if (character.position.margins.side != 0) {
           marginSideSdp = helper.getSceneResource(scene, { type: 'sdp', dp: character.position.margins.side })
-
-          dpiFunctions += helper.codePrepare(`${marginSideSdp.definition}\n`, 0, 4, false)
-
           helper.addSceneResource(scene, { type: 'sdp', dp: character.position.margins.side })
+
+          if (marginSideSdp.definition) dpiFunctions += helper.codePrepare(`${marginSideSdp.definition}\n`, 0, 4, false)
         }
 
         let marginTopSdp = null
@@ -610,10 +609,10 @@ function finalize(scene) {
           marginTopSdp = helper.getSceneResource(scene, { type: 'sdp', dp: character.position.margins.top })
           helper.addSceneResource(scene, { type: 'sdp', dp: character.position.margins.top })
 
-          if (customSdp.definition) dpiFunctions += helper.codePrepare(customSdp.definition, 0, 4, false)
+          if (marginTopSdp.definition) dpiFunctions += helper.codePrepare(marginTopSdp.definition, 0, 4, false)
         }
 
-        dpiFunctions += '\n'
+        if (marginSideSdp?.definition || marginTopSdp?.definition) dpiFunctions += '\n'
 
         let layoutParams = helper.codePrepare(`layoutParams_${character.name}.setMargins(`, 0, 4, false)
         if (character.position.margins.side != 0 && character.position.side == 'left') {
@@ -1130,7 +1129,7 @@ function finalize(scene) {
     sceneJson.scenario = scene.background
   }
 
-  sceneJson.scene = scene.name
+  sceneJson.scene = visualNovel.optimizations.scenesNameHashing ? helper.hash(scene.name) : scene.name
 
   if (scene.characters.length != 0) {
     sceneJson.characters = []
@@ -1188,7 +1187,7 @@ function finalize(scene) {
     )
 
     ${sdp23.definition ? `${sdp23.definition}\n    ` : ''}layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(${sdp23.variable}, ${sdp15.variable}, 0, 0)
+    layoutParamsMenu.setMargins(${sdp15.variable}, ${sdp23.variable}, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu\n\n`
   )
@@ -1244,7 +1243,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
         val scene = scenes.get(scenesLength - 1)
 
         scenesLength--
-        scenes.set(scenesLength, "")
+        scenes.set(scenesLength, ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'})
 
         switchScene(scene)\n`, 2
       )
@@ -1254,7 +1253,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
-          scenes.set(scenesLength, "")
+          scenes.set(scenesLength, ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'})
 
           ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 4
         )
@@ -1732,7 +1731,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
     if (scene.next) {
       sceneCode += helper.codePrepare(`
           findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-            scenes.set(scenesLength, "${scene.name}")
+            scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
             scenesLength++
 
             ${scene.next}(__PERFORVNM_NEXT_SCENE_PARAMS__)

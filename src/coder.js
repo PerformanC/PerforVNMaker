@@ -41,10 +41,10 @@ function init(options) {
           type: 'boolean',
           required: false
         }, /* This option will utilize the same sdp & ssp files for resources of the same scene. */
-        'useIntForSwitch': {
+        'scenesNameHashing': {
           type: 'boolean',
           required: false
-        }, /* Agresssive optimization: This option will use an integer for the switch statement instead of a string. */
+        }, /* Agresssive optimization: This option will hash the scenes names and use integers for the switch. */
         'codeGenTimePositions': {
           type: 'boolean',
           required: false
@@ -145,7 +145,7 @@ function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
 
   let switchesCode = helper.codePrepare(`
-    private fun switchScene(scene: String) {
+    private fun switchScene(${visualNovel.optimizations.scenesNameHashing ? 'scene: Int' : 'scene: String'}) {
       when (scene) {`, 2
   )
 
@@ -235,7 +235,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
                 override fun onAnimationStart(animation: Animation?) {}
 
                 override fun onAnimationEnd(animation: Animation?) {
-                  scenes.set(scenesLength, "${scene.name}")
+                  scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
                   scenesLength++
 
                   ${nextScene.name}(${functionParams.join(', ')})
@@ -246,7 +246,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
             )
           } else {
             code += helper.codePrepare(`
-              scenes.set(scenesLength, "${scene.name}")
+              scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
               scenesLength++
 
               ${nextScene.name}(${functionParams.join(', ')})\n`, 8
@@ -298,7 +298,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           functionParams2.switch.push('true')
         }
 
-        switchesCode += '\n' + helper.codePrepare(`"${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -366,7 +366,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
         }
 
-        switchesCode += '\n' + helper.codePrepare(`"${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -502,7 +502,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
         }
 
         scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-        switchesCode += '\n' + helper.codePrepare(`"${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -543,7 +543,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           functionParams.switch.push('true')
         }
 
-        switchesCode += '\n' + helper.codePrepare(`"${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -587,7 +587,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           var json = "["
     
           for (i in 0 until scenesLength) {
-            json += "\\"" + scenes.get(i) + "\\","
+            json += ${visualNovel.optimizations.scenesNameHashing ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
           }
     
           json = json.dropLast(1) + "]"
@@ -601,7 +601,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
-  helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, "${visualNovel.scenes[0].name}")` : '// No scenes created.')
+  helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[0].name)})` : '// No scenes created.')
   if (!visualNovel.optimizations.codeGenTimePositions) {
     const defaultSaveSwitchCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
@@ -682,18 +682,18 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     const savesCode = helper.codePrepare(`
       val historyScenes = buttonData.getJSONArray("history")
       for (j in 0 until historyScenes.length()) {
-        scenes.set(j, historyScenes.getString(j))
+        scenes.set(j, historyScenes.get${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}(j))
       }
       scenesLength = historyScenes.length()
       
-      switchScene(buttonData.getString("scene"))`, 0, 2
+      switchScene(buttonData.${visualNovel.optimizations.scenesNameHashing ? 'getInt' : 'getString'}("scene"))`, 0, 2
     )
 
     helper.replace('__PERFORVNM_SWITCHES__', savesCode)
   }
 
   let addHeaders = helper.codePrepare(`
-    private var scenes = MutableList<String>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { "" }
+    private var scenes = MutableList<${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'} }
     private var scenesLength = 1\n`, 2
   )
 
