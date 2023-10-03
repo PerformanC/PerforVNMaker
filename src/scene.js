@@ -43,7 +43,8 @@ function init(options) {
     effect: null,
     music: null,
     transition: null,
-    custom: []
+    custom: [],
+    resources: []
   }
 }
 
@@ -594,31 +595,41 @@ function finalize(scene) {
       case 'right':
       case 'left': {
         let dpiFunctions = ''
+
+        let marginSideSdp = null
         if (character.position.margins.side != 0) {
-          dpiFunctions += helper.codePrepare(`val ${character.position.side}Dp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.side}sdp)\n`, 0, 4, false)
+          marginSideSdp = helper.getSceneResource(scene, { type: 'sdp', dp: character.position.margins.side })
+
+          dpiFunctions += helper.codePrepare(`${marginSideSdp.definition}\n`, 0, 4, false)
+
+          helper.addSceneResource(scene, { type: 'sdp', dp: character.position.margins.side })
         }
 
+        let marginTopSdp = null
         if (character.position.margins.top != 0) {
-          dpiFunctions += helper.codePrepare(`val topDp_${character.name} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${character.position.margins.top}sdp)\n`, 0, 4, false)
+          marginTopSdp = helper.getSceneResource(scene, { type: 'sdp', dp: character.position.margins.top })
+          helper.addSceneResource(scene, { type: 'sdp', dp: character.position.margins.top })
+
+          if (customSdp.definition) dpiFunctions += helper.codePrepare(customSdp.definition, 0, 4, false)
         }
 
         dpiFunctions += '\n'
 
         let layoutParams = helper.codePrepare(`layoutParams_${character.name}.setMargins(`, 0, 4, false)
         if (character.position.margins.side != 0 && character.position.side == 'left') {
-          layoutParams += `${character.position.side}Dp_${character.name}, `
+          layoutParams += `${marginSideSdp.variable}, `
         } else {
           layoutParams += '0, '
         }
 
         if (character.position.margins.top != 0) {
-          layoutParams += `topDp_${character.name}, `
+          layoutParams += `${marginTopSdp.variable}, `
         } else {
           layoutParams += '0, '
         }
 
         if (character.position.margins.side != 0 && character.position.side == 'right') {
-          layoutParams += `${character.position.side}Dp_${character.name}, `
+          layoutParams += `${marginSideSdp.variable}, `
         } else {
           layoutParams += '0, '
         }
@@ -798,13 +809,16 @@ function finalize(scene) {
     }
   }
 
+  let sdp53 = null
+
   if (scene.speech) {
+    sdp53 = helper.getSceneResource(scene, { type: 'sdp', dp: '53' })
+    helper.addSceneResource(scene, { type: 'sdp', dp: '53' })
+
     sceneCode += helper.codePrepare(`
       val rectangleViewSpeech = RectangleView(this)
 
-      val bottomDpRectangles = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-      val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, bottomDpRectangles)
+      ${sdp53.definition ? `${sdp53.definition}\n      ` : ''}val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp53.variable})
       layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
@@ -833,6 +847,9 @@ function finalize(scene) {
       sceneCode += '\n'
     }
 
+    const sdp270 = helper.getSceneResource(scene, { type: 'sdp', dp: '270' })
+    helper.addSceneResource(scene, { type: 'sdp', dp: '270' })
+
     sceneCode += helper.codePrepare(`
       frameLayout.addView(rectangleViewSpeech)
 
@@ -845,8 +862,8 @@ function finalize(scene) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-      layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
+      ${sdp270.definition ? `${sdp270.definition}\n      ` : ''}layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+      layoutParamsSpeech.setMargins(0, ${sdp270.variable}, 0, 0)
 
       textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -857,7 +874,7 @@ function finalize(scene) {
 
       val layoutParamsRectangleAuthor = LayoutParams(LayoutParams.WRAP_CONTENT, 70)
       layoutParamsRectangleAuthor.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-      layoutParamsRectangleAuthor.setMargins(0, 0, 0, bottomDpRectangles)
+      layoutParamsRectangleAuthor.setMargins(0, 0, 0, ${sdp53.variable})
 
       rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2
     )
@@ -886,6 +903,9 @@ function finalize(scene) {
     sceneCode += helper.codePrepare('frameLayout.addView(rectangleViewAuthor)', 0, 4, false)
 
     if (scene.speech.author.name) {
+      const sdp135 = helper.getSceneResource(scene, { type: 'sdp', dp: '155' })
+      helper.addSceneResource(scene, { type: 'sdp', dp: '155' })
+
       sceneCode += helper.codePrepare(`
 
         val textViewAuthor = TextView(this)
@@ -898,8 +918,8 @@ function finalize(scene) {
           LayoutParams.WRAP_CONTENT
         )
 
-        layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-        layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, bottomDpRectangles)
+        ${sdp135.definition ? `${sdp135.definition}\n        ` : ''}layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsAuthor.setMargins(${sdp135.variable}, 0, 0, ${sdp53.variable})
 
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
@@ -1078,6 +1098,9 @@ function finalize(scene) {
 
   finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 8, false))
 
+  const sdp15 = helper.getSceneResource(scene, { type: 'sdp', dp: '15' })
+  helper.addSceneResource(scene, { type: 'sdp', dp: '15' })
+
   sceneCode += helper.codePrepare(`
     val buttonSave = Button(this)
     buttonSave.text = "Save"
@@ -1090,10 +1113,8 @@ function finalize(scene) {
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
-
-    layoutParamsSave.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSave.setMargins(leftDpButtons, 0, 0, 0)
+    ${sdp15.definition ? `${sdp15.definition}\n    ` : ''}layoutParamsSave.gravity = Gravity.TOP or Gravity.START
+    layoutParamsSave.setMargins(${sdp15.variable}, 0, 0, 0)
 
     buttonSave.layoutParams = layoutParamsSave
 
@@ -1139,6 +1160,9 @@ function finalize(scene) {
     })
   }
 
+  const sdp23 = helper.getSceneResource(scene, { type: 'sdp', dp: '23' })
+  helper.addSceneResource(scene, { type: 'sdp', dp: '23' })
+
   sceneCode += helper.codePrepare(`
       val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() + "}"
 
@@ -1163,10 +1187,8 @@ function finalize(scene) {
       LayoutParams.WRAP_CONTENT
     )
 
-    val topDpMenu = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp)
-
-    layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(leftDpButtons, topDpMenu, 0, 0)
+    ${sdp23.definition ? `${sdp23.definition}\n    ` : ''}layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
+    layoutParamsMenu.setMargins(${sdp23.variable}, ${sdp15.variable}, 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu\n\n`
   )
@@ -1188,6 +1210,9 @@ ${finishScene.join('\n\n')}
   )
 
   if (visualNovel.scenes.length != 0) {
+    const sdp46 = helper.getSceneResource(scene, { type: 'sdp', dp: '46' })
+    helper.addSceneResource(scene, { type: 'sdp', dp: '46' })
+
     sceneCode += helper.codePrepare(`
       val buttonBack = Button(this)
       buttonBack.text = "Back"
@@ -1200,10 +1225,8 @@ ${finishScene.join('\n\n')}
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpBack = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp)
-
-      layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-      layoutParamsBack.setMargins(leftDpButtons, topDpBack, 0, 0)
+      ${sdp46.definition ? `${sdp46.definition}\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      layoutParamsBack.setMargins(${sdp15.variable}, ${sdp46.variable}, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack\n\n`, 2
     )
@@ -1246,6 +1269,9 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
   }
 
   if (scene.subScenes.length == 2) {
+    const sdp120 = helper.getSceneResource(scene, { type: 'sdp', dp: '120' })
+    helper.addSceneResource(scene, { type: 'sdp', dp: '120' })
+
     sceneCode += helper.codePrepare(`
       val buttonSubScenes = Button(this)
       buttonSubScenes.text = "${scene.subScenes[0].text}"
@@ -1258,10 +1284,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpSubScenes = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._120sdp)
-
-      layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
-      layoutParamsSubScenes.setMargins(0, topDpSubScenes, 0, 0)
+      ${sdp120.definition ? `${sdp120.definition}\n      ` : ''}layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
+      layoutParamsSubScenes.setMargins(0, ${sdp120.variable}, 0, 0)
 
       buttonSubScenes.layoutParams = layoutParamsSubScenes\n\n`, 2
     )
@@ -1269,6 +1293,9 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
     const functionParams = []
     if (scene.subScenes[0].speech && !scene.speech) functionParams.push('true')
     if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+
+    const sdp150 = helper.getSceneResource(scene, { type: 'sdp', dp: '150' })
+    helper.addSceneResource(scene, { type: 'sdp', dp: '150' })
 
     sceneCode += helper.codePrepare(`
       buttonSubScenes.setOnClickListener {
@@ -1288,10 +1315,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpSubScenes2 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp)
-
-      layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
-      layoutParamsSubScenes2.setMargins(0, topDpSubScenes2, 0, 0)
+      ${sdp150.definition ? `${sdp150.definition}\n      ` : ''}layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
+      layoutParamsSubScenes2.setMargins(0, ${sdp150.variable}, 0, 0)
 
       buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
@@ -1337,7 +1362,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             }
 
             sceneCode +=
-              definitions.join('\n') + '\n\n' +
+              definitions.join('\n') +
 
               helper.codePrepare(`
                 layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START
@@ -1371,7 +1396,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
           buttonCustomButton${index}.text = "${custom.text}"
           buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))
           buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
-          buttonCustomButton${index}.background = null
+          buttonCustomButton${index}.background = null__PERFORVNM_OPTIMIZED_RESOURCE__
 
           val layoutParamsCustomButton${index} = LayoutParams(\n`, 6
         )
@@ -1388,7 +1413,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
+            const customHeight = helper.getSceneResource(scene, { type: 'sdp', dp: custom.height })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.height })
+
+            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
+
+            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
 
@@ -1404,34 +1434,49 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
+            const customWidth = helper.getSceneResource(scene, { type: 'sdp', dp: custom.width })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.width })
+
+            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
+
+            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
+        sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
         sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
             const definitions = []
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(
-                helper.codePrepare(`val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              marginTopSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+
+              if (marginTopSdp.definition) definitions.push(
+                helper.codePrepare(marginTopSdp.definition, 0, 4, false)
               )
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(
-                helper.codePrepare(`val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              marginSideSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+
+              if (marginSideSdp.definition) definitions.push(
+                helper.codePrepare(marginSideSdp.definition, 0, 4, false)
               )
             }
 
             sceneCode +=
-              definitions.join('\n') + '\n\n' +
+              definitions.join('\n') +
 
               helper.codePrepare(`
                 layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomButton${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)
+                layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.definition : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.definition : '0'}, 0)
 
                 buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
@@ -1457,10 +1502,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       }
       case 'rectangle': {
         sceneCode += helper.codePrepare(`
-          val rectangleViewCustomRectangle${index} = RectangleView(this)
+          val rectangleViewCustomRectangle${index} = RectangleView(this)__PERFORVNM_OPTIMIZED_RESOURCE__
 
           val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6
         )
+
+        //TODO: Assure that this is working.
 
         switch (custom.height) {
           case 'match': {
@@ -1474,9 +1521,16 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
+            const customHeight = helper.getSceneResource(scene, { type: 'sdp', dp: custom.height })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.height })
+
+            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__${customHeight.additionalSpace}`)
+
+            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
+
+        //TODO: Assure that this is working.
 
         switch (custom.width) {
           case 'match': {
@@ -1490,34 +1544,51 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
+            const customWidth = helper.getSceneResource(scene, { type: 'sdp', dp: custom.width })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.width })
+
+            console.log(customWidth)
+
+            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}${customWidth.additionalSpace}`)
+
+            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
+        sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
         sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
             const definitions = []
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(
-                helper.codePrepare(`val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              marginTopSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+
+              if (marginTopSdp.definition) definitions.push(
+                helper.codePrepare(marginTopSdp.definition + marginTopSdp.additionalSpace, 0, 4, false)
               )
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(
-                helper.codePrepare(`val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              marginSideSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+
+              if (marginSideSdp.definition) definitions.push(
+                helper.codePrepare(marginSideSdp.definition + marginSideSdp.additionalSpace, 0, 4, false)
               )
             }
 
             sceneCode +=
-              definitions.join('\n') + '\n\n' +
+              definitions.join('\n') +
 
               helper.codePrepare(`
                 layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomRectangle${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)
+                layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
                 rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
@@ -1546,6 +1617,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
           val imageViewCustomImage${index} = ImageView(this)
           imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})
 
+          __PERFORVNM_OPTIMIZED_RESOURCE__
+
           val layoutParamsCustomImage${index} = LayoutParams(\n`, 6
         )
 
@@ -1561,7 +1634,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`, 0, 6, false)
+            const customHeight = helper.getSceneResource(scene, { type: 'sdp', dp: custom.height })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.height })
+
+            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
+
+            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
 
@@ -1577,7 +1655,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
             break
           }
           default: {
-            sceneCode += helper.codePrepare(`resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`, 0, 6, false)
+            const customWidth = helper.getSceneResource(scene, { type: 'sdp', dp: custom.width })
+            helper.addSceneResource(scene, { type: 'sdp', dp: custom.width })
+
+            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
+
+            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
@@ -1587,24 +1670,33 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
           case 'left':
           case 'right': {
             const definitions = []
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(
-                helper.codePrepare(`val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`, 0, 4, false)
+              marginTopSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.top })
+
+              if (marginTopSdp.definition) definitions.push(
+                helper.codePrepare(marginSideSdp.definition, 0, 4, false)
               )
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(
-                helper.codePrepare(`val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`, 0, 4, false)
+              marginSideSdp = helper.getSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+              helper.addSceneResource(scene, { type: 'sdp', dp: custom.position.margins.side })
+
+              if (marginSideSdp.definition) definitions.push(
+                helper.codePrepare(marginSideSdp.definition, 0, 4, false)
               )
             }
 
             sceneCode +=
-              definitions.join('\n') + '\n\n' +
+              definitions.join('\n') +
 
               helper.codePrepare(`
                 layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomImage${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)
+                layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
                 imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 

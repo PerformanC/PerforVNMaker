@@ -191,6 +191,38 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
   return lines.join('\n')
 }
 
+function addSceneResource(scene, resource) {
+  scene.resources.push(resource)
+
+  return scene
+}
+
+function getSceneResource(scene, conf) {
+  const resource = scene.resources.find((resource) => resource.dp == conf.dp && resource.type == conf.type)
+
+  if (!visualNovel.optimizations.reuseResources) return {
+    definition: null,
+    inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
+    variable: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
+    additionalSpace: '\n'
+  }
+
+  if (resource) return {
+    definition: null,
+    inlined: `${resource.type}${resource.dp}`,
+    variable: `${resource.type}${resource.dp}`,
+    additionalSpace: '\n'
+  }
+  else {
+    return {
+      definition: `val ${conf.type}${conf.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
+      inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
+      variable: `${conf.type}${conf.dp}`,
+      additionalSpace: '\n\n'
+    }
+  }
+}
+
 export default {
   writeFunction,
   replace,
@@ -200,5 +232,7 @@ export default {
   logWarning,
   lastMessage,
   verifyParams,
-  codePrepare
+  codePrepare,
+  addSceneResource,
+  getSceneResource
 }

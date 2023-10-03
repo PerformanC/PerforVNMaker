@@ -9,7 +9,9 @@ perfor.coder.init({
     android: './android'
   },
   optimizations: {
-    codeGenTimePositions: true
+    codeGenTimePositions: true,
+    reuseResources: true,
+    // minify: true
   }
 })
 
@@ -76,13 +78,42 @@ firstScene = perfor.scene.addCharacter(firstScene, {
     side: 'right',
     duration: 1000,
     margins: {
-      side: 20,
+      side: -10,
       top: 0
     },
     type: 'movement',
     delay: 1000,
   }]
 }) /* Adds a character to the scene */
+
+/*
+firstScene = perfor.scene.addCustomRectangle(firstScene, {
+  color: 'FFFFFF',
+  opacity: 0.8,
+  height: 'match',
+  width: 'match',
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  }
+})
+firstScene = perfor.scene.addCustomRectangle(firstScene, {
+  color: 'FFFFFF',
+  opacity: 0.8,
+  height: 'match',
+  width: 'match',
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  }
+}) Resource re-usage optimization test */
+
 firstScene = perfor.scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
 firstScene = perfor.scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
 firstScene = perfor.scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
