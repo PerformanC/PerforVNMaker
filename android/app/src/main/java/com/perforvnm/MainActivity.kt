@@ -244,28 +244,6 @@ class MainActivity : Activity() {
 
     frameLayout.addView(buttonSaves)
 
-    val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
-
-    val buttonCustomButton0 = Button(this)
-    buttonCustomButton0.text = "Customizations!"
-    buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
-    buttonCustomButton0.setTextColor(0xFFFFFFFF.toInt())
-    buttonCustomButton0.background = null
-
-    val sdp10 = resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName()))
-
-    val layoutParamsCustomButton0 = LayoutParams(
-      sdp10,
-      sdp10,
-    )
-
-    layoutParamsCustomButton0.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomButton0.setMargins(sdp10, 0, sdp10, 0)
-
-    buttonCustomButton0.layoutParams = layoutParamsCustomButton0
-
-    frameLayout.addView(buttonCustomButton0)
-
     setContentView(frameLayout)
   }
 
@@ -479,28 +457,6 @@ class MainActivity : Activity() {
     textView.movementMethod = LinkMovementMethod.getInstance()
 
     frameLayout.addView(textView)
-
-    val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
-
-    val buttonCustomButton0 = Button(this)
-    buttonCustomButton0.text = "Customizations!"
-    buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
-    buttonCustomButton0.setTextColor(0xFFFFFFFF.toInt())
-    buttonCustomButton0.background = null
-
-    val sdp10 = resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName()))
-
-    val layoutParamsCustomButton0 = LayoutParams(
-      sdp10,
-      sdp10,
-    )
-
-    layoutParamsCustomButton0.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomButton0.setMargins(sdp10, 0, sdp10, 0)
-
-    buttonCustomButton0.layoutParams = layoutParamsCustomButton0
-
-    frameLayout.addView(buttonCustomButton0)
 
     setContentView(frameLayout)
   }
@@ -966,28 +922,6 @@ class MainActivity : Activity() {
       override fun onStopTrackingTouch(seekBar: SeekBar?) {}
     })
 
-    val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
-
-    val buttonCustomButton0 = Button(this)
-    buttonCustomButton0.text = "Customizations!"
-    buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
-    buttonCustomButton0.setTextColor(0xFFFFFFFF.toInt())
-    buttonCustomButton0.background = null
-
-    val sdp10 = resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName()))
-
-    val layoutParamsCustomButton0 = LayoutParams(
-      sdp10,
-      sdp10,
-    )
-
-    layoutParamsCustomButton0.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomButton0.setMargins(sdp10, 0, sdp10, 0)
-
-    buttonCustomButton0.layoutParams = layoutParamsCustomButton0
-
-    frameLayout.addView(buttonCustomButton0)
-
     setContentView(frameLayout)
   }
 
@@ -1311,28 +1245,6 @@ class MainActivity : Activity() {
     scrollView.addView(frameLayoutScenes)
 
     frameLayout.addView(scrollView)
-
-    val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
-
-    val buttonCustomButton0 = Button(this)
-    buttonCustomButton0.text = "Customizations!"
-    buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
-    buttonCustomButton0.setTextColor(0xFFFFFFFF.toInt())
-    buttonCustomButton0.background = null
-
-    val sdp10 = resources.getDimensionPixelSize(resources.getIdentifier("_10sdp", "dimen", getPackageName()))
-
-    val layoutParamsCustomButton0 = LayoutParams(
-      sdp10,
-      sdp10,
-    )
-
-    layoutParamsCustomButton0.gravity = Gravity.TOP or Gravity.START
-    layoutParamsCustomButton0.setMargins(sdp10, 0, sdp10, 0)
-
-    buttonCustomButton0.layoutParams = layoutParamsCustomButton0
-
-    frameLayout.addView(buttonCustomButton0)
 
     setContentView(frameLayout)
   }

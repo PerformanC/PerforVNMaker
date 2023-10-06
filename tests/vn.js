@@ -50,7 +50,6 @@ menu = perfor.menu.addCustomText(menu, {
     }
   }
 })
-*/
 
 menu = perfor.menu.addCustomButton(menu, {
   text: 'Customizations!',
@@ -67,7 +66,6 @@ menu = perfor.menu.addCustomButton(menu, {
   width: 10,
 })
 
-/*
 menu = perfor.menu.addCustomRectangle(menu, {
   color: 'FFFFFF',
   opacity: 0.8,

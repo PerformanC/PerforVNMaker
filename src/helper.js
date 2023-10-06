@@ -276,6 +276,15 @@ function getSceneId(scene) {
   else `"${scene}"`
 }
 
+function removeAllDoubleLines(code) {
+  switch (process.platform) {
+    case 'win32':
+      return code.replace(/\r\n\r\n/g, '\r\n')
+    default:
+      return code.replace(/\n\n/g, '\n')
+  }
+}
+
 export default {
   writeFunction,
   replace,
@@ -291,5 +300,6 @@ export default {
   getResource,
   getMultipleResources,
   hash,
-  getSceneId
+  getSceneId,
+  removeAllDoubleLines
 }

@@ -806,6 +806,8 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
 
   helper.replace(/__PERFORVNM_START_MUSIC__/g, startMusicCode)
 
+  if (visualNovel.optimizations.minify) visualNovel.code = helper.removeAllDoubleLines(visualNovel.code)
+
   helper.logOk('Code finished up.', 'Android')
 
   let finished = [ false, false ]
