@@ -1134,7 +1134,7 @@ function finalize(scene) {
 
   const sceneJson = {}
 
-  sceneJson.scene = visualNovel.optimizations.scenesNameHashing ? helper.hash(scene.name) : scene.name
+  sceneJson.scene = visualNovel.optimizations.hashScenesNames ? helper.hash(scene.name) : scene.name
 
   if (scene.background != '') {
     sceneJson.scenario = scene.background
@@ -1252,7 +1252,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
         val scene = scenes.get(scenesLength - 1)
 
         scenesLength--
-        scenes.set(scenesLength, ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'})
+        scenes.set(scenesLength, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
 
         switchScene(scene)\n`, 2
       )
@@ -1262,7 +1262,7 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
-          scenes.set(scenesLength, ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'})
+          scenes.set(scenesLength, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
 
           ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 4
         )

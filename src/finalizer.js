@@ -2,7 +2,7 @@ import helper from './helper.js'
 
 function sceneEachInit() {
   return helper.codePrepare(`
-    when (buttonData.get${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}("scene")) {`, 0, 4
+    when (buttonData.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}("scene")) {`, 0, 4
   )
 }
 

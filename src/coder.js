@@ -41,11 +41,11 @@ function init(options) {
           type: 'boolean',
           required: false
         }, /* This option will utilize the same sdp & ssp files for resources of the same scene. */
-        'scenesNameHashing': {
+        'hashScenesNames': {
           type: 'boolean',
           required: false
         }, /* Agresssive optimization: This option will hash the scenes names and use integers for the switch. */
-        'codeGenTimePositions': {
+        'preCalculateRounding': {
           type: 'boolean',
           required: false
         }, /* This option will make PerforVNM generate a switch with the pre-made configurations for the each scene in the saves menu. */
@@ -145,7 +145,7 @@ function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
 
   let switchesCode = helper.codePrepare(`
-    private fun switchScene(${visualNovel.optimizations.scenesNameHashing ? 'scene: Int' : 'scene: String'}) {
+    private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
       when (scene) {`, 2
   )
 
@@ -587,7 +587,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           var json = "["
     
           for (i in 0 until scenesLength) {
-            json += ${visualNovel.optimizations.scenesNameHashing ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
+            json += ${visualNovel.optimizations.hashScenesNames ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
           }
     
           json = json.dropLast(1) + "]"
@@ -602,7 +602,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
   helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[0].name)})` : '// No scenes created.')
-  if (!visualNovel.optimizations.codeGenTimePositions) {
+  if (!visualNovel.optimizations.preCalculateRounding) {
     const defaultSaveSwitchCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
         "left" -> {
@@ -682,18 +682,18 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     const savesCode = helper.codePrepare(`
       val historyScenes = buttonData.getJSONArray("history")
       for (j in 0 until historyScenes.length()) {
-        scenes.set(j, historyScenes.get${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}(j))
+        scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
       }
       scenesLength = historyScenes.length()
       
-      switchScene(buttonData.${visualNovel.optimizations.scenesNameHashing ? 'getInt' : 'getString'}("scene"))`, 0, 2
+      switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))`, 0, 2
     )
 
     helper.replace('__PERFORVNM_SWITCHES__', savesCode)
   }
 
   let addHeaders = helper.codePrepare(`
-    private var scenes = MutableList<${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.scenesNameHashing ? '0' : '""'} }
+    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
     private var scenesLength = 1\n`, 2
   )
 

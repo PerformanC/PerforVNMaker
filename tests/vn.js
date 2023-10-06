@@ -9,10 +9,10 @@ perfor.coder.init({
     android: './android'
   },
   optimizations: {
-    codeGenTimePositions: true,
+    preCalculateRounding: true,
     reuseResources: true,
-    // minify: true,
-    scenesNameHashing: true
+    hashScenesNames: true,
+    // minify: true
   }
 })
 

@@ -272,7 +272,7 @@ function hash(str) {
 }
 
 function getSceneId(scene) {
-  if (visualNovel.optimizations.scenesNameHashing) return hash(scene)
+  if (visualNovel.optimizations.hashScenesNames) return hash(scene)
   else `"${scene}"`
 }
 
