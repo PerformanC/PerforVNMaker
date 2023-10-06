@@ -191,21 +191,21 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
   return lines.join('\n')
 }
 
-function addResource(scene, resource) {
-  if (scene.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return scene
+function addResource(page, resource) {
+  if (page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return page
 
-  scene.resources.push(resource)
+  page.resources.push(resource)
 
-  return scene
+  return page
 }
 
-function addMultipleResources(scene, scene1, resource) {
-  addResource(scene, resource)
-  addResource(scene1, resource)
+function addMultipleResources(page, page2, resource) {
+  addResource(page, resource)
+  addResource(page2, resource)
 }
 
-function getResource(scene, resource) {
-  const cResource = scene.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
+function getResource(page, resource) {
+  const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
 
   if (resource.type == 'sdp') {
     if (!visualNovel.optimizations.reuseResources) return {
@@ -254,11 +254,11 @@ function getResource(scene, resource) {
   }
 }
 
-function getMultipleResources(scene, scene1, resource) {
+function getMultipleResources(page, page2, resource) {
   let cResource = null
 
-  cResource = getResource(scene, resource)
-  if (!cResource.definition) cResource = getResource(scene1, resource)
+  cResource = getResource(page, resource)
+  if (!cResource.definition) cResource = getResource(page2, resource)
 
   return cResource
 }
