@@ -2,13 +2,13 @@ import helper from './helper.js'
 
 function sceneEachInit() {
   return helper.codePrepare(`
-    when (buttonData.getString("scenario")) {`, 0, 4
+    when (buttonData.get${visualNovel.optimizations.scenesNameHashing ? 'Int' : 'String'}("scene")) {`, 0, 4
   )
 }
 
 function sceneEach(scene) {
   let savesSwitchLocal = helper.codePrepare(`
-    "${scene.name}" -> {
+    ${helper.getSceneId(scene.name)} -> {
       when (characterData.getString("name")) {`, 0, 6, false
   )
 

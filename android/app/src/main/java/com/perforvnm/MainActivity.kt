@@ -1183,15 +1183,15 @@ class MainActivity : Activity() {
 
         layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-        when (buttonData.getString("scenario")) {
-          "scene1" -> {
+        when (buttonData.getInt("scene")) {
+          1722916382 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
               }
             }
           }
-          "scene4" -> {
+          1722916385 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
                 val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
@@ -1200,7 +1200,7 @@ class MainActivity : Activity() {
               }
             }
           }
-          "scene5" -> {
+          1722916386 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
                 val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
@@ -1209,7 +1209,7 @@ class MainActivity : Activity() {
               }
             }
           }
-          "scene2" -> {
+          1722916383 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
                 val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
@@ -1218,7 +1218,7 @@ class MainActivity : Activity() {
               }
             }
           }
-          "scene3" -> {
+          1722916384 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
                 val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
@@ -1361,7 +1361,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916382,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916382,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1638,7 +1638,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916385,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916385,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1870,7 +1870,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916386,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916386,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2122,7 +2122,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916383,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916383,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2378,7 +2378,7 @@ class MainActivity : Activity() {
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scenario\":\"background_thanking\",\"scene\":1722916384,\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916384,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"

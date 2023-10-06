@@ -1134,11 +1134,11 @@ function finalize(scene) {
 
   const sceneJson = {}
 
+  sceneJson.scene = visualNovel.optimizations.scenesNameHashing ? helper.hash(scene.name) : scene.name
+
   if (scene.background != '') {
     sceneJson.scenario = scene.background
   }
-
-  sceneJson.scene = visualNovel.optimizations.scenesNameHashing ? helper.hash(scene.name) : scene.name
 
   if (scene.characters.length != 0) {
     sceneJson.characters = []
