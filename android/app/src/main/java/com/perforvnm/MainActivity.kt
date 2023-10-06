@@ -2369,9 +2369,7 @@ val layoutParamsSavesBackground = LayoutParams(
       json += scenes.get(i).toString() + ","
     }
 
-    json = json.dropLast(1) + "]"
-
-    return json
+    return json.dropLast(1) + "]"
   }
 }
 

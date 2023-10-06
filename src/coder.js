@@ -124,6 +124,16 @@ function init(options) {
 
         __PERFORVNM_MENU__
       }__PERFORVNM_SCENES__
+
+      private fun scenesToJson(): String {
+        var json = "["
+  
+        for (i in 0 until scenesLength) {
+          json += ${visualNovel.optimizations.hashScenesNames ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
+        }
+  
+        return json.dropLast(1) + "]"
+      }
     }
     __PERFORVNM_CLASSES__`, 4
   )
@@ -579,24 +589,6 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   )
 
   helper.writeFunction(switchesCode)
-
-  if (visualNovel.subScenes.length != 0) {
-    helper.writeFunction(
-      helper.codePrepare(`
-        private fun scenesToJson(): String {
-          var json = "["
-    
-          for (i in 0 until scenesLength) {
-            json += ${visualNovel.optimizations.hashScenesNames ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
-          }
-    
-          json = json.dropLast(1) + "]"
-    
-          return json
-        }`, 6
-      )
-    )
-  }
 
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
