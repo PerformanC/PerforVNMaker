@@ -77,7 +77,7 @@ function verifyParams(check, params, additionalinfo = {}) {
 
     if (checkKey.shouldCheck && !checkKey.shouldCheck(params[key], additionalinfo)) return;
 
-    if (checkKey.required == true && params[key] === undefined) {
+    if (checkKey.required != false && params[key] === undefined) {
       logFatal(`The parameter "${key}" is required.`)
     }
   })
@@ -191,36 +191,76 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
   return lines.join('\n')
 }
 
-function addSceneResource(scene, resource) {
+function addResource(scene, resource) {
+  if (scene.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return scene
+
   scene.resources.push(resource)
 
   return scene
 }
 
-function getSceneResource(scene, conf) {
-  const resource = scene.resources.find((resource) => resource.dp == conf.dp && resource.type == conf.type)
+function addMultipleResources(scene, scene1, resource) {
+  addResource(scene, resource)
+  addResource(scene1, resource)
+}
 
-  if (!visualNovel.optimizations.reuseResources) return {
-    definition: null,
-    inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
-    variable: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
-    additionalSpace: '\n'
-  }
+function getResource(scene, resource) {
+  const cResource = scene.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
 
-  if (resource) return {
-    definition: null,
-    inlined: `${resource.type}${resource.dp}`,
-    variable: `${resource.type}${resource.dp}`,
-    additionalSpace: '\n'
-  }
-  else {
-    return {
-      definition: `val ${conf.type}${conf.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
-      inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${conf.dp}${conf.type}", "dimen", getPackageName()))`,
-      variable: `${conf.type}${conf.dp}`,
-      additionalSpace: '\n\n'
+  if (resource.type == 'sdp') {
+    if (!visualNovel.optimizations.reuseResources) return {
+      definition: null,
+      inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+      variable: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+      additionalSpace: '\n'
+    }
+
+    if (cResource) return {
+      definition: null,
+      inlined: `${cResource.type}${cResource.dp}`,
+      variable: `${cResource.type}${cResource.dp}`,
+      additionalSpace: '\n'
+    }
+    else {
+      return {
+        definition: `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+        inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+        variable: `${resource.type}${resource.dp}`,
+        additionalSpace: '\n\n'
+      }
+    }
+  } else if (resource.type == 'ssp') {
+    if (!visualNovel.optimizations.reuseResources) return {
+      definition: null,
+      inlined: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      variable: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      additionalSpace: '\n'
+    }
+
+    if (cResource) return {
+      definition: null,
+      inlined: `${cResource.type}${cResource.dp}`,
+      variable: `${cResource.type}${cResource.dp}`,
+      additionalSpace: '\n'
+    }
+    else {
+      return {
+        definition: `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+        inlined: `resources.getDimension(com.intuit.ssp.R.dimen.__${resource.dp}${resource.type})`,
+        variable: `${resource.type}${resource.dp}`,
+        additionalSpace: '\n\n'
+      }
     }
   }
+}
+
+function getMultipleResources(scene, scene1, resource) {
+  let cResource = null
+
+  cResource = getResource(scene, resource)
+  if (!cResource.definition) cResource = getResource(scene1, resource)
+
+  return cResource
 }
 
 function hash(str) {
@@ -246,8 +286,10 @@ export default {
   lastMessage,
   verifyParams,
   codePrepare,
-  addSceneResource,
-  getSceneResource,
+  addResource,
+  addMultipleResources,
+  getResource,
+  getMultipleResources,
   hash,
   getSceneId
 }

@@ -38,6 +38,36 @@ let menu = perfor.menu.init({
 })
 
 /*
+menu = perfor.menu.addCustomText(menu, {
+  text: 'This is a custom text',
+  color: 'FFFFFF',
+  fontSize: 9,
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  }
+})
+*/
+
+menu = perfor.menu.addCustomButton(menu, {
+  text: 'Customizations!',
+  color: 'FFFFFF',
+  fontSize: 9,
+  position: {
+    side: 'left',
+    margins: {
+      side: 10,
+      top: 10
+    }
+  },
+  height: 10,
+  width: 10,
+})
+
+/*
 menu = perfor.menu.addCustomRectangle(menu, {
   color: 'FFFFFF',
   opacity: 0.8,
