@@ -302,7 +302,7 @@ function finalize(menu) {
         menu = helper.addResource(menu, { type: 'ssp', dp: custom.fontSize })
 
         customCode += helper.codePrepare(`
-          ${customTextSsp.definition ? `${customTextSsp.definition}\n          ` : ''}val textViewCustomText${index} = TextView(this)
+          ${customTextSsp.definition ? `${customTextSsp.definition}\n\n          ` : ''}val textViewCustomText${index} = TextView(this)
           textViewCustomText${index}.text = "${custom.text}"
           textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
           textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())
@@ -372,7 +372,7 @@ function finalize(menu) {
         menu = helper.addResource(menu, { type: 'ssp', dp: custom.fontSize })
 
         customCode += helper.codePrepare(`
-          ${customTextSsp.definition ? `${customTextSsp.definition}\n          ` : ''}val buttonCustomButton${index} = Button(this)
+          ${customTextSsp.definition ? `${customTextSsp.definition}\n\n          ` : ''}val buttonCustomButton${index} = Button(this)
           buttonCustomButton${index}.text = "${custom.text}"
           buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
           buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
@@ -766,7 +766,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      ${sdp30Main.definition ? `${sdp30Main.definition}\n      ` : ''}val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Main.variable})
+      ${sdp30Main.definition ? `${sdp30Main.definition}\n\n      ` : ''}val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Main.variable})
       layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParams
@@ -774,7 +774,7 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      ${ssp13Main.definition ? `${ssp13Main.definition}\n      ` : ''}val buttonStart = Button(this)
+      ${ssp13Main.definition ? `${ssp13Main.definition}\n\n      ` : ''}val buttonStart = Button(this)
       buttonStart.text = "Start"
       buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
@@ -785,7 +785,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp88Main.definition ? `${sdp88Main.definition}\n      ` : ''}${sdpMinus3Main.definition ? `${sdpMinus3Main.definition}\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp88Main.definition ? `${sdp88Main.definition}${!sdpMinus3Main.definition ? '\n' : ''}\n      ` : ''}${sdpMinus3Main.definition ? `${sdpMinus3Main.definition}\n\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsStart.setMargins(${sdp88Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonStart.layoutParams = layoutParamsStart
@@ -805,7 +805,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp161Main.definition ? `${sdp161Main.definition}\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp161Main.definition ? `${sdp161Main.definition}\n\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsAbout.setMargins(${sdp161Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
@@ -827,7 +827,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp233Main.definition ? `${sdp233Main.definition}\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp233Main.definition ? `${sdp233Main.definition}\n\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSettings.setMargins(${sdp233Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
@@ -849,7 +849,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp320Main.definition ? `${sdp320Main.definition}\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp320Main.definition ? `${sdp320Main.definition}\n\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSaves.setMargins(${sdp320Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
@@ -960,7 +960,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      ${sdp30About.definition ? `${sdp30About.definition}\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30About.variable})
+      ${sdp30About.definition ? `${sdp30About.definition}\n\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30About.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -968,7 +968,7 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      ${ssp13About.definition ? `${ssp13About.definition}\n      ` : ''}val buttonStart = Button(this)
+      ${ssp13About.definition ? `${ssp13About.definition}\n\n      ` : ''}val buttonStart = Button(this)
       buttonStart.text = "Start"
       buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
@@ -979,7 +979,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp88About.definition ? `${sdp88About.definition}\n      ` : ''}${sdpMinus3About.definition ? `${sdpMinus3About.definition}\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp88About.definition ? `${sdp88About.definition}${!sdpMinus3About.definition ? '\n' : ''}\n      ` : ''}${sdpMinus3About.definition ? `${sdpMinus3About.definition}\n\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsStart.setMargins(${sdp88About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonStart.layoutParams = layoutParamsStart
@@ -999,7 +999,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp161About.definition ? `${sdp161About.definition}\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp161About.definition ? `${sdp161About.definition}\n\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsAbout.setMargins(${sdp161About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
@@ -1017,7 +1017,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp233About.definition ? `${sdp233About.definition}\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp233About.definition ? `${sdp233About.definition}\n\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSettings.setMargins(${sdp233About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
@@ -1039,7 +1039,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp320About.definition ? `${sdp320About.definition}\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp320About.definition ? `${sdp320About.definition}\n\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSaves.setMargins(${sdp320About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
@@ -1050,7 +1050,7 @@ function finalize(menu) {
 
       frameLayout.addView(buttonSaves)
 
-      ${ssp15About.definition ? `${ssp15About.definition}\n      ` : ''}val buttonBack = Button(this)
+      ${ssp15About.definition ? `${ssp15About.definition}\n\n      ` : ''}val buttonBack = Button(this)
       buttonBack.text = "Back"
       buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15About.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
@@ -1061,7 +1061,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp73About.definition ? `${sdp73About.definition}\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      ${sdp73About.definition ? `${sdp73About.definition}\n\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
       layoutParamsBack.setMargins(${sdp73About.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
@@ -1079,7 +1079,7 @@ function finalize(menu) {
 
       frameLayout.addView(buttonBack)
 
-      ${ssp11About.definition ? `${ssp11About.definition}\n      ` : ''}val textView = TextView(this)
+      ${ssp11About.definition ? `${ssp11About.definition}\n\n      ` : ''}val textView = TextView(this)
       textView.text = SpannableStringBuilder().apply {
         append("${visualNovel.info.fullName} ${visualNovel.info.version}\\n\\nMade with ")
         append("PerforVNM")
@@ -1107,7 +1107,7 @@ function finalize(menu) {
       LayoutParams.WRAP_CONTENT
     )
 
-    ${sdp53About.definition ? `${sdp53About.definition}\n    ` : ''}layoutParamsText.gravity = Gravity.TOP or Gravity.START
+    ${sdp53About.definition ? `${sdp53About.definition}\n\n    ` : ''}layoutParamsText.gravity = Gravity.TOP or Gravity.START
     layoutParamsText.setMargins(${sdp88About.variable}, ${sdp53About.variable}, 0, 0)
 
     textView.layoutParams = layoutParamsText
@@ -1225,7 +1225,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      ${sdp30Settings.definition ? `${sdp30Settings.definition}\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Settings.variable})
+      ${sdp30Settings.definition ? `${sdp30Settings.definition}\n\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Settings.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -1233,7 +1233,7 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      ${ssp13Settings.definition ? `${ssp13Settings.definition}\n      ` : ''}val buttonStart = Button(this)
+      ${ssp13Settings.definition ? `${ssp13Settings.definition}\n\n      ` : ''}val buttonStart = Button(this)
       buttonStart.text = "Start"
       buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
@@ -1244,7 +1244,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp88Settings.definition ? `${sdp88Settings.definition}\n      ` : ''}${sdpMinus3Settings.definition ? `${sdpMinus3Settings.definition}\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp88Settings.definition ? `${sdp88Settings.definition}${!sdpMinus3Settings.definition ? '\n' : ''}\n      ` : ''}${sdpMinus3Settings.definition ? `${sdpMinus3Settings.definition}\n\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsStart.setMargins(${sdp88Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonStart.layoutParams = layoutParamsStart
@@ -1264,7 +1264,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp161Settings.definition ? `${sdp161Settings.definition}\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp161Settings.definition ? `${sdp161Settings.definition}\n\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsAbout.setMargins(${sdp161Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
@@ -1286,7 +1286,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp233Settings.definition ? `${sdp233Settings.definition}\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp233Settings.definition ? `${sdp233Settings.definition}\n\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSettings.setMargins(${sdp233Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
@@ -1304,7 +1304,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp320Settings.definition ? `${sdp320Settings.definition}\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp320Settings.definition ? `${sdp320Settings.definition}\n\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSaves.setMargins(${sdp320Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
@@ -1315,7 +1315,7 @@ function finalize(menu) {
 
       frameLayout.addView(buttonSaves)
 
-      ${ssp15Settings.definition ? `${ssp15Settings.definition}\n      ` : ''}val buttonBack = Button(this)
+      ${ssp15Settings.definition ? `${ssp15Settings.definition}\n\n      ` : ''}val buttonBack = Button(this)
       buttonBack.text = "Back"
       buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15Settings.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
@@ -1326,7 +1326,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp73Settings.definition ? `${sdp73Settings.definition}\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      ${sdp73Settings.definition ? `${sdp73Settings.definition}\n\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
       layoutParamsBack.setMargins(${sdp73Settings.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
@@ -1344,7 +1344,7 @@ function finalize(menu) {
 
       frameLayout.addView(buttonBack)
 
-      ${ssp16Settings.definition ? `${ssp16Settings.definition}\n      ` : ''}val textViewTextSpeed = TextView(this)
+      ${ssp16Settings.definition ? `${ssp16Settings.definition}\n\n      ` : ''}val textViewTextSpeed = TextView(this)
       textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
       textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp16Settings.variable})
       textViewTextSpeed.setTextColor(0xFF${menu.textColor}.toInt())
@@ -1354,7 +1354,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp149Settings.definition ? `${sdp149Settings.definition}\n      ` : ''}${sdp53Settings.definition ? `${sdp53Settings.definition}\n      ` : ''}layoutParamsText.gravity = Gravity.TOP or Gravity.START
+      ${sdp149Settings.definition ? `${sdp149Settings.definition}${!sdp53Settings.definition ? '\n' : ''}\n      ` : ''}${sdp53Settings.definition ? `${sdp53Settings.definition}\n\n      ` : ''}layoutParamsText.gravity = Gravity.TOP or Gravity.START
       layoutParamsText.setMargins(${sdp149Settings.variable}, ${sdp53Settings.variable}, 0, 0)
 
       textViewTextSpeed.layoutParams = layoutParamsText
@@ -1379,12 +1379,12 @@ function finalize(menu) {
 
       seekBarTextSpeed.thumbOffset = 0
 
-      ${sdp150Settings.definition ? `${sdp150Settings.definition}\n      ` : ''}val layoutParamsSeekBar = LayoutParams(
+      ${sdp150Settings.definition ? `${sdp150Settings.definition}\n\n      ` : ''}val layoutParamsSeekBar = LayoutParams(
         ${sdp150Settings.variable},
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp135Settings.definition ? `${sdp135Settings.definition}\n      ` : ''}${sdp77Settings.definition ? `${sdp77Settings.definition}\n      ` : ''}layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
+      ${sdp135Settings.definition ? `${sdp135Settings.definition}${!sdp77Settings.definition ? '\n' : ''}\n      ` : ''}${sdp77Settings.definition ? `${sdp77Settings.definition}\n\n      ` : ''}layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
       layoutParamsSeekBar.setMargins(${sdp135Settings.variable}, ${sdp77Settings.variable}, 0, 0)
 
       seekBarTextSpeed.layoutParams = layoutParamsSeekBar
@@ -1423,7 +1423,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp443Settings.definition ? `${sdp443Settings.definition}\n      ` : ''}layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
+      ${sdp443Settings.definition ? `${sdp443Settings.definition}\n\n      ` : ''}layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
       layoutParamsTextMusicVolume.setMargins(${sdp443Settings.variable}, ${sdp53Settings.variable}, 0, 0)
 
       textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume
@@ -1453,7 +1453,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp432Settings.definition ? `${sdp432Settings.definition}\n      ` : ''}layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
+      ${sdp432Settings.definition ? `${sdp432Settings.definition}\n\n      ` : ''}layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
       layoutParamsSeekBarMusicVolume.setMargins(${sdp432Settings.variable}, ${sdp77Settings.variable}, 0, 0)
 
       seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume
@@ -1488,7 +1488,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp111Settings.definition ? `${sdp111Settings.definition}\n      ` : ''}layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
+      ${sdp111Settings.definition ? `${sdp111Settings.definition}\n\n      ` : ''}layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
       layoutParamsTextSEffectVolume.setMargins(${sdp443Settings.variable}, ${sdp111Settings.variable}, 0, 0)
 
       textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume
@@ -1553,7 +1553,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp166Settings.definition ? `${sdp166Settings.definition}\n      ` : ''}layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
+      ${sdp166Settings.definition ? `${sdp166Settings.definition}\n\n      ` : ''}layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
       layoutParamsTextSceneMusic.setMargins(${sdp443Settings.variable}, ${sdp166Settings.variable}, 0, 0)
 
       textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic
@@ -1583,7 +1583,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp190Settings.definition ? `${sdp190Settings.definition}\n      ` : ''}layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
+      ${sdp190Settings.definition ? `${sdp190Settings.definition}\n\n      ` : ''}layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
       layoutParamsSeekBarSceneMusic.setMargins(${sdp432Settings.variable}, ${sdp190Settings.variable}, 0, 0)
 
       seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic
@@ -1719,7 +1719,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      ${sdp30Saves.definition ? `${sdp30Saves.definition}\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Saves.variable})
+      ${sdp30Saves.definition ? `${sdp30Saves.definition}\n\n      ` : ''}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Saves.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -1727,7 +1727,7 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      ${ssp13Saves.definition ? `${ssp13Saves.definition}\n      ` : ''}val buttonStart = Button(this)
+      ${ssp13Saves.definition ? `${ssp13Saves.definition}\n\n      ` : ''}val buttonStart = Button(this)
       buttonStart.text = "Start"
       buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
@@ -1738,7 +1738,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp88Saves.definition ? `${sdp88Saves.definition}\n      ` : ''}${sdpMinus3Saves.definition ? `${sdpMinus3Saves.definition}\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp88Saves.definition ? `${sdp88Saves.definition}${!sdpMinus3Saves.definition ? '\n' : ''}\n      ` : ''}${sdpMinus3Saves.definition ? `${sdpMinus3Saves.definition}\n\n      ` : ''}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsStart.setMargins(${sdp88Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonStart.layoutParams = layoutParamsStart
@@ -1758,7 +1758,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp161Saves.definition ? `${sdp161Saves.definition}\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp161Saves.definition ? `${sdp161Saves.definition}\n\n      ` : ''}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsAbout.setMargins(${sdp161Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
@@ -1780,7 +1780,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp233Saves.definition ? `${sdp233Saves.definition}\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp233Saves.definition ? `${sdp233Saves.definition}\n\n      ` : ''}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSettings.setMargins(${sdp233Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
@@ -1802,14 +1802,14 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp320Saves.definition ? `${sdp320Saves.definition}\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      ${sdp320Saves.definition ? `${sdp320Saves.definition}\n\n      ` : ''}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
       layoutParamsSaves.setMargins(${sdp320Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
 
       frameLayout.addView(buttonSaves)
 
-      ${ssp15Saves.definition ? `${ssp15Saves.definition}\n      ` : ''}val buttonBack = Button(this)
+      ${ssp15Saves.definition ? `${ssp15Saves.definition}\n\n      ` : ''}val buttonBack = Button(this)
       buttonBack.text = "Back"
       buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15Saves.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
@@ -1820,7 +1820,7 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      ${sdp73Saves.definition ? `${sdp73Saves.definition}\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      ${sdp73Saves.definition ? `${sdp73Saves.definition}\n\n      ` : ''}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
       layoutParamsBack.setMargins(${sdp73Saves.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
@@ -1870,7 +1870,7 @@ function finalize(menu) {
           savesBackground.setColor(0xFF000000.toInt())
         }
 
-        ${sdp100Saves.definition ? `${sdp100Saves.definition}\n        ` : ''}${sdp70Saves.definition ? `${sdp70Saves.definition}\n        ` : ''}val layoutParamsSavesBackground = LayoutParams(
+        ${sdp100Saves.definition ? `${sdp100Saves.definition}${!sdp70Saves.definition ? '\n' : ''}\n        ` : ''}${sdp70Saves.definition ? `${sdp70Saves.definition}\n\n        ` : ''}val layoutParamsSavesBackground = LayoutParams(
           ${sdp100Saves.variable},
           ${sdp70Saves.variable}
         )

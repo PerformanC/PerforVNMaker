@@ -130,6 +130,7 @@ class MainActivity : Activity() {
     val rectangleView = RectangleView(this)
 
     val sdp30 = resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName()))
+
     val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, sdp30)
     layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -139,6 +140,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleView)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
     buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -152,6 +154,7 @@ class MainActivity : Activity() {
 
     val sdp88 = resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName()))
     val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsStart.setMargins(sdp88, 0, 0, sdpminus3)
 
@@ -181,6 +184,7 @@ class MainActivity : Activity() {
     )
 
     val sdp161 = resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName()))
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAbout.setMargins(sdp161, 0, 0, sdpminus3)
 
@@ -204,6 +208,7 @@ class MainActivity : Activity() {
     )
 
     val sdp233 = resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName()))
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSettings.setMargins(sdp233, 0, 0, sdpminus3)
 
@@ -227,6 +232,7 @@ class MainActivity : Activity() {
     )
 
     val sdp320 = resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName()))
+
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSaves.setMargins(sdp320, 0, 0, sdpminus3)
 
@@ -239,6 +245,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonSaves)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val buttonCustomButton0 = Button(this)
     buttonCustomButton0.text = "Customizations!"
     buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
@@ -296,6 +303,7 @@ class MainActivity : Activity() {
     val rectangleView = RectangleView(this)
 
     val sdp30 = resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, sdp30)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -305,6 +313,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleView)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
     buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -318,6 +327,7 @@ class MainActivity : Activity() {
 
     val sdp88 = resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName()))
     val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsStart.setMargins(sdp88, 0, 0, sdpminus3)
 
@@ -347,6 +357,7 @@ class MainActivity : Activity() {
     )
 
     val sdp161 = resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName()))
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAbout.setMargins(sdp161, 0, 0, sdpminus3)
 
@@ -366,6 +377,7 @@ class MainActivity : Activity() {
     )
 
     val sdp233 = resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName()))
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSettings.setMargins(sdp233, 0, 0, sdpminus3)
 
@@ -389,6 +401,7 @@ class MainActivity : Activity() {
     )
 
     val sdp320 = resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName()))
+
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSaves.setMargins(sdp320, 0, 0, sdpminus3)
 
@@ -401,6 +414,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonSaves)
 
     val ssp15 = resources.getDimension(com.intuit.ssp.R.dimen._15ssp)
+
     val buttonBack = Button(this)
     buttonBack.text = "Back"
     buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp15)
@@ -413,6 +427,7 @@ class MainActivity : Activity() {
     )
 
     val sdp73 = resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp73, 0, 0, 0)
 
@@ -432,6 +447,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     val ssp11 = resources.getDimension(com.intuit.ssp.R.dimen._11ssp)
+
     val textView = TextView(this)
     textView.text = SpannableStringBuilder().apply {
       append("The PerforVNM 1.0.0\n\nMade with ")
@@ -452,6 +468,7 @@ class MainActivity : Activity() {
     )
 
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
     layoutParamsText.setMargins(sdp88, sdp53, 0, 0)
 
@@ -464,6 +481,7 @@ class MainActivity : Activity() {
     frameLayout.addView(textView)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val buttonCustomButton0 = Button(this)
     buttonCustomButton0.text = "Customizations!"
     buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
@@ -521,6 +539,7 @@ class MainActivity : Activity() {
     val rectangleView = RectangleView(this)
 
     val sdp30 = resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, sdp30)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -530,6 +549,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleView)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
     buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -543,6 +563,7 @@ class MainActivity : Activity() {
 
     val sdp88 = resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName()))
     val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsStart.setMargins(sdp88, 0, 0, sdpminus3)
 
@@ -572,6 +593,7 @@ class MainActivity : Activity() {
     )
 
     val sdp161 = resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName()))
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAbout.setMargins(sdp161, 0, 0, sdpminus3)
 
@@ -595,6 +617,7 @@ class MainActivity : Activity() {
     )
 
     val sdp233 = resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName()))
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSettings.setMargins(sdp233, 0, 0, sdpminus3)
 
@@ -614,6 +637,7 @@ class MainActivity : Activity() {
     )
 
     val sdp320 = resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName()))
+
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSaves.setMargins(sdp320, 0, 0, sdpminus3)
 
@@ -626,6 +650,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonSaves)
 
     val ssp15 = resources.getDimension(com.intuit.ssp.R.dimen._15ssp)
+
     val buttonBack = Button(this)
     buttonBack.text = "Back"
     buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp15)
@@ -638,6 +663,7 @@ class MainActivity : Activity() {
     )
 
     val sdp73 = resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp73, 0, 0, 0)
 
@@ -657,6 +683,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonBack)
 
     val ssp16 = resources.getDimension(com.intuit.ssp.R.dimen._16ssp)
+
     val textViewTextSpeed = TextView(this)
     textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
     textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp16)
@@ -669,6 +696,7 @@ class MainActivity : Activity() {
 
     val sdp149 = resources.getDimensionPixelSize(resources.getIdentifier("_149sdp", "dimen", getPackageName()))
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
     layoutParamsText.setMargins(sdp149, sdp53, 0, 0)
 
@@ -695,6 +723,7 @@ class MainActivity : Activity() {
     seekBarTextSpeed.thumbOffset = 0
 
     val sdp150 = resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName()))
+
     val layoutParamsSeekBar = LayoutParams(
       sdp150,
       LayoutParams.WRAP_CONTENT
@@ -702,6 +731,7 @@ class MainActivity : Activity() {
 
     val sdp135 = resources.getDimensionPixelSize(resources.getIdentifier("_135sdp", "dimen", getPackageName()))
     val sdp77 = resources.getDimensionPixelSize(resources.getIdentifier("_77sdp", "dimen", getPackageName()))
+
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBar.setMargins(sdp135, sdp77, 0, 0)
 
@@ -742,6 +772,7 @@ class MainActivity : Activity() {
     )
 
     val sdp443 = resources.getDimensionPixelSize(resources.getIdentifier("_443sdp", "dimen", getPackageName()))
+
     layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsTextMusicVolume.setMargins(sdp443, sdp53, 0, 0)
 
@@ -773,6 +804,7 @@ class MainActivity : Activity() {
     )
 
     val sdp432 = resources.getDimensionPixelSize(resources.getIdentifier("_432sdp", "dimen", getPackageName()))
+
     layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBarMusicVolume.setMargins(sdp432, sdp77, 0, 0)
 
@@ -809,6 +841,7 @@ class MainActivity : Activity() {
     )
 
     val sdp111 = resources.getDimensionPixelSize(resources.getIdentifier("_111sdp", "dimen", getPackageName()))
+
     layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsTextSEffectVolume.setMargins(sdp443, sdp111, 0, 0)
 
@@ -875,6 +908,7 @@ class MainActivity : Activity() {
     )
 
     val sdp166 = resources.getDimensionPixelSize(resources.getIdentifier("_166sdp", "dimen", getPackageName()))
+
     layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
     layoutParamsTextSceneMusic.setMargins(sdp443, sdp166, 0, 0)
 
@@ -906,6 +940,7 @@ class MainActivity : Activity() {
     )
 
     val sdp190 = resources.getDimensionPixelSize(resources.getIdentifier("_190sdp", "dimen", getPackageName()))
+
     layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBarSceneMusic.setMargins(sdp432, sdp190, 0, 0)
 
@@ -932,6 +967,7 @@ class MainActivity : Activity() {
     })
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val buttonCustomButton0 = Button(this)
     buttonCustomButton0.text = "Customizations!"
     buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
@@ -989,6 +1025,7 @@ class MainActivity : Activity() {
     val rectangleView = RectangleView(this)
 
     val sdp30 = resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, sdp30)
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -998,6 +1035,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleView)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val buttonStart = Button(this)
     buttonStart.text = "Start"
     buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -1011,6 +1049,7 @@ class MainActivity : Activity() {
 
     val sdp88 = resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName()))
     val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsStart.setMargins(sdp88, 0, 0, sdpminus3)
 
@@ -1040,6 +1079,7 @@ class MainActivity : Activity() {
     )
 
     val sdp161 = resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName()))
+
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAbout.setMargins(sdp161, 0, 0, sdpminus3)
 
@@ -1063,6 +1103,7 @@ class MainActivity : Activity() {
     )
 
     val sdp233 = resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName()))
+
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSettings.setMargins(sdp233, 0, 0, sdpminus3)
 
@@ -1086,6 +1127,7 @@ class MainActivity : Activity() {
     )
 
     val sdp320 = resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName()))
+
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsSaves.setMargins(sdp320, 0, 0, sdpminus3)
 
@@ -1094,6 +1136,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonSaves)
 
     val ssp15 = resources.getDimension(com.intuit.ssp.R.dimen._15ssp)
+
     val buttonBack = Button(this)
     buttonBack.text = "Back"
     buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp15)
@@ -1106,6 +1149,7 @@ class MainActivity : Activity() {
     )
 
     val sdp73 = resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp73, 0, 0, 0)
 
@@ -1158,6 +1202,7 @@ class MainActivity : Activity() {
 
       val sdp100 = resources.getDimensionPixelSize(resources.getIdentifier("_100sdp", "dimen", getPackageName()))
       val sdp70 = resources.getDimensionPixelSize(resources.getIdentifier("_70sdp", "dimen", getPackageName()))
+
       val layoutParamsSavesBackground = LayoutParams(
         sdp100,
         sdp70
@@ -1268,6 +1313,7 @@ class MainActivity : Activity() {
     frameLayout.addView(scrollView)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val buttonCustomButton0 = Button(this)
     buttonCustomButton0.text = "Customizations!"
     buttonCustomButton0.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
@@ -1379,6 +1425,7 @@ class MainActivity : Activity() {
     }
 
     val ssp8 = resources.getDimension(com.intuit.ssp.R.dimen._8ssp)
+
     val buttonSave = Button(this)
     buttonSave.text = "Save"
     buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp8)
@@ -1391,6 +1438,7 @@ class MainActivity : Activity() {
     )
 
     val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
@@ -1425,6 +1473,7 @@ class MainActivity : Activity() {
     )
 
     val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
     layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
@@ -1460,6 +1509,7 @@ class MainActivity : Activity() {
     frameLayout.addView(buttonMenu)
 
     val ssp12 = resources.getDimension(com.intuit.ssp.R.dimen._12ssp)
+
     val buttonSubScenes = Button(this)
     buttonSubScenes.text = "second"
     buttonSubScenes.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp12)
@@ -1472,6 +1522,7 @@ class MainActivity : Activity() {
     )
 
     val sdp120 = resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName()))
+
     layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
     layoutParamsSubScenes.setMargins(0, sdp120, 0, 0)
 
@@ -1495,6 +1546,7 @@ class MainActivity : Activity() {
     )
 
     val sdp150 = resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName()))
+
     layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
     layoutParamsSubScenes2.setMargins(0, sdp150, 0, 0)
 
@@ -1540,6 +1592,7 @@ class MainActivity : Activity() {
     val rectangleViewSpeech = RectangleView(this)
 
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -1560,6 +1613,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val textViewSpeech = TextView(this)
     textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
@@ -1570,6 +1624,7 @@ class MainActivity : Activity() {
     )
 
     val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
+
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
@@ -1617,6 +1672,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewAuthor)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val textViewAuthor = TextView(this)
     textViewAuthor.text = "Pedro"
     textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -1628,6 +1684,7 @@ class MainActivity : Activity() {
     )
 
     val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
+
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
@@ -1645,6 +1702,7 @@ class MainActivity : Activity() {
     frameLayout.addView(textViewAuthor)
 
     val ssp8 = resources.getDimension(com.intuit.ssp.R.dimen._8ssp)
+
     val buttonSave = Button(this)
     buttonSave.text = "Save"
     buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp8)
@@ -1657,6 +1715,7 @@ class MainActivity : Activity() {
     )
 
     val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
@@ -1691,6 +1750,7 @@ class MainActivity : Activity() {
     )
 
     val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
     layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
@@ -1731,6 +1791,7 @@ class MainActivity : Activity() {
     )
 
     val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
@@ -1796,6 +1857,7 @@ class MainActivity : Activity() {
     val rectangleViewSpeech = RectangleView(this)
 
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -1806,6 +1868,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val textViewSpeech = TextView(this)
     textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
@@ -1816,6 +1879,7 @@ class MainActivity : Activity() {
     )
 
     val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
+
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
@@ -1849,6 +1913,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewAuthor)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val textViewAuthor = TextView(this)
     textViewAuthor.text = "Pedro"
     textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -1860,6 +1925,7 @@ class MainActivity : Activity() {
     )
 
     val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
+
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
@@ -1868,6 +1934,7 @@ class MainActivity : Activity() {
     frameLayout.addView(textViewAuthor)
 
     val ssp8 = resources.getDimension(com.intuit.ssp.R.dimen._8ssp)
+
     val buttonSave = Button(this)
     buttonSave.text = "Save"
     buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp8)
@@ -1880,6 +1947,7 @@ class MainActivity : Activity() {
     )
 
     val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
@@ -1914,6 +1982,7 @@ class MainActivity : Activity() {
     )
 
     val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
     layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
@@ -1954,6 +2023,7 @@ class MainActivity : Activity() {
     )
 
     val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
@@ -2006,6 +2076,7 @@ class MainActivity : Activity() {
     val rectangleViewSpeech = RectangleView(this)
 
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -2026,6 +2097,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val textViewSpeech = TextView(this)
     textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
@@ -2036,6 +2108,7 @@ class MainActivity : Activity() {
     )
 
     val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
+
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
@@ -2083,6 +2156,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewAuthor)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val textViewAuthor = TextView(this)
     textViewAuthor.text = "Pedro"
     textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -2094,6 +2168,7 @@ class MainActivity : Activity() {
     )
 
     val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
+
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
@@ -2111,6 +2186,7 @@ class MainActivity : Activity() {
     frameLayout.addView(textViewAuthor)
 
     val ssp8 = resources.getDimension(com.intuit.ssp.R.dimen._8ssp)
+
     val buttonSave = Button(this)
     buttonSave.text = "Save"
     buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp8)
@@ -2123,6 +2199,7 @@ class MainActivity : Activity() {
     )
 
     val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
@@ -2157,6 +2234,7 @@ class MainActivity : Activity() {
     )
 
     val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
     layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
@@ -2197,6 +2275,7 @@ class MainActivity : Activity() {
     )
 
     val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
@@ -2253,6 +2332,7 @@ class MainActivity : Activity() {
     val rectangleViewSpeech = RectangleView(this)
 
     val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
@@ -2273,6 +2353,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewSpeech)
 
     val ssp9 = resources.getDimension(com.intuit.ssp.R.dimen._9ssp)
+
     val textViewSpeech = TextView(this)
     textViewSpeech.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp9)
     textViewSpeech.setTextColor(0xFFFFFFFF.toInt())
@@ -2283,6 +2364,7 @@ class MainActivity : Activity() {
     )
 
     val sdp270 = resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName()))
+
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     layoutParamsSpeech.setMargins(0, sdp270, 0, 0)
 
@@ -2330,6 +2412,7 @@ class MainActivity : Activity() {
     frameLayout.addView(rectangleViewAuthor)
 
     val ssp13 = resources.getDimension(com.intuit.ssp.R.dimen._13ssp)
+
     val textViewAuthor = TextView(this)
     textViewAuthor.text = "Pedro"
     textViewAuthor.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp13)
@@ -2341,6 +2424,7 @@ class MainActivity : Activity() {
     )
 
     val sdp155 = resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName()))
+
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsAuthor.setMargins(sdp155, 0, 0, sdp53)
 
@@ -2358,6 +2442,7 @@ class MainActivity : Activity() {
     frameLayout.addView(textViewAuthor)
 
     val ssp8 = resources.getDimension(com.intuit.ssp.R.dimen._8ssp)
+
     val buttonSave = Button(this)
     buttonSave.text = "Save"
     buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, ssp8)
@@ -2370,6 +2455,7 @@ class MainActivity : Activity() {
     )
 
     val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
 
@@ -2404,6 +2490,7 @@ class MainActivity : Activity() {
     )
 
     val sdp23 = resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName()))
+
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
     layoutParamsMenu.setMargins(sdp15, sdp23, 0, 0)
 
@@ -2444,6 +2531,7 @@ class MainActivity : Activity() {
     )
 
     val sdp46 = resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName()))
+
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
     layoutParamsBack.setMargins(sdp15, sdp46, 0, 0)
 
