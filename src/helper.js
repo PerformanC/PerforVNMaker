@@ -41,6 +41,9 @@ function lastMessage(finished) {
   if (!finished[0] || !finished[1]) return;
 
   console.log('\n\n\u001b[34mOK\u001b[0m: The visual novel has been successfully generated. If you liked our work, please give us a star in our repository.')
+
+  if (visualNovel.optimizations.useIntForSwitch)
+    console.log('\n\n\u001b[34mOK\u001b[0m: The "useIntForSwitch" aggressive optimization has been enabled. Saves backward compability are not supported, use only for the final release of the VN.')
 }
 
 /*
@@ -74,7 +77,7 @@ function verifyParams(check, params, additionalinfo = {}) {
 
     if (checkKey.shouldCheck && !checkKey.shouldCheck(params[key], additionalinfo)) return;
 
-    if (checkKey.required == true && params[key] === undefined) {
+    if (checkKey.required != false && params[key] === undefined) {
       logFatal(`The parameter "${key}" is required.`)
     }
   })
@@ -163,16 +166,167 @@ function verifyParams(check, params, additionalinfo = {}) {
   })
 }
 
-function codePrepare(code, removeSpaceAmount = 0, removeFirstLine = false) {
+function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirstLine = true) {
   const lines = code.split('\n')
 
   if (removeFirstLine) lines.shift()
 
+  let addedSpaces = ''
+  for (let i = 0; i < addSpaceAmount; i++) {
+    addedSpaces += ' '
+  }
+
   lines.forEach((line, index) => {
-    lines[index] = line.substring(removeSpaceAmount)
+    if (line == '') return;
+
+    if (visualNovel.optimizations.minify) {
+      lines[index] = line.trim()
+
+      return;
+    }
+
+    lines[index] = addedSpaces + line.substring(removeSpaceAmount)
   })
 
   return lines.join('\n')
+}
+
+function addResource(page, resource) {
+  if (page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return page
+
+  page.resources.push(resource)
+
+  return page
+}
+
+function addMultipleResources(page, page2, resource) {
+  addResource(page, resource)
+  addResource(page2, resource)
+}
+
+function getResource(page, resource) {
+  const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
+
+  if (resource.type == 'sdp') {
+    if (!visualNovel.optimizations.reuseResources) return {
+      definition: null,
+      inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+      variable: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+      additionalSpace: '\n'
+    }
+
+    if (cResource) return {
+      definition: null,
+      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
+      additionalSpace: '\n'
+    }
+    else {
+      return {
+        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
+        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
+        additionalSpace: '\n\n'
+      }
+    }
+  } else if (resource.type == 'ssp') {
+    if (!visualNovel.optimizations.reuseResources) return {
+      definition: null,
+      inlined: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      variable: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      additionalSpace: '\n'
+    }
+
+    if (cResource) return {
+      definition: null,
+      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
+      additionalSpace: '\n'
+    }
+    else {
+      return {
+        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
+        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
+        additionalSpace: '\n\n'
+      }
+    }
+  }
+}
+
+function getMultipleResources(page, page2, resource) {
+  let cResource = null
+
+  cResource = getResource(page, resource)
+  if (!cResource.definition) cResource = getResource(page2, resource)
+
+  return cResource
+}
+
+function finalizeResources(page, code) {
+  page.resources.forEach((resource) => {
+    const defineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`, 'g')
+    const inlineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`, 'g')
+    const variableRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`, 'g')
+
+    const variableAmount = code.split(variableRegex).length - 1
+
+    if (variableAmount == 1) {
+      code = code.replace(defineRegex, '')
+
+      if (resource.type == 'sdp') {
+        code = code.replace(variableRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+      } else {
+        code = code.replace(variableRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
+      }
+    }
+
+    let spaces = ''
+    for (let i = 0; i < resource.spaces; i++) {
+      spaces += ' '
+    }
+
+    if (resource.type == 'sdp') {
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))\n\n${spaces}`)
+      code = code.replace(inlineRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
+    } else {
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
+      code = code.replace(inlineRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
+      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
+    }
+  })
+
+  return code
+}
+
+function finalizeMultipleResources(page, page2, code) {
+  code = finalizeResources(page, code)
+  code = finalizeResources(page2, code)
+
+  return code
+}
+
+function hash(str) {
+  let hash = 0, i = 0
+
+  while (str.length > i) hash = hash * 37 + (str.charCodeAt(i++) & 255)
+
+  return hash % 2147483647 /* Kotlin Int max value */
+}
+
+function getSceneId(scene) {
+  if (visualNovel.optimizations.hashScenesNames) return hash(scene)
+  else `"${scene}"`
+}
+
+function removeAllDoubleLines(code) {
+  switch (process.platform) {
+    case 'win32':
+      return code.replace(/\r\n\r\n/g, '\r\n')
+    default:
+      return code.replace(/\n\n/g, '\n')
+  }
 }
 
 export default {
@@ -184,5 +338,14 @@ export default {
   logWarning,
   lastMessage,
   verifyParams,
-  codePrepare
+  codePrepare,
+  addResource,
+  addMultipleResources,
+  getResource,
+  getMultipleResources,
+  finalizeResources,
+  finalizeMultipleResources,
+  hash,
+  getSceneId,
+  removeAllDoubleLines
 }

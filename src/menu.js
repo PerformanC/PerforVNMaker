@@ -62,7 +62,25 @@ function init(options) {
 
   return {
     ...options,
-    custom: []
+    custom: [],
+    pages: {
+      main: {
+        resources: []
+      },
+      about: {
+        resources: []
+      },
+      settings: {
+        resources: []
+      },
+      savesFor: {
+        resources: []
+      },
+      saves: {
+        resources: []
+      }
+    },
+    resources: []
   }
 }
 
@@ -280,41 +298,50 @@ function finalize(menu) {
   menu.custom.forEach((custom, index) => {
     switch (custom.type) {
       case 'text': {
+        const customTextSsp = helper.getResource(menu, { type: 'ssp', dp: custom.fontSize })
+        menu = helper.addResource(menu, { type: 'ssp', dp: custom.fontSize, spaces: 4 })
+
         customCode += helper.codePrepare(`
-          val textViewCustomText${index} = TextView(this)
+          ${customTextSsp.definition}val textViewCustomText${index} = TextView(this)
           textViewCustomText${index}.text = "${custom.text}"
-          textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))
+          textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
           textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())
 
           val layoutParamsCustomText${index} = LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT
-          )\n\n`, 6, true
+          )\n\n`, 6
         )
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
-            const definitions = []
+            let definitions = ''
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              marginTopSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.top })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
+
+              if (marginTopSdp.definition) definitions += marginTopSdp.definition
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomText${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              marginSideSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.side })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
+
+              if (marginSideSdp.definition) definitions += marginSideSdp.definition
             }
 
-            customCode += 
-              definitions.join('\n') + '\n\n' +
+            customCode += helper.codePrepare(`
+              ${definitions}layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START
+              layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
-              helper.codePrepare(`
-                layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomText${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomText${index}` : '0'}, 0)
+              textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-                textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
-
-                frameLayout.addView(textViewCustomText${index})\n\n`, 12, true
-              )
+              frameLayout.addView(textViewCustomText${index})\n\n`, 10
+            )
 
             break
           }
@@ -324,7 +351,7 @@ function finalize(menu) {
 
               textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
 
-              frameLayout.addView(textViewCustomText${index})\n\n`, 10, true
+              frameLayout.addView(textViewCustomText${index})\n\n`, 12
             )
 
             break
@@ -334,73 +361,93 @@ function finalize(menu) {
         break
       }
       case 'button': {
-        customCode += helper.codePrepare(`
-          val buttonCustomButton${index} = Button(this)
-          buttonCustomButton${index}.text = "${custom.text}"
-          buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._${custom.fontSize}ssp))
-          buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
-          buttonCustomButton${index}.background = null
+        const customTextSsp = helper.getResource(menu, { type: 'ssp', dp: custom.fontSize })
+        menu = helper.addResource(menu, { type: 'ssp', dp: custom.fontSize, spaces: 4 })
 
-          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6, true
+        customCode += helper.codePrepare(`
+          ${customTextSsp.definition}val buttonCustomButton${index} = Button(this)
+          buttonCustomButton${index}.text = "${custom.text}"
+          buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
+          buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
+          buttonCustomButton${index}.background = null__PERFORVNM_OPTIMIZED_RESOURCE__
+
+          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            const customHeight = helper.getResource(menu, { type: 'sdp', dp: custom.height })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.height, spaces: 4 })
+
+            if (customHeight.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
+
+            customCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            const customWidth = helper.getResource(menu, { type: 'sdp', dp: custom.width })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.width, spaces: 4 })
+
+            if (customWidth.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
+
+            customCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
-        customCode += '    )\n\n'
+        customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
+        customCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
-            const definitions = []
+            let definitions = ''
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              marginTopSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.top })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
+
+              if (marginTopSdp.definition) definitions += marginTopSdp.definition
             }
 
-            if (custom.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomButton${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+            let marginSideSdp = null
+            if (custom.position.margins.side != 0) {
+              marginSideSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.side })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
+
+              if (marginSideSdp.definition) definitions += marginSideSdp.definition
             }
 
-            customCode +=
-              definitions.join('\n') + '\n\n' +
+            customCode += helper.codePrepare(`
+              ${definitions}layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START
+              layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
-              helper.codePrepare(`
-                layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomButton${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomButton${index}` : '0'}, 0)
+              buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-                buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
-
-                frameLayout.addView(buttonCustomButton${index})\n\n`, 12, true
-              )
+              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
+            )
 
             break
           }
@@ -410,7 +457,7 @@ function finalize(menu) {
 
               buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
 
-              frameLayout.addView(buttonCustomButton${index})\n\n`, 10, true
+              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
             )
 
             break
@@ -421,68 +468,85 @@ function finalize(menu) {
       }
       case 'rectangle': {
         customCode += helper.codePrepare(`
-          val rectangleViewCustomRectangle${index} = RectangleView(this)
+          val rectangleViewCustomRectangle${index} = RectangleView(this)__PERFORVNM_OPTIMIZED_RESOURCE__
 
-          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6, true
+          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            const customHeight = helper.getResource(menu, { type: 'sdp', dp: custom.height })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.height, spaces: 4 })
+
+            if (customHeight.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__${customHeight.additionalSpace}`)
+
+            customCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            const customWidth = helper.getResource(menu, { type: 'sdp', dp: custom.width })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.width, spaces: 4 })
+
+            if (customWidth.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}${customWidth.additionalSpace}`)
+
+            customCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
-        customCode += '    )\n\n'
+        customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
+        customCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
-            const definitions = []
+            let definitions = ''
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              marginTopSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.top })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
+
+              if (marginTopSdp.definition) definitions += marginTopSdp.definition
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomRectangle${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              marginSideSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.side })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
+
+              if (marginSideSdp.definition) definitions += marginSideSdp.definition
             }
 
-            customCode +=
-              definitions.join('\n') + '\n\n' +
+            customCode += helper.codePrepare(`
+              ${definitions}layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START
+              layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
-              helper.codePrepare(`
-                layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomRectangle${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomRectangle${index}` : '0'}, 0)
+              rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-                rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
-
-                frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 12, true
-              )
+              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
+            )
 
             break
           }
@@ -492,7 +556,7 @@ function finalize(menu) {
 
               rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
 
-              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10, true
+              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
             )
 
             break
@@ -506,66 +570,84 @@ function finalize(menu) {
           val imageViewCustomImage${index} = ImageView(this)
           imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})
 
-          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6, true
+          __PERFORVNM_OPTIMIZED_RESOURCE__
+
+          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6
         )
 
         switch (custom.height) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.height}sdp),\n`
+            const customHeight = helper.getResource(menu, { type: 'sdp', dp: custom.height })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.height, spaces: 4 })
+
+            if (customHeight.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
+
+            customCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
           }
         }
 
         switch (custom.width) {
           case 'match': {
-            customCode += '      LayoutParams.MATCH_PARENT,\n'
+            customCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
 
             break
           }
           case 'wrap': {
-            customCode += '      LayoutParams.WRAP_CONTENT,\n'
+            customCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
 
             break
           }
           default: {
-            customCode += `      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.width}sdp),\n`
+            const customWidth = helper.getResource(menu, { type: 'sdp', dp: custom.width })
+            menu = helper.addResource(menu, { type: 'sdp', dp: custom.width, spaces: 4 })
+
+            if (customWidth.definition) customCode = customCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
+
+            customCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
           }
         }
 
-        customCode += '    )\n\n'
+        customCode += helper.codePrepare(')\n\n', 0, 4, false)
 
         switch (custom.position.side) {
           case 'left':
           case 'right': {
-            const definitions = []
+            let definitions = ''
+
+            let marginTopSdp = null
             if (custom.position.margins.top != 0) {
-              definitions.push(`    val topDpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.top}sdp)`)
+              marginTopSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.top })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
+
+              if (marginTopSdp.definition) definitions += marginTopSdp.definition
             }
 
+            let marginSideSdp = null
             if (custom.position.margins.side != 0) {
-              definitions.push(`    val ${custom.position.side}DpCustomImage${index} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${custom.position.margins.side}sdp)`)
+              marginSideSdp = helper.getResource(menu, { type: 'sdp', dp: custom.position.margins.side })
+              menu = helper.addResource(menu, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
+
+              if (marginSideSdp.definition) definitions += marginSideSdp.definition
             }
 
-            customCode +=
-              definitions.join('\n') + '\n\n' +
+            customCode += helper.codePrepare(`
+              ${definitions}layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START
+              layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
 
-              helper.codePrepare(`
-                layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START
-                layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? `${custom.position.side}DpCustomImage${index}` : '0'}, 0, ${custom.position.margins.top != 0 ? `topDpCustomImage${index}` : '0'}, 0)
+              imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-                imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
-
-                frameLayout.addView(imageViewCustomImage${index})\n\n`, 12, true
-              )
+              frameLayout.addView(imageViewCustomImage${index})\n\n`, 10
+            )
 
             break
           }
@@ -575,7 +657,7 @@ function finalize(menu) {
 
               imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
 
-              frameLayout.addView(imageViewCustomImage${index})\n\n`, 10, true
+              frameLayout.addView(imageViewCustomImage${index})`, 10
             )
 
             break
@@ -586,6 +668,8 @@ function finalize(menu) {
       }
     }
   })
+
+  customCode = helper.finalizeResources(menu, customCode)
 
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)\n'
 
@@ -602,7 +686,7 @@ function finalize(menu) {
         mediaPlayer!!.setOnCompletionListener {
           mediaPlayer!!.start()
         }
-      }\n\n`, 2, true
+      }\n\n`, 2
     )
   }
 
@@ -617,10 +701,31 @@ function finalize(menu) {
       savesFile.writeText("[]")
     }
 
-    menu()`, 0, true
+    menu()`
   )
 
   helper.replace(/__PERFORVNM_MENU__/g, mainCode)
+
+  const sdp30Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '30' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '30', spaces: 4 })
+
+  const ssp13Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'ssp', dp: '13' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'ssp', dp: '13', spaces: 4 })
+
+  const sdp88Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '88' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '88', spaces: 4 })
+
+  const sdpMinus3Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: 'minus3' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp161Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '161' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '161', spaces: 4 })
+
+  const sdp233Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '233' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '233', spaces: 4 })
+
+  const sdp320Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '320' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '320', spaces: 4 })
 
   let menuCode = helper.codePrepare(`
     private fun menu() {
@@ -635,7 +740,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
+      ${sdp30Main.definition}val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Main.variable})
       layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParams
@@ -643,9 +748,9 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      val buttonStart = Button(this)
+      ${ssp13Main.definition}val buttonStart = Button(this)
       buttonStart.text = "Start"
-      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonStart.background = null
 
@@ -654,10 +759,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
-
-      layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)
+      ${sdp88Main.definition}${sdpMinus3Main.definition}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsStart.setMargins(${sdp88Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonStart.layoutParams = layoutParamsStart
 
@@ -667,7 +770,7 @@ function finalize(menu) {
 
       val buttonAbout = Button(this)
       buttonAbout.text = "About"
-      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
       buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonAbout.background = null
 
@@ -676,8 +779,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
+      ${sdp161Main.definition}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAbout.setMargins(${sdp161Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
 
@@ -689,7 +792,7 @@ function finalize(menu) {
 
       val buttonSettings = Button(this)
       buttonSettings.text = "Settings"
-      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
       buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSettings.background = null
 
@@ -698,8 +801,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+      ${sdp233Main.definition}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSettings.setMargins(${sdp233Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
 
@@ -711,7 +814,7 @@ function finalize(menu) {
 
       val buttonSaves = Button(this)
       buttonSaves.text = "Saves"
-      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
       buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSaves.background = null
 
@@ -720,8 +823,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+      ${sdp320Main.definition}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSaves.setMargins(${sdp320Main.variable}, 0, 0, ${sdpMinus3Main.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
 
@@ -729,15 +832,19 @@ function finalize(menu) {
         saves(true)
       }
 
-      frameLayout.addView(buttonSaves)\n\n`, 2, true
+      frameLayout.addView(buttonSaves)\n\n`, 2
   )
+
+  menuCode = helper.finalizeMultipleResources(menu, menu.pages.main, menuCode)
 
   if (menu.custom.length != 0) {
     menuCode += customCode
   }
 
-  menuCode += '    setContentView(frameLayout)\n' +
-              '  }'
+  menuCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(menuCode)
 
@@ -757,10 +864,43 @@ function finalize(menu) {
         val rect = canvas?.clipBounds ?: return
         canvas.drawRect(rect, paint)
       }
-    }\n`, 4, false
+    }\n`, 4, 0, false
   )
 
   helper.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
+
+  const sdp30About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '30' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '30', spaces: 4 })
+
+  const ssp13About = helper.getMultipleResources(menu, menu.pages.about, { type: 'ssp', dp: '13' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'ssp', dp: '13', spaces: 4 })
+
+  const sdpMinus3About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: 'minus3' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp88About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '88' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '88', spaces: 4 })
+
+  const sdp53About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '53' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '53', spaces: 4 })
+
+  const sdp161About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '161' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '161', spaces: 4 })
+
+  const sdp233About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '233' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '233', spaces: 4 })
+
+  const sdp320About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '320' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '320', spaces: 4 })
+
+  const ssp15About = helper.getMultipleResources(menu, menu.pages.about, { type: 'ssp', dp: '15' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'ssp', dp: '15', spaces: 4 })
+
+  const sdp73About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '73' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '73', spaces: 4 })
+
+  const ssp11About = helper.getMultipleResources(menu, menu.pages.about, { type: 'ssp', dp: '11' })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'ssp', dp: '11', spaces: 4 })
 
   let aboutCode = helper.codePrepare(`
     private fun about(animate: Boolean) {
@@ -796,7 +936,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
+      ${sdp30About.definition}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30About.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -804,9 +944,9 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      val buttonStart = Button(this)
+      ${ssp13About.definition}val buttonStart = Button(this)
       buttonStart.text = "Start"
-      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonStart.background = null
 
@@ -815,10 +955,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
-
-      layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)
+      ${sdp88About.definition}${sdpMinus3About.definition}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsStart.setMargins(${sdp88About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonStart.layoutParams = layoutParamsStart
 
@@ -828,7 +966,7 @@ function finalize(menu) {
 
       val buttonAbout = Button(this)
       buttonAbout.text = "About"
-      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
       buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonAbout.background = null
 
@@ -837,8 +975,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
+      ${sdp161About.definition}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAbout.setMargins(${sdp161About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
 
@@ -846,7 +984,7 @@ function finalize(menu) {
 
       val buttonSettings = Button(this)
       buttonSettings.text = "Settings"
-      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
       buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSettings.background = null
 
@@ -855,8 +993,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+      ${sdp233About.definition}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSettings.setMargins(${sdp233About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
 
@@ -868,7 +1006,7 @@ function finalize(menu) {
 
       val buttonSaves = Button(this)
       buttonSaves.text = "Saves"
-      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
       buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSaves.background = null
 
@@ -877,8 +1015,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+      ${sdp320About.definition}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSaves.setMargins(${sdp320About.variable}, 0, 0, ${sdpMinus3About.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
 
@@ -888,9 +1026,9 @@ function finalize(menu) {
 
       frameLayout.addView(buttonSaves)
 
-      val buttonBack = Button(this)
+      ${ssp15About.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
-      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))
+      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15About.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
       buttonBack.background = null
 
@@ -899,8 +1037,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-      layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
+      ${sdp73About.definition}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      layoutParamsBack.setMargins(${sdp73About.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
 
@@ -917,7 +1055,7 @@ function finalize(menu) {
 
       frameLayout.addView(buttonBack)
 
-      val textView = TextView(this)
+      ${ssp11About.definition}val textView = TextView(this)
       textView.text = SpannableStringBuilder().apply {
         append("${visualNovel.info.fullName} ${visualNovel.info.version}\\n\\nMade with ")
         append("PerforVNM")
@@ -926,7 +1064,7 @@ function finalize(menu) {
             startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("${PerforVNM.repository}")))
           }
         }, length - "PerforVNM".length, length, 0)
-        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`, 2, true
+        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`, 2
   )
 
   if (menu.aboutText) {
@@ -937,7 +1075,7 @@ function finalize(menu) {
 
   aboutCode += helper.codePrepare(`
     }
-    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
+    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp11About.variable})
     textView.setTextColor(0xFF${menu.textColor}.toInt())
 
     val layoutParamsText = LayoutParams(
@@ -945,11 +1083,8 @@ function finalize(menu) {
       LayoutParams.WRAP_CONTENT
     )
 
-    val leftDpText = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp)
-    val topDpText = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-    layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(leftDpText, topDpText, 0, 0)
+    ${sdp53About.definition}layoutParamsText.gravity = Gravity.TOP or Gravity.START
+    layoutParamsText.setMargins(${sdp88About.variable}, ${sdp53About.variable}, 0, 0)
 
     textView.layoutParams = layoutParamsText
     textView.startAnimation(animationTexts)
@@ -957,17 +1092,82 @@ function finalize(menu) {
     textView.ellipsize = TextUtils.TruncateAt.END
     textView.movementMethod = LinkMovementMethod.getInstance()
 
-    frameLayout.addView(textView)\n\n`, 0, true
+    frameLayout.addView(textView)\n\n`
   )
+
+  aboutCode = helper.finalizeMultipleResources(menu, menu.pages.about, aboutCode)
 
   if (menu.custom.length != 0) {
     aboutCode += customCode
   }
 
-  aboutCode += '    setContentView(frameLayout)\n' +
-               '  }'
+  aboutCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(aboutCode)
+
+
+  const sdp30Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '30' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '30', spaces: 4 })
+
+  const ssp13Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '13' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '13', spaces: 4 })
+
+  const sdp88Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '88' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '88', spaces: 4 })
+
+  const sdpMinus3Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: 'minus3' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp161Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '161' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '161', spaces: 4 })
+
+  const sdp233Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '233' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '233', spaces: 4 })
+
+  const sdp320Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '320' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '320', spaces: 4 })
+
+  const ssp15Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '15' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '15', spaces: 4 })
+
+  const sdp73Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '73' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '73', spaces: 4 })
+
+  const ssp16Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '16' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '16', spaces: 4 })
+
+  const sdp149Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '149' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '149', spaces: 4 })
+
+  const sdp53Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '53' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '53', spaces: 4 })
+
+  const sdp150Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '150' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '150', spaces: 4 })
+
+  const sdp135Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '135' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '135', spaces: 4 })
+
+  const sdp77Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '77' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '77', spaces: 4 })
+
+  const sdp443Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '443' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '443', spaces: 4 })
+
+  const sdp432Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '432' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '432', spaces: 4 })
+
+  const sdp111Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '111' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '111', spaces: 4 })
+
+  const sdp166Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '166' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '166', spaces: 4 })
+
+  const sdp190Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '190' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '190', spaces: 4 })
 
   let settingsCode = helper.codePrepare(`
     private fun settings(animate: Boolean) {
@@ -1003,7 +1203,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
+      ${sdp30Settings.definition}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Settings.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -1011,9 +1211,9 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      val buttonStart = Button(this)
+      ${ssp13Settings.definition}val buttonStart = Button(this)
       buttonStart.text = "Start"
-      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonStart.background = null
 
@@ -1022,10 +1222,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
-
-      layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)
+      ${sdp88Settings.definition}${sdpMinus3Settings.definition}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsStart.setMargins(${sdp88Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonStart.layoutParams = layoutParamsStart
 
@@ -1035,7 +1233,7 @@ function finalize(menu) {
 
       val buttonAbout = Button(this)
       buttonAbout.text = "About"
-      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
       buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonAbout.background = null
 
@@ -1044,8 +1242,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
+      ${sdp161Settings.definition}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAbout.setMargins(${sdp161Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
 
@@ -1057,7 +1255,7 @@ function finalize(menu) {
 
       val buttonSettings = Button(this)
       buttonSettings.text = "Settings"
-      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
       buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSettings.background = null
 
@@ -1066,8 +1264,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+      ${sdp233Settings.definition}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSettings.setMargins(${sdp233Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
 
@@ -1075,7 +1273,7 @@ function finalize(menu) {
 
       val buttonSaves = Button(this)
       buttonSaves.text = "Saves"
-      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
       buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSaves.background = null
 
@@ -1084,8 +1282,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+      ${sdp320Settings.definition}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSaves.setMargins(${sdp320Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
 
@@ -1095,9 +1293,9 @@ function finalize(menu) {
 
       frameLayout.addView(buttonSaves)
 
-      val buttonBack = Button(this)
+      ${ssp15Settings.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
-      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))
+      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15Settings.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
       buttonBack.background = null
 
@@ -1106,8 +1304,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-      layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
+      ${sdp73Settings.definition}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      layoutParamsBack.setMargins(${sdp73Settings.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
 
@@ -1124,9 +1322,9 @@ function finalize(menu) {
 
       frameLayout.addView(buttonBack)
 
-      val textViewTextSpeed = TextView(this)
+      ${ssp16Settings.definition}val textViewTextSpeed = TextView(this)
       textViewTextSpeed.text = "Text speed: " + textSpeed.toString() + "ms"
-      textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))
+      textViewTextSpeed.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp16Settings.variable})
       textViewTextSpeed.setTextColor(0xFF${menu.textColor}.toInt())
 
       val layoutParamsText = LayoutParams(
@@ -1134,11 +1332,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val leftDpTextSpeed = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._149sdp)
-      val topDpTextSpeed = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-      layoutParamsText.gravity = Gravity.TOP or Gravity.START
-      layoutParamsText.setMargins(leftDpTextSpeed, topDpTextSpeed, 0, 0)
+      ${sdp149Settings.definition}${sdp53Settings.definition}layoutParamsText.gravity = Gravity.TOP or Gravity.START
+      layoutParamsText.setMargins(${sdp149Settings.variable}, ${sdp53Settings.variable}, 0, 0)
 
       textViewTextSpeed.layoutParams = layoutParamsText
       textViewTextSpeed.startAnimation(animationTexts)
@@ -1162,18 +1357,13 @@ function finalize(menu) {
 
       seekBarTextSpeed.thumbOffset = 0
 
-      val heightDpSeekBars = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp)
-
-      val layoutParamsSeekBar = LayoutParams(
-        heightDpSeekBars,
+      ${sdp150Settings.definition}val layoutParamsSeekBar = LayoutParams(
+        ${sdp150Settings.variable},
         LayoutParams.WRAP_CONTENT
       )
 
-      val leftDpSeekBarSpeed = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._135sdp)
-      val topDpSeekBarSpeed = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._77sdp)
-
-      layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSeekBar.setMargins(leftDpSeekBarSpeed, topDpSeekBarSpeed, 0, 0)
+      ${sdp135Settings.definition}${sdp77Settings.definition}layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
+      layoutParamsSeekBar.setMargins(${sdp135Settings.variable}, ${sdp77Settings.variable}, 0, 0)
 
       seekBarTextSpeed.layoutParams = layoutParamsSeekBar
       seekBarTextSpeed.startAnimation(animationTexts)
@@ -1203,7 +1393,7 @@ function finalize(menu) {
 
       val textViewMusicVolume = TextView(this)
       textViewMusicVolume.text = "Menu music: " + (musicVolume * 100).toInt().toString() + "%"
-      textViewMusicVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))
+      textViewMusicVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp16Settings.variable})
       textViewMusicVolume.setTextColor(0xFF${menu.textColor}.toInt())
 
       val layoutParamsTextMusicVolume = LayoutParams(
@@ -1211,11 +1401,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val leftDpRightTexts = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._443sdp)
-      val topDpTextMusicVolume = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
-
-      layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
-      layoutParamsTextMusicVolume.setMargins(leftDpRightTexts, topDpTextMusicVolume, 0, 0)
+      ${sdp443Settings.definition}layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
+      layoutParamsTextMusicVolume.setMargins(${sdp443Settings.variable}, ${sdp53Settings.variable}, 0, 0)
 
       textViewMusicVolume.layoutParams = layoutParamsTextMusicVolume
       textViewMusicVolume.startAnimation(animationTexts)
@@ -1240,15 +1427,12 @@ function finalize(menu) {
       seekBarMusicVolume.thumbOffset = 0
 
       val layoutParamsSeekBarMusicVolume = LayoutParams(
-        heightDpSeekBars,
+        ${sdp150Settings.variable},
         LayoutParams.WRAP_CONTENT
       )
 
-      val leftDpRightSeekbars = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._432sdp)
-      val topDpSeekBarMusicVolume = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._77sdp)
-
-      layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSeekBarMusicVolume.setMargins(leftDpRightSeekbars, topDpSeekBarMusicVolume, 0, 0)
+      ${sdp432Settings.definition}layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
+      layoutParamsSeekBarMusicVolume.setMargins(${sdp432Settings.variable}, ${sdp77Settings.variable}, 0, 0)
 
       seekBarMusicVolume.layoutParams = layoutParamsSeekBarMusicVolume
       seekBarMusicVolume.startAnimation(animationTexts)
@@ -1274,7 +1458,7 @@ function finalize(menu) {
 
       val textViewSEffectVolume = TextView(this)
       textViewSEffectVolume.text = "Sound effects: " + (sEffectVolume * 100).toInt().toString() + "%"
-      textViewSEffectVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))
+      textViewSEffectVolume.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp16Settings.variable})
       textViewSEffectVolume.setTextColor(0xFF${menu.textColor}.toInt())
 
       val layoutParamsTextSEffectVolume = LayoutParams(
@@ -1282,10 +1466,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpSeekBarSEffectVolume = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._111sdp)
-
-      layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
-      layoutParamsTextSEffectVolume.setMargins(leftDpRightTexts, topDpSeekBarSEffectVolume, 0, 0)
+      ${sdp111Settings.definition}layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
+      layoutParamsTextSEffectVolume.setMargins(${sdp443Settings.variable}, ${sdp111Settings.variable}, 0, 0)
 
       textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume
       textViewSEffectVolume.startAnimation(animationTexts)
@@ -1310,14 +1492,12 @@ function finalize(menu) {
       seekBarSEffectVolume.thumbOffset = 0
 
       val layoutParamsSeekBarSEffectVolume = LayoutParams(
-        heightDpSeekBars,
+        ${sdp150Settings.variable},
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpTextSEffectVolume = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._135sdp)
-
       layoutParamsSeekBarSEffectVolume.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSeekBarSEffectVolume.setMargins(leftDpRightSeekbars, topDpTextSEffectVolume, 0, 0)
+      layoutParamsSeekBarSEffectVolume.setMargins(${sdp432Settings.variable}, ${sdp135Settings.variable}, 0, 0)
 
       seekBarSEffectVolume.layoutParams = layoutParamsSeekBarSEffectVolume
       seekBarSEffectVolume.startAnimation(animationTexts)
@@ -1343,7 +1523,7 @@ function finalize(menu) {
 
       val textViewSceneMusic = TextView(this)
       textViewSceneMusic.text = "Scene music: " + (sceneMusicVolume * 100).toInt().toString() + "%"
-      textViewSceneMusic.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._16ssp))
+      textViewSceneMusic.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp16Settings.variable})
       textViewSceneMusic.setTextColor(0xFF${menu.textColor}.toInt())
 
       val layoutParamsTextSceneMusic = LayoutParams(
@@ -1351,10 +1531,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpSeekBarSceneMusic = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._166sdp)
-
-      layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
-      layoutParamsTextSceneMusic.setMargins(leftDpRightTexts, topDpSeekBarSceneMusic, 0, 0)
+      ${sdp166Settings.definition}layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
+      layoutParamsTextSceneMusic.setMargins(${sdp443Settings.variable}, ${sdp166Settings.variable}, 0, 0)
 
       textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic
       textViewSceneMusic.startAnimation(animationTexts)
@@ -1379,14 +1557,12 @@ function finalize(menu) {
       seekBarSceneMusic.thumbOffset = 0
 
       val layoutParamsSeekBarSceneMusic = LayoutParams(
-        heightDpSeekBars,
+        ${sdp150Settings.variable},
         LayoutParams.WRAP_CONTENT
       )
 
-      val topDpTextSceneMusic = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._190sdp)
-
-      layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSeekBarSceneMusic.setMargins(leftDpRightSeekbars, topDpTextSceneMusic, 0, 0)
+      ${sdp190Settings.definition}layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
+      layoutParamsSeekBarSceneMusic.setMargins(${sdp432Settings.variable}, ${sdp190Settings.variable}, 0, 0)
 
       seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic
       seekBarSceneMusic.startAnimation(animationTexts)
@@ -1408,15 +1584,19 @@ function finalize(menu) {
         override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
         override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-      })\n\n`, 2, true
+      })\n\n`, 2
   )
+
+  settingsCode = helper.finalizeMultipleResources(menu, menu.pages.settings, settingsCode)
 
   if (menu.custom.length != 0) {
     settingsCode += customCode
   }
 
-  settingsCode +=   '    setContentView(frameLayout)\n' +
-                    '  }'
+  settingsCode += helper.codePrepare(`
+      setContentView(frameLayout)
+    }`, 2
+  )
 
   helper.writeFunction(settingsCode)
 
@@ -1438,7 +1618,7 @@ function finalize(menu) {
             </shape>
           </clip>
         </item>
-      </layer-list>`, 6, true
+      </layer-list>`, 6
     )
   })
 
@@ -1448,9 +1628,42 @@ function finalize(menu) {
       <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
         <solid android:color="#${menu.seekBar.thumbColor}" />
         <size android:width="@dimen/_7sdp" android:height="@dimen/_13sdp" />
-      </shape>`, 6, true
+      </shape>`, 6
     )
   })
+
+  const sdp30Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '30' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '30', spaces: 4 })
+
+  const ssp13Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'ssp', dp: '13' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'ssp', dp: '13', spaces: 4 })
+
+  const sdpMinus3Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: 'minus3' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp88Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '88' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '88', spaces: 4 })
+
+  const sdp161Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '161' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '161', spaces: 4 })
+
+  const sdp233Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '233' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '233', spaces: 4 })
+
+  const sdp320Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '320' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '320', spaces: 4 })
+
+  const ssp15Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'ssp', dp: '15' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'ssp', dp: '15', spaces: 4 })
+
+  const sdp73Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '73' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '73', spaces: 4 })
+
+  const sdp100Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
+  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100' })
+
+  const sdp70Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '70' })
+  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '70' })
 
   let saverCode = helper.codePrepare(`
     private fun saves(animate: Boolean) {
@@ -1486,7 +1699,7 @@ function finalize(menu) {
 
       val rectangleView = RectangleView(this)
 
-      val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
+      ${sdp30Saves.definition}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Saves.variable})
       layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
       rectangleView.layoutParams = layoutParamsRectangle
@@ -1494,9 +1707,9 @@ function finalize(menu) {
 
       frameLayout.addView(rectangleView)
 
-      val buttonStart = Button(this)
+      ${ssp13Saves.definition}val buttonStart = Button(this)
       buttonStart.text = "Start"
-      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
       buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonStart.background = null
 
@@ -1505,10 +1718,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      val bottomDpButtons = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
-
-      layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, bottomDpButtons)
+      ${sdp88Saves.definition}${sdpMinus3Saves.definition}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsStart.setMargins(${sdp88Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonStart.layoutParams = layoutParamsStart
 
@@ -1518,7 +1729,7 @@ function finalize(menu) {
 
       val buttonAbout = Button(this)
       buttonAbout.text = "About"
-      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
       buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonAbout.background = null
 
@@ -1527,8 +1738,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, bottomDpButtons)
+      ${sdp161Saves.definition}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAbout.setMargins(${sdp161Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonAbout.layoutParams = layoutParamsAbout
 
@@ -1540,7 +1751,7 @@ function finalize(menu) {
 
       val buttonSettings = Button(this)
       buttonSettings.text = "Settings"
-      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
       buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSettings.background = null
 
@@ -1549,8 +1760,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, bottomDpButtons)
+      ${sdp233Saves.definition}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSettings.setMargins(${sdp233Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonSettings.layoutParams = layoutParamsSettings
 
@@ -1562,7 +1773,7 @@ function finalize(menu) {
 
       val buttonSaves = Button(this)
       buttonSaves.text = "Saves"
-      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._13ssp))
+      buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
       buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())
       buttonSaves.background = null
 
@@ -1571,16 +1782,16 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-      layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, bottomDpButtons)
+      ${sdp320Saves.definition}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsSaves.setMargins(${sdp320Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
 
       buttonSaves.layoutParams = layoutParamsSaves
 
       frameLayout.addView(buttonSaves)
 
-      val buttonBack = Button(this)
+      ${ssp15Saves.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
-      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._15ssp))
+      buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15Saves.variable})
       buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
       buttonBack.background = null
 
@@ -1589,8 +1800,8 @@ function finalize(menu) {
         LayoutParams.WRAP_CONTENT
       )
 
-      layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-      layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
+      ${sdp73Saves.definition}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+      layoutParamsBack.setMargins(${sdp73Saves.variable}, 0, 0, 0)
 
       buttonBack.layoutParams = layoutParamsBack
 
@@ -1639,9 +1850,9 @@ function finalize(menu) {
           savesBackground.setColor(0xFF000000.toInt())
         }
 
-        val layoutParamsSavesBackground = LayoutParams(
-          resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
-          resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
+        ${sdp100Saves.definition}${sdp70Saves.definition}val layoutParamsSavesBackground = LayoutParams(
+          ${sdp100Saves.variable},
+          ${sdp70Saves.variable}
         )
 
         val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_\${leftDp}sdp", "dimen", getPackageName()))
@@ -1669,51 +1880,20 @@ function finalize(menu) {
           imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))
 
           val layoutParamsImageViewCharacter = LayoutParams(
-            resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
-            resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
+            ${sdp100Saves.variable},
+            ${sdp70Saves.variable}
           )
 
           layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-          when (characterData.getJSONObject("position").getString("sideType")) {
-            "left" -> {
-              val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
-            }
-            "leftTop" -> {
-              val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "right" -> {
-              val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
-            }
-            "rightTop" -> {
-              val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "top" -> {
-              val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
-            }
-            "center" -> {
-              layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
-            }
-          }
+  __PERFORVNM_SAVES_SWITCH__
 
           imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
 
           frameLayoutScenes.addView(imageViewCharacter)
         }
 
-        if (i != 0 && i % 4 == 0) {
+        if (i != 0 && (i + 1).mod(4) == 0) {
           leftDp = 100
           topDp += 100
         } else {
@@ -1723,8 +1903,11 @@ function finalize(menu) {
 
       scrollView.addView(frameLayoutScenes)
 
-      frameLayout.addView(scrollView)\n\n`, 2, true
+      frameLayout.addView(scrollView)\n\n`, 2
   )
+
+  saverCode = helper.finalizeMultipleResources(menu, menu.pages.saves, saverCode)
+  saverCode = helper.finalizeMultipleResources(menu, menu.pages.savesFor, saverCode)
 
   if (menu.custom.length != 0) {
     saverCode += customCode
@@ -1732,7 +1915,7 @@ function finalize(menu) {
 
   saverCode += helper.codePrepare(`
       setContentView(frameLayout)
-    }`, 2, true
+    }`, 2
   )
 
   helper.writeFunction(saverCode)

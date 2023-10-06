@@ -11,7 +11,13 @@ coder.init({
   name: 'PerforVNM',
   fullName: 'The PerforVNM',
   applicationId: 'com.perforvnm',
-  version: '1.0.0'
+  version: '1.0.0',
+  optimizations: {
+    preCalculateRounding: true,
+    hashScenesNames: true,
+    reuseResources: true,
+    minify: true
+  }
 })
 ```
 
@@ -22,6 +28,11 @@ coder.init({
   - `fullName`: The full name of the VN, used in the About menu.
   - `applicationId`: The application ID of the VN is used in the package name of the app.
   - `version`: The version of the VN, used by the system and in the About menu.
+  - `optimizations`: The optimizations of the code generator.
+    - `preCalculateRounding`: If `true`, PerforVNM will generate a switch with pre-calculated rouded `sdp`s for faster `save` page loading. (high - speed)
+    - `hashScenesNames`: If `true`, the code generator, in code generation time, will hash the names of the scenes in `saves` switch page to reduce overhead of checking strings.
+    - `reuseResources`: If `true`, the code generator will reuse any `sdp` and `ssp` resources that are identical in each scene. (low - speed & code size)
+    - `minify`: If `true`, the code generator will minify the generated code by removing the identation spaces. (low - code size)
 
 ## Return value
 

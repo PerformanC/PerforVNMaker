@@ -1,8 +1,9 @@
 import fs from 'fs'
 
 import helper from './helper.js'
+import finalizer from './finalizer.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [] }
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [], optimizations: {} }
 global.PerforVNM = {
   codeGeneratorVersion: '1.22.0',
   generatedCodeVersion: '1.20.0',
@@ -32,10 +33,34 @@ function init(options) {
           type: 'string'
         }
       }
+    },
+    'optimizations': {
+      type: 'object',
+      params: {
+        'reuseResources': {
+          type: 'boolean',
+          required: false
+        }, /* This option will utilize the same sdp & ssp files for resources of the same scene. */
+        'hashScenesNames': {
+          type: 'boolean',
+          required: false
+        }, /* Agresssive optimization: This option will hash the scenes names and use integers for the switch. */
+        'preCalculateRounding': {
+          type: 'boolean',
+          required: false
+        }, /* This option will make PerforVNM generate a switch with the pre-made configurations for the each scene in the saves menu. */
+        'minify': {
+          type: 'boolean',
+          required: false
+        } /* This option will remove identation (minify) the generated code. */
+      },
+      required: true
     }
   }
 
   helper.verifyParams(checks, options)
+
+  if (options.optimizations) visualNovel.optimizations = options.optimizations
 
   visualNovel.info = options
 
@@ -44,8 +69,7 @@ function init(options) {
 
     import java.io.File
     import java.io.InputStreamReader
-    import org.json.JSONArray
-    import kotlin.math.roundToInt
+    import org.json.JSONArray__PERFORVNM_HEADERS__
 
     import android.os.Build
     import android.os.Bundle
@@ -100,8 +124,18 @@ function init(options) {
 
         __PERFORVNM_MENU__
       }__PERFORVNM_SCENES__
+
+      private fun scenesToJson(): String {
+        var json = "["
+  
+        for (i in 0 until scenesLength) {
+          json += ${visualNovel.optimizations.hashScenesNames ? 'scenes.get(i).toString() + "' : '"\\"" + scenes.get(i) + "\\"'},"
+        }
+  
+        return json.dropLast(1) + "]"
+      }
     }
-    __PERFORVNM_CLASSES__`, 4, true
+    __PERFORVNM_CLASSES__`, 4
   )
 
   visualNovel.customXML.push({
@@ -110,7 +144,7 @@ function init(options) {
       <?xml version="1.0" encoding="utf-8"?>
       <resources>
         <string name="app_name">${visualNovel.info.name}</string>
-      </resources>`, 6, true
+      </resources>`, 6
     )
   })
 
@@ -121,14 +155,18 @@ function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
 
   let switchesCode = helper.codePrepare(`
-    private fun switchScene(scene: String) {
-      when (scene) {`, 2, true
+    private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
+      when (scene) {`, 2
   )
+
+  let savesSwitchCode = finalizer.sceneEachInit()
 
   if (visualNovel.scenes.length) {
     let scenesCode = ''
 
     visualNovel.scenes.forEach((scene, i) => {
+      savesSwitchCode += finalizer.sceneEach(scene)
+
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
         const finishScene = []
@@ -140,7 +178,7 @@ function finalize() {
                 mediaPlayer!!.stop()
                 mediaPlayer!!.release()
                 mediaPlayer = null
-              }\n`, 6, true
+              }\n`, 14
             )
           )
         }
@@ -152,22 +190,23 @@ function finalize() {
                 mediaPlayer2!!.stop()
                 mediaPlayer2!!.release()
                 mediaPlayer2 = null
-              }\n`, 6, true
+              }\n`, 14
             )
           )
         }
 
         if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-          finishScene.push('      handler.removeCallbacksAndMessages(null)')
+          finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
 
         if (i == visualNovel.scenes.length - 2)
-          finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
+          finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
 
-        finishScene.push('      it.setOnClickListener(null)')
+        finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
 
         if (scene.subScenes.length == 0) {
-          let code = '\n\n    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {\n' +
-                    finishScene.join('\n') + '\n\n'
+          let code = '\n\n' + helper.codePrepare(`
+            findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+${finishScene.join('\n')}\n\n`, 8, 0)
 
           const functionParams = []
           if (nextScene.speech && i != visualNovel.scenes.length - 2) functionParams.push('true')
@@ -194,11 +233,11 @@ function finalize() {
               animationAuthorSpeech.interpolator = LinearInterpolator()
               animationAuthorSpeech.fillAfter = true
 
-              rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8, true
+              rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8
             )
 
             if (scene.speech.author?.name) {
-              code += '      textViewAuthor.startAnimation(animationTextSpeech)\n\n'
+              code += helper.codePrepare('textViewAuthor.startAnimation(animationTextSpeech)\n\n', 0, 6, false)
             }
 
             code += helper.codePrepare(`
@@ -206,25 +245,25 @@ function finalize() {
                 override fun onAnimationStart(animation: Animation?) {}
 
                 override fun onAnimationEnd(animation: Animation?) {
-                  scenes.set(scenesLength, "${scene.name}")
+                  scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
                   scenesLength++
 
                   ${nextScene.name}(${functionParams.join(', ')})
                 }
 
                 override fun onAnimationRepeat(animation: Animation?) {}
-              })\n`, 8, true
+              })\n`, 8
             )
           } else {
             code += helper.codePrepare(`
-              scenes.set(scenesLength, "${scene.name}")
+              scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
               scenesLength++
 
-              ${nextScene.name}(${functionParams.join(', ')})\n`, 8, true
+              ${nextScene.name}(${functionParams.join(', ')})\n`, 8
             )
           }
 
-          code += '    }'
+          code += helper.codePrepare('}', 0, 4, false)
 
           scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
         } else {
@@ -269,7 +308,7 @@ function finalize() {
           functionParams2.switch.push('true')
         }
 
-        switchesCode += `\n      "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -289,7 +328,7 @@ function finalize() {
               }, textSpeed)
             } else {
               textViewSpeech.text = speechText
-            }\n`, 8, false
+            }\n`, 8, 0, false
           )
 
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
@@ -337,7 +376,7 @@ function finalize() {
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
         }
 
-        switchesCode += `\n      "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -354,7 +393,7 @@ function finalize() {
                   handler.postDelayed(this, textSpeed)
                 }
               }
-            }, textSpeed)\n`, 8, false
+            }, textSpeed)\n`, 8, 0, false
           )
 
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
@@ -365,6 +404,8 @@ function finalize() {
     })
 
     visualNovel.subScenes.forEach((scene, i) => {
+      savesSwitchCode += finalizer.sceneEach(scene)
+
       if (scene.next) {
         const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next)
 
@@ -380,7 +421,7 @@ function finalize() {
                 mediaPlayer!!.stop()
                 mediaPlayer!!.release()
                 mediaPlayer = null
-              }\n`, 8, true
+              }\n`, 12
             )
           )
         }
@@ -392,21 +433,22 @@ function finalize() {
                 mediaPlayer2!!.stop()
                 mediaPlayer2!!.release()
                 mediaPlayer2 = null
-              }\n`, 8, true
+              }\n`, 12
             )
           )
         }
 
         if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-          finishScene.push('      handler.removeCallbacksAndMessages(null)')
+          finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 12, false))
 
         if (i == visualNovel.subScenes.length - 2)
-          finishScene.push('      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)')
+          finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 12, false))
 
-        finishScene.push('      it.setOnClickListener(null)')
+        finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 12, false))
 
-        let code = '\n\n    findViewById<FrameLayout>(android.R.id.content).setOnClickListener {\n' +
-                   finishScene.join('\n') + '\n\n'
+        let code = '\n\n' + helper.codePrepare(`
+          findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+${finishScene.join('\n')}\n\n`, 6, 0)
 
         const functionParams = []
         if (nextScene.speech && i != visualNovel.subScenes.length - 2) functionParams.push('true')
@@ -433,11 +475,11 @@ function finalize() {
             animationAuthorSpeech.interpolator = LinearInterpolator()
             animationAuthorSpeech.fillAfter = true
 
-            rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8, true
+            rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8
           )
 
           if (scene.speech.author?.name) {
-            code += '      textViewAuthor.startAnimation(animationTextSpeech)\n\n'
+            code += helper.codePrepare('textViewAuthor.startAnimation(animationTextSpeech)\n\n', 0, 6, false)
           }
 
           code += helper.codePrepare(`
@@ -449,13 +491,13 @@ function finalize() {
               }
 
               override fun onAnimationRepeat(animation: Animation?) {}
-            })\n`, 8, true
+            })\n`, 8
           )
         } else {
-          code += `      ${nextScene.name}(${functionParams.join(', ')})\n`
+          code += helper.codePrepare(`${nextScene.name}(${functionParams.join(', ')})\n`, 0, 6, false)
         }
 
-        code += '    }'
+        code += helper.codePrepare('}', 0, 4, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
 
@@ -470,7 +512,7 @@ function finalize() {
         }
 
         scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-        switchesCode += `\n      "${scene.name}" -> ${scene.name}(${functionParams2.switch.join(', ')})`
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -490,7 +532,7 @@ function finalize() {
               }, textSpeed)
             } else {
               textViewSpeech.text = speechText
-            }\n`, 8, false
+            }\n`, 8, 0, false
           )
 
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
@@ -511,7 +553,7 @@ function finalize() {
           functionParams.switch.push('true')
         }
 
-        switchesCode += `\n      "${scene.name}" -> ${scene.name}(${functionParams.switch.join(', ')})`
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -528,7 +570,7 @@ function finalize() {
                   handler.postDelayed(this, textSpeed)
                 }
               }
-            }, textSpeed)\n`, 8, false
+            }, textSpeed)\n`, 8, 0, false
           )
 
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
@@ -543,33 +585,57 @@ function finalize() {
 
   switchesCode += helper.codePrepare(`
       }
-    }`, 2, false
+    }`, 2, 0, false
   )
 
   helper.writeFunction(switchesCode)
 
-  if (visualNovel.subScenes.length != 0) {
-    helper.writeFunction(
-      helper.codePrepare(`
-        private fun scenesToJson(): String {
-          var json = "["
-    
-          for (i in 0 until scenesLength) {
-            json += "\\"" + scenes.get(i) + "\\","
-          }
-    
-          json = json.dropLast(1) + "]"
-    
-          return json
-        }`, 6, true
-      )
-    )
-  }
-
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
-  helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, "${visualNovel.scenes[0].name}")` : '// No scenes created.')
+  helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[0].name)})` : '// No scenes created.')
+  if (!visualNovel.optimizations.preCalculateRounding) {
+    const defaultSaveSwitchCode = helper.codePrepare(`
+      when (characterData.getJSONObject("position").getString("sideType")) {
+        "left" -> {
+          val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+        }
+        "leftTop" -> {
+          val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+        }
+        "right" -> {
+          val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
+        }
+        "rightTop" -> {
+          val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+          val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+        }
+        "top" -> {
+          val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
+        }
+        "center" -> {
+          layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+        }
+      }`, 0, 2)
+
+    helper.replace('__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
+    helper.replace('__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
+  } else {
+    helper.replace('__PERFORVNM_SAVES_SWITCH__', finalizer.sceneEachFinalize(savesSwitchCode))
+  }
+
+  helper.replace('__PERFORVNM_HEADERS__', '')
 
   if (visualNovel.menu) {
     let menuCode = 'buttonStart.setOnClickListener {\n'
@@ -580,13 +646,13 @@ function finalize() {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }\n\n`, 2, true
+        }\n\n`, 2
       )
     }
 
     menuCode += helper.codePrepare(`
         ${visualNovel.scenes.length != 0 ? `${visualNovel.scenes[0].name}(${(visualNovel.scenes[0].speech ? 'true' : '')})` : '// No scenes created.'}
-      }`, 2, true
+      }`, 2
     )
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
@@ -599,47 +665,44 @@ function finalize() {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 0, true
+        }`
       )
     } else releaseCode = '// No music to release.'
 
     helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
 
     const savesCode = helper.codePrepare(`
-        val historyScenes = buttonData.getJSONArray("history")
-        for (j in 0 until historyScenes.length()) {
-          scenes.set(j, historyScenes.getString(j))
-        }
-        scenesLength = historyScenes.length()
-        
-        switchScene(buttonData.getString("scene"))`, 0, true
+      val historyScenes = buttonData.getJSONArray("history")
+      for (j in 0 until historyScenes.length()) {
+        scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
+      }
+      scenesLength = historyScenes.length()
+      
+      switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))`, 0, 2
     )
 
     helper.replace('__PERFORVNM_SWITCHES__', savesCode)
   }
 
-  let addHeaders = ''
-
-  /* TODO: Use lastScene only when necessary (only when sub-scenes are added) */
-  addHeaders += helper.codePrepare(`
-    private var scenes = MutableList<String>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { "" }
-    private var scenesLength = 1\n`, 2, true
+  let addHeaders = helper.codePrepare(`
+    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
+    private var scenesLength = 1\n`, 2
   )
 
   if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
-    addHeaders += '  private val handler = Handler(Looper.getMainLooper())\n'
+    addHeaders += helper.codePrepare('private val handler = Handler(Looper.getMainLooper())\n', 0, 2, false)
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)
-    addHeaders += `  private var textSpeed = ${visualNovel.menu?.textSpeed || 1000}L\n`
+    addHeaders += helper.codePrepare(`private var textSpeed = ${visualNovel.menu?.textSpeed || 1000}L\n`, 0, 2, false)
 
   if (visualNovel.menu || visualNovel.internalInfo.hasEffect)
-    addHeaders += '  private var sEffectVolume = 1f\n'
+    addHeaders += helper.codePrepare('private var sEffectVolume = 1f\n', 0, 2, false)
 
   if (visualNovel.menu || visualNovel.internalInfo.hasSceneMusic)
-    addHeaders += '  private var sceneMusicVolume = 1f\n'
+    addHeaders += helper.codePrepare('private var sceneMusicVolume = 1f\n', 0, 2, false)
 
   if (visualNovel.internalInfo.needs2Players)
-    addHeaders += '  private var mediaPlayer2: MediaPlayer? = null\n'
+    addHeaders += helper.codePrepare('private var mediaPlayer2: MediaPlayer? = null\n', 0, 2, false)
 
   if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
     if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
@@ -649,11 +712,11 @@ function finalize() {
         override fun onPause() {
           super.onPause()
 
-          mediaPlayer?.pause()\n`, 6, true
+          mediaPlayer?.pause()\n`, 6
       )
 
       if (visualNovel.internalInfo.needs2Players) {
-        addHeaders += '    mediaPlayer2?.pause()\n'
+        addHeaders += helper.codePrepare('mediaPlayer2?.pause()\n', 0, 4, false)
       }
 
       addHeaders += helper.codePrepare(`
@@ -665,7 +728,7 @@ function finalize() {
           if (mediaPlayer != null) {
             mediaPlayer!!.seekTo(mediaPlayer!!.getCurrentPosition())
             mediaPlayer!!.start()
-          }\n`, 6, true
+          }\n`, 6
       )
 
       if (visualNovel.internalInfo.needs2Players) {
@@ -673,22 +736,22 @@ function finalize() {
           if (mediaPlayer2 != null) {
             mediaPlayer2!!.seekTo(mediaPlayer2!!.getCurrentPosition())
             mediaPlayer2!!.start()
-          }`, 4, false
+          }`, 4, 0, false
         )
       }
 
-      addHeaders += '  }\n\n'
+      addHeaders += helper.codePrepare('}\n\n', 0, 2, false)
     } else {
       addHeaders += '\n'
     }
 
     addHeaders += helper.codePrepare(`
       override fun onDestroy() {
-        super.onDestroy()`, 4, true
+        super.onDestroy()`, 4
     )
 
     if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
-      addHeaders += '\n\n    handler.removeCallbacksAndMessages(null)'
+      addHeaders += '\n\n' + helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 4, false)
     }
 
     if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
@@ -698,7 +761,7 @@ function finalize() {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 4, false
+        }`, 4, 0, false
       )
     }
 
@@ -709,31 +772,33 @@ function finalize() {
           mediaPlayer2!!.stop()
           mediaPlayer2!!.release()
           mediaPlayer2 = null
-        }`, 4, false
+        }`, 4, 0, false
       )
     }
 
-    addHeaders += '\n  }\n'
+    addHeaders += '\n' + helper.codePrepare('}\n', 0, 2, false)
   }
 
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
   const startMusicCode = helper.codePrepare(`
-      mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.backgroundMusic})
+    mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.backgroundMusic})
 
-      if (mediaPlayer != null) {
+    if (mediaPlayer != null) {
+      mediaPlayer!!.start()
+
+      val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+      mediaPlayer!!.setVolume(volume, volume)
+
+      mediaPlayer!!.setOnCompletionListener {
         mediaPlayer!!.start()
-
-        val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-        mediaPlayer!!.setVolume(volume, volume)
-
-        mediaPlayer!!.setOnCompletionListener {
-          mediaPlayer!!.start()
-        }
-      }`, 0, false
+      }
+    }`, 0, 2, false
   )
 
   helper.replace(/__PERFORVNM_START_MUSIC__/g, startMusicCode)
+
+  if (visualNovel.optimizations.minify) visualNovel.code = helper.removeAllDoubleLines(visualNovel.code)
 
   helper.logOk('Code finished up.', 'Android')
 
