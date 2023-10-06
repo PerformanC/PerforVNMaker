@@ -217,15 +217,15 @@ function getResource(page, resource) {
 
     if (cResource) return {
       definition: null,
-      inlined: `${cResource.type}${cResource.dp}`,
-      variable: `${cResource.type}${cResource.dp}`,
+      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
       additionalSpace: '\n'
     }
     else {
       return {
-        definition: `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
-        inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
-        variable: `${resource.type}${resource.dp}`,
+        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
+        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
         additionalSpace: '\n\n'
       }
     }
@@ -239,15 +239,15 @@ function getResource(page, resource) {
 
     if (cResource) return {
       definition: null,
-      inlined: `${cResource.type}${cResource.dp}`,
-      variable: `${cResource.type}${cResource.dp}`,
+      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
       additionalSpace: '\n'
     }
     else {
       return {
-        definition: `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
-        inlined: `resources.getDimension(com.intuit.ssp.R.dimen.__${resource.dp}${resource.type})`,
-        variable: `${resource.type}${resource.dp}`,
+        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
+        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
         additionalSpace: '\n\n'
       }
     }
@@ -261,6 +261,50 @@ function getMultipleResources(page, page2, resource) {
   if (!cResource.definition) cResource = getResource(page2, resource)
 
   return cResource
+}
+
+function finalizeResources(page, code) {
+  page.resources.forEach((resource) => {
+    const defineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`, 'g')
+    const inlineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`, 'g')
+    const variableRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`, 'g')
+
+    const variableAmount = code.split(variableRegex).length - 1
+
+    if (variableAmount == 1) {
+      code = code.replace(defineRegex, '')
+
+      if (resource.type == 'sdp') {
+        code = code.replace(variableRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+      } else {
+        code = code.replace(variableRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
+      }
+    }
+
+    let spaces = ''
+    for (let i = 0; i < resource.spaces; i++) {
+      spaces += ' '
+    }
+
+    if (resource.type == 'sdp') {
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))\n\n${spaces}`)
+      code = code.replace(inlineRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
+    } else {
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
+      code = code.replace(inlineRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
+      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
+    }
+  })
+
+  return code
+}
+
+function finalizeMultipleResources(page, page2, code) {
+  code = finalizeResources(page, code)
+  code = finalizeResources(page2, code)
+
+  return code
 }
 
 function hash(str) {
@@ -299,6 +343,8 @@ export default {
   addMultipleResources,
   getResource,
   getMultipleResources,
+  finalizeResources,
+  finalizeMultipleResources,
   hash,
   getSceneId,
   removeAllDoubleLines
