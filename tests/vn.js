@@ -34,7 +34,8 @@ let menu = perfor.menu.init({
     color: '000000',
     textColor: 'FFFFFFF',
     opacity: 0.8
-  }
+  },
+  showAchievements: true
 })
 
 /*
@@ -82,6 +83,12 @@ menu = perfor.menu.addCustomRectangle(menu, {
 */
 
 perfor.menu.finalize(menu) /* Generates the menu */
+
+perfor.achievements.init([{
+  id: 'first_achievement',
+  name: 'First achievement',
+  image: 'achievement'
+}])
 
 let firstScene = perfor.scene.init({
   name: 'scene1',
@@ -147,6 +154,7 @@ firstScene = perfor.scene.addScenario(firstScene, { image: 'background_thanking'
 firstScene = perfor.scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
 firstScene = perfor.scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
 firstScene = perfor.scene.addSubScenes(firstScene, [{ text: 'second', scene: 'scene2' }, { text: 'third', scene: 'scene3' }]) /* Adds the subscenes to the first scene */
+firstScene = perfor.achievements.give(firstScene, 'first_achievement') /* Gives the first achievement to the scene */
 perfor.scene.finalize(firstScene) /* Finishes up the scene */
 
 let secondScene = perfor.subScene.init({

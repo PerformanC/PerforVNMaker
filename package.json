@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "node tests/vn.js"
+    "test": "bun run tests/vn.js"
   },
   "repository": {
     "type": "git",

@@ -204,7 +204,7 @@ function addMultipleResources(page, page2, resource) {
   addResource(page2, resource)
 }
 
-function getResource(page, resource) {
+function getResource(page, resource, add) {
   const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
 
   if (resource.type == 'sdp') {
@@ -232,10 +232,12 @@ function getResource(page, resource) {
   } else if (resource.type == 'ssp') {
     if (!visualNovel.optimizations.reuseResources) return {
       definition: null,
-      inlined: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
-      variable: `resources.getDimensionPixelSize(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      inlined: `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
+      variable: `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
       additionalSpace: '\n'
     }
+
+    if (add) console.log(page.resources)
 
     if (cResource) return {
       definition: null,
@@ -254,11 +256,13 @@ function getResource(page, resource) {
   }
 }
 
-function getMultipleResources(page, page2, resource) {
+function getMultipleResources(page, page2, resource, add) {
   let cResource = null
 
-  cResource = getResource(page, resource)
-  if (!cResource.definition) cResource = getResource(page2, resource)
+  cResource = getResource(page, resource, add)
+  if (add) console.log(cResource)
+  if (cResource.definition) cResource = getResource(page2, resource, add)
+  if (add) console.log(cResource)
 
   return cResource
 }

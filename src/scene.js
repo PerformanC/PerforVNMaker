@@ -43,6 +43,7 @@ function init(options) {
     effect: null,
     music: null,
     transition: null,
+    achievements: [],
     custom: [],
     resources: []
   }
@@ -1209,7 +1210,7 @@ ${finishScene.join('\n\n')}
   }
 
   sceneCode += helper.codePrepare(`
-      ${(visualNovel.menu ? visualNovel.menu.name : '__PERFORVNM_MENU__')}
+      ${(visualNovel.menu ? 'menu()' : '__PERFORVNM_MENU__')}
     }
 
     frameLayout.addView(buttonMenu)\n\n`
@@ -1712,6 +1713,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       }
     }
   })
+
+  if (scene.achievements.length != 0) {
+    sceneCode += helper.codePrepare(`
+      ${scene.achievements.map((achievement) => `giveAchievement("${achievement.id}", "\\"${achievement.id}\\"")`).join('\n')}\n\n`, 2
+    )
+  }
 
   if (scene.type == 'normal') {
     sceneCode += helper.codePrepare(`

@@ -43,6 +43,7 @@ function init(options) {
     effect: null,
     music: null,
     transition: null,
+    achievements: [],
     custom: [],
     resources: []
   }

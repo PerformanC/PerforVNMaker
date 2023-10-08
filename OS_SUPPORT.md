@@ -195,9 +195,9 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Save/Load system (Completed)
 - [x] Custom paths (Completed)
 - [x] Custom Views (Completed)
+- [x] Achievements (Completed)
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
-- [ ] Achievements
 - [ ] Inventory
 - [ ] Text effects
 - [ ] Speech bubbles
