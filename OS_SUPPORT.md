@@ -204,6 +204,16 @@ Custom elements are elements that can be added to the menu, like a button, a tex
 
 \>= `v1.20.2 & 1.18.8`: Supported
 
+### Custom elements
+
+Custom elements are elements that can be added to the VN, like a button, a text box, etc.
+
+#### Version support
+
+\>= ` v1.20.2 & v1.18.8`: Supported, uses either `perfor.menu` or `perfor.scene`
+
+\>= `v1.23.0 & 1.21.0`: Supported, uses `perfor.custom`
+
 ## [iOS](https://www.apple.com/br/ios/ios-16/)
 
 We're sorry, but we don't have support for iOS yet, and neither have plans to support it in the near future due to the difficulty to build in non-Apple devices. (The PerformanC team doesn't have any Apple devices, but if you're willing to voluntarily help us, please contact us on our [Discord](https://discord.gg/uPveNfTuCJ))

@@ -2,12 +2,12 @@
 
 ## Description
 
-Adds a custom rectangle to the scene.
+Adds a custom rectangle to either `menu` or `scene`.
 
 ## Syntax
 
 ```js
-scene.addCustomRectangle(scene, {
+page.addCustomRectangle(page, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',
@@ -24,7 +24,7 @@ scene.addCustomRectangle(scene, {
 
 ## Parameters
 
-- `scene`: The scene configurations from the `init` function.
+- `page`: The page configurations from the `init` function.
 - `options`: The options of the custom rectangle. An object with the following properties:
   - `color`: The color of the rectangle.
   - `opacity`: The opacity of the rectangle.
@@ -38,7 +38,7 @@ scene.addCustomRectangle(scene, {
 
 ## Return value
 
-This function will return the scene configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return the page configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 
