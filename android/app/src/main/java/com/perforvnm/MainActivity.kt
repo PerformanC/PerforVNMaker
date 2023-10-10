@@ -1791,18 +1791,8 @@ val layoutParamsSavesBackground = LayoutParams(
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech
+    rectangleViewSpeech.setAlpha(0.8f)
     rectangleViewSpeech.setColor(0xFF000000.toInt())
-
-    if (animate) {
-      val animationRectangleSpeech = AlphaAnimation(0f, 0.8f)
-      animationRectangleSpeech.duration = 1000
-      animationRectangleSpeech.interpolator = LinearInterpolator()
-      animationRectangleSpeech.fillAfter = true
-
-      rectangleViewSpeech.startAnimation(animationRectangleSpeech)
-    } else {
-      rectangleViewSpeech.setAlpha(0.8f)
-    }
 
     frameLayout.addView(rectangleViewSpeech)
 
@@ -1846,18 +1836,8 @@ val layoutParamsSavesBackground = LayoutParams(
     layoutParamsRectangleAuthor.setMargins(0, 0, 0, sdp53)
 
     rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor
+    rectangleViewAuthor.setAlpha(0.6f)
     rectangleViewAuthor.setColor(0xFF000000.toInt())
-
-    if (animate) {
-      val animationRectangleAuthor = AlphaAnimation(0f, 0.6f)
-      animationRectangleAuthor.duration = 1000
-      animationRectangleAuthor.interpolator = LinearInterpolator()
-      animationRectangleAuthor.fillAfter = true
-
-      rectangleViewAuthor.startAnimation(animationRectangleAuthor)
-    } else {
-      rectangleViewAuthor.setAlpha(0.6f)
-    }
 
     frameLayout.addView(rectangleViewAuthor)
 
@@ -1875,15 +1855,6 @@ val layoutParamsSavesBackground = LayoutParams(
     layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
-
-    if (animate) {
-      val animationAuthor = AlphaAnimation(0f, 1f)
-      animationAuthor.duration = 1000
-      animationAuthor.interpolator = LinearInterpolator()
-      animationAuthor.fillAfter = true
-
-      textViewAuthor.startAnimation(animationAuthor)
-    }
 
     frameLayout.addView(textViewAuthor)
 
@@ -2700,10 +2671,10 @@ val layoutParamsSavesBackground = LayoutParams(
   private fun switchScene(scene: Int) {
     when (scene) {
       1722916382 -> scene1()
-      1722916385 -> scene4(true)
+      1722916385 -> scene4(false)
       1722916386 -> scene5()
-      1722916383 -> scene2(true)
-      1722916384 -> scene3(true)
+      1722916383 -> scene2(false)
+      1722916384 -> scene3(false)
     }
   }
 

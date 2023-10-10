@@ -4,6 +4,7 @@ import helper from './helper.js'
 import finalizer from './finalizer.js'
 
 import achievements from './achievements.js'
+import { nextTick } from 'process'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], customXML: [], optimizations: {} }
 global.PerforVNM = {
@@ -282,24 +283,24 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           subScene1.parent = scene.name
           subScene2.parent = scene.name
 
-          const subFunctionParams = { function: [], switch: [] }
-          if (subScene1.speech && !scene.speech) {
-            subFunctionParams.switch.push('true')
+          const subFunctionParams = []
+          if (!scene.speech && subScene1.speech) {
+            subFunctionParams.push('true')
           }
           if (subScene1.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams.switch.push('true')
+            subFunctionParams.push('true')
           }
 
-          const subFunctionParams2 = { function: [], switch: [] }
+          const subFunctionParams2 = []
           if (subScene2.speech && !scene.speech) {
-            subFunctionParams2.switch.push('true')
+            subFunctionParams2.push('true')
           }
           if (subScene2.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams2.switch.push('true')
+            subFunctionParams2.push('true')
           }
 
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.switch.join(', ')})`)
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
+          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.join(', ')})`)
+          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.join(', ')})`)
 
           scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
         }
@@ -314,7 +315,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           functionParams2.switch.push('true')
         }
 
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -382,7 +383,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
         }
 
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
@@ -518,7 +519,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
         }
 
         scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
@@ -559,7 +560,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           functionParams.switch.push('true')
         }
 
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ')})`, 0, 6, false)
+        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
         scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}`, '')
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))

@@ -822,13 +822,15 @@ function finalize(scene) {
       rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
     )
 
-    if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+
+    if (visualNovel.scenes.length != 0 && oldScene.speech) {
       sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+    if (visualNovel.scenes.length == 0 || !oldScene.speech) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleSpeech = AlphaAnimation(0f, ${scene.speech.text.rectangle.opacity}f)
@@ -880,13 +882,14 @@ function finalize(scene) {
       rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2
     )
 
-    if (visualNovel.scenes.length != 0 && visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+    if (visualNovel.scenes.length != 0 && oldScene.speech) {
       sceneCode += helper.codePrepare(`rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !visualNovel.scenes[visualNovel.scenes.length - 1].speech) {
+    if (visualNovel.scenes.length == 0 || !oldScene.speech) {
+      console.log('ACT1', scene.name)
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)
@@ -928,15 +931,17 @@ function finalize(scene) {
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
 
+      const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+
       if (
         visualNovel.scenes.length == 0 ||
-        !visualNovel.scenes[visualNovel.scenes.length - 1].speech ||
+        !oldScene.speech ||
         (visualNovel.scenes.length != 0 &&
           scene.speech?.author?.name &&
-          visualNovel.scenes[visualNovel.scenes.length - 1].speech &&
-          !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name)
+          oldScene.speech &&
+          !oldScene.speech?.author?.name)
         ) {
-          if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && visualNovel.scenes[visualNovel.scenes.length - 1].speech && !visualNovel.scenes[visualNovel.scenes.length - 1].speech?.author?.name) {
+          if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
             sceneCode += helper.codePrepare('if (animateAuthor) {', 0, 4, false)
           } else {
             sceneCode += helper.codePrepare('if (animate) {', 0, 4, false)
@@ -1246,6 +1251,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       sceneCode += helper.codePrepare('buttonBack.setOnClickListener {\n', 0, 2, false)
     }
 
+    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+
     if (visualNovel.subScenes.find((subScene) => subScene.next == scene.name)) {
       sceneCode += helper.codePrepare(`
         val scene = scenes.get(scenesLength - 1)
@@ -1257,13 +1264,13 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       )
     } else {
       if (visualNovel.scenes.length == 1) {
-        sceneCode += helper.codePrepare(`${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 0, 6, false)
+        sceneCode += helper.codePrepare(`${oldScene.name}(${(oldScene.speech ? 'false' : '' )})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
           scenes.set(scenesLength, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
 
-          ${visualNovel.scenes[visualNovel.scenes.length - 1].name}(${(visualNovel.scenes[visualNovel.scenes.length - 1].speech ? 'false' : '' )})\n`, 4
+          ${oldScene.name}(${(oldScene.speech ? 'false' : '' )})\n`, 4
         )
       }
     }
