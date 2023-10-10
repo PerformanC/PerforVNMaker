@@ -31,6 +31,8 @@ import android.text.style.ClickableSpan
 import android.text.method.LinkMovementMethod
 import android.graphics.Paint
 import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.content.Context
 import android.content.SharedPreferences
 
@@ -1497,51 +1499,34 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val achievements = JSONArray(text)
 
-    var leftDp = 120
-    var topDp = 50
+    val ColorMatrixAchievements = ColorMatrix()
+    ColorMatrixAchievements.setSaturation(0.0f)
+
+    val achievement_first_achievement = ImageView(this)
+    achievement_first_achievement.setImageResource(R.raw.achievement)
+
+    val layoutParamsAchievement_first_achievement = LayoutParams(
+      resources.getDimensionPixelSize(resources.getIdentifier("_100sdp", "dimen", getPackageName())),
+      resources.getDimensionPixelSize(resources.getIdentifier("_70sdp", "dimen", getPackageName()))
+    )
+
+    layoutParamsAchievement_first_achievement.gravity = Gravity.TOP or Gravity.START
+    layoutParamsAchievement_first_achievement.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_50sdp", "dimen", getPackageName())), 0, 0)
+    
+    achievement_first_achievement.layoutParams = layoutParamsAchievement_first_achievement
+
+    val ColorFilter_first_achievement = ColorMatrixColorFilter(ColorMatrixAchievements)
+    achievement_first_achievement.setColorFilter(ColorFilter_first_achievement)
+    achievement_first_achievement.setAlpha(0.7f)
+
+    frameLayoutScenes.addView(achievement_first_achievement)
 
     for (i in 0 until achievements.length()) {
-      val achievement = achievements.getString(i)
-
-      val sdp70 = resources.getDimensionPixelSize(resources.getIdentifier("_70sdp", "dimen", getPackageName()))
-
-      val layoutParamsSavesBackground = LayoutParams(
-        resources.getDimensionPixelSize(resources.getIdentifier("_100sdp", "dimen", getPackageName())),
-        sdp70
-      )
-
-      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))
-      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))
-
-      layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)
-
-      var achievementImage: Int = 0
-
-      when (achievement) {
-        "first_achievement" -> achievementImage = R.raw.achievement
-      }
-
-      val imageViewAchievement = ImageView(this)
-      imageViewAchievement.setImageResource(achievementImage)
-
-      val layoutParamsAchievement = LayoutParams(
-        sdp70,
-        sdp70
-      )
-
-      layoutParamsAchievement.gravity = Gravity.TOP or Gravity.START
-      layoutParamsAchievement.setMargins(leftDpLoad, topDpLoad, 0, 0)
-
-      imageViewAchievement.layoutParams = layoutParamsAchievement
-
-      frameLayoutScenes.addView(imageViewAchievement)
-
-      if (i != 0 && (i + 1).mod(4) == 0) {
-        leftDp = 100
-        topDp += 100
-      } else {
-        leftDp += 133
+      when (achievements.getString(i)) {
+        "first_achievement" -> {
+          achievement_first_achievement.setColorFilter(null)
+          achievement_first_achievement.setAlpha(1.0f)
+        }
       }
     }
 

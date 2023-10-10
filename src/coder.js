@@ -100,6 +100,8 @@ function init(options) {
     import android.text.method.LinkMovementMethod
     import android.graphics.Paint
     import android.graphics.Canvas
+    import android.graphics.ColorMatrix
+    import android.graphics.ColorMatrixColorFilter
     import android.content.Context
     import android.content.SharedPreferences
 

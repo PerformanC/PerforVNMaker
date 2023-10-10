@@ -70,20 +70,70 @@ function _SetAchievementsMenu() {
   const menu = visualNovel.menu
 
   let achievementsSwitch = helper.codePrepare(`
-    when (achievement) {
+    when (achievements.getString(i)) {
 ${visualNovel.achievements.map((achievement) => helper.codePrepare(`
-      "${achievement.id}" -> achievementImage = R.raw.${achievement.image}`)).join('\n')}
+      "${achievement.id}" -> {
+        achievement_${achievement.id}.setColorFilter(null)
+        achievement_${achievement.id}.setAlpha(1.0f)
+      }`)).join('\n')}
     }`, 0, 2
   )
 
   const sdp300Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '300' })
   menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '300', spaces: 4 })
 
-  const sdp100Achievements = helper.getMultipleResources(menu, menu.pages.achievementsFor, { type: 'sdp', dp: '100' })
-  menu.pages.achievementsFor = helper.addResource(menu.pages.achievementsFor, { type: 'sdp', dp: '100', spaces: 6 })
+  let achievementsView = ''
+  if (visualNovel.achievements.length != 0) {
+    const sdp100Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '100' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '100', spaces: 4 })
+  
+    const sdp70Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '70' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '70', spaces: 0 })
 
-  const sdp70Achievements = helper.getMultipleResources(menu, menu.pages.achievementsFor, { type: 'sdp', dp: '70' })
-  menu.pages.achievementsFor = helper.addResource(menu.pages.achievementsFor, { type: 'sdp', dp: '70', spaces: 6 })
+    achievementsView = helper.codePrepare(`\n
+      ${sdp100Achievements.definition}${sdp70Achievements.definition}val ColorMatrixAchievements = ColorMatrix()
+      ColorMatrixAchievements.setSaturation(0.0f)\n\n`, 2, 0, false
+    )
+
+    let leftDp = 120
+    let topDp = 50
+  
+    visualNovel.achievements.forEach((achievement, index) => {
+      let customLeftSdpAchievement = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: leftDp })
+      menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: leftDp, spaces: 4 })
+
+      let customTopSdpAchievement = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: topDp })
+      menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: topDp, spaces: 4 })
+
+      achievementsView += helper.codePrepare(`
+        val achievement_${achievement.id} = ImageView(this)
+        achievement_${achievement.id}.setImageResource(R.raw.${achievement.image})
+
+        val layoutParamsAchievement_${achievement.id} = LayoutParams(
+          ${sdp100Achievements.variable},
+          ${sdp70Achievements.variable}
+        )
+
+        ${customLeftSdpAchievement.definition}${customTopSdpAchievement.definition}layoutParamsAchievement_${achievement.id}.gravity = Gravity.TOP or Gravity.START
+        layoutParamsAchievement_${achievement.id}.setMargins(${customLeftSdpAchievement.variable}, ${customTopSdpAchievement.variable}, 0, 0)
+        
+        achievement_${achievement.id}.layoutParams = layoutParamsAchievement_${achievement.id}
+
+        val ColorFilter_${achievement.id} = ColorMatrixColorFilter(ColorMatrixAchievements)
+        achievement_first_achievement.setColorFilter(ColorFilter_${achievement.id})
+        achievement_first_achievement.setAlpha(0.7f)
+
+        frameLayoutScenes.addView(achievement_${achievement.id})`, 4
+      )
+
+      if (index != 0 && (index + 1).mod(4) == 0) {
+        leftDp = 100
+        topDp += 100
+      } else {
+        leftDp += 133
+      }
+    })
+  }
 
   let achievementsCode = helper.codePrepare(`
     val scrollView = ScrollView(this)
@@ -103,50 +153,10 @@ ${visualNovel.achievements.map((achievement) => helper.codePrepare(`
     val text = inputStream.bufferedReader().use { it.readText() }
     inputStream.close()
 
-    val achievements = JSONArray(text)
-
-    var leftDp = 120
-    var topDp = 50
+    val achievements = JSONArray(text)${achievementsView}
 
     for (i in 0 until achievements.length()) {
-      val achievement = achievements.getString(i)
-
-      ${sdp100Achievements.definition}${sdp70Achievements.definition}val layoutParamsSavesBackground = LayoutParams(
-        ${sdp100Achievements.variable},
-        ${sdp70Achievements.variable}
-      )
-
-      val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_\${leftDp}sdp", "dimen", getPackageName()))
-      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_\${topDp}sdp", "dimen", getPackageName()))
-
-      layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START
-      layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)
-
-      var achievementImage: Int = 0
-
 ${achievementsSwitch}
-
-      val imageViewAchievement = ImageView(this)
-      imageViewAchievement.setImageResource(achievementImage)
-
-      val layoutParamsAchievement = LayoutParams(
-        ${sdp70Achievements.variable},
-        ${sdp70Achievements.variable}
-      )
-
-      layoutParamsAchievement.gravity = Gravity.TOP or Gravity.START
-      layoutParamsAchievement.setMargins(leftDpLoad, topDpLoad, 0, 0)
-
-      imageViewAchievement.layoutParams = layoutParamsAchievement
-
-      frameLayoutScenes.addView(imageViewAchievement)
-
-      if (i != 0 && (i + 1).mod(4) == 0) {
-        leftDp = 100
-        topDp += 100
-      } else {
-        leftDp += 133
-      }
     }
 
     scrollView.addView(frameLayoutScenes)
@@ -154,7 +164,6 @@ ${achievementsSwitch}
     frameLayout.addView(scrollView)`)
 
   achievementsCode = helper.finalizeMultipleResources(menu, menu.pages.achievements, achievementsCode)
-  achievementsCode = helper.finalizeResources(menu.pages.achievementsFor, achievementsCode)
 
   helper.replace('__PERFORVNM_ACHIEVEMENTS_MENU__', achievementsCode)
 }
