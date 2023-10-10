@@ -1,5 +1,7 @@
 import helper from './helper.js'
 
+let gCustomCode = null
+
 function init(options) {
   const checks = {
     'textColor': {
@@ -55,6 +57,9 @@ function init(options) {
           max: 1
         }
       }
+    },
+    'showAchievements': {
+      type: 'boolean'
     }
   }
 
@@ -73,10 +78,16 @@ function init(options) {
       settings: {
         resources: []
       },
+      saves: {
+        resources: []
+      },
       savesFor: {
         resources: []
       },
-      saves: {
+      achievements: {
+        resources: []
+      },
+      achievementsFor: {
         resources: []
       }
     },
@@ -671,6 +682,8 @@ function finalize(menu) {
 
   customCode = helper.finalizeResources(menu, customCode)
 
+  gCustomCode = customCode
+
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)\n'
 
   if (menu.background.music) {
@@ -690,6 +703,17 @@ function finalize(menu) {
     )
   }
 
+  let achievementsFileCode = ''
+  if (menu.showAchievements) {
+    achievementsFileCode = helper.codePrepare(`\n
+      val achievementsFile = File(getFilesDir(), "achievements.json")
+      if (!achievementsFile.exists()) {
+        achievementsFile.createNewFile()
+        achievementsFile.writeText("[]")
+      }`, 2, 0, false
+    )
+  }
+
   mainCode += helper.codePrepare(`
     textSpeed = sharedPreferences.getLong("textSpeed", ${menu.textSpeed}L)
 
@@ -699,7 +723,7 @@ function finalize(menu) {
     if (!savesFile.exists()) {
       savesFile.createNewFile()
       savesFile.writeText("[]")
-    }
+    }${achievementsFileCode}
 
     menu()`
   )
@@ -726,6 +750,36 @@ function finalize(menu) {
 
   const sdp320Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '320' })
   menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '320', spaces: 4 })
+
+  let sdp390Main = null
+  let achievementsButtonMain = ''
+  if (menu.showAchievements) {
+    sdp390Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '390' })
+    menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '390', spaces: 4 })
+
+    achievementsButtonMain = `\n
+      val buttonAchievements = Button(this)
+      buttonAchievements.text = "Achievements"
+      buttonAchievements.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Main.variable})
+      buttonAchievements.setTextColor(0xFF${menu.footer.textColor}.toInt())
+      buttonAchievements.background = null
+
+      val layoutParamsAchievements = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        LayoutParams.WRAP_CONTENT
+      )
+
+      ${sdp390Main.definition}layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAchievements.setMargins(${sdp390Main.variable}, 0, 0, ${sdpMinus3Main.variable})
+
+      buttonAchievements.layoutParams = layoutParamsAchievements
+
+      buttonAchievements.setOnClickListener {
+        achievements(true)
+      }
+
+      frameLayout.addView(buttonAchievements)`
+  }
 
   let menuCode = helper.codePrepare(`
     private fun menu() {
@@ -832,7 +886,7 @@ function finalize(menu) {
         saves(true)
       }
 
-      frameLayout.addView(buttonSaves)\n\n`, 2
+      frameLayout.addView(buttonSaves)${achievementsButtonMain}\n\n`, 2
   )
 
   menuCode = helper.finalizeMultipleResources(menu, menu.pages.main, menuCode)
@@ -892,6 +946,36 @@ function finalize(menu) {
 
   const sdp320About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '320' })
   menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '320', spaces: 4 })
+
+  let sdp390About = null
+  let achievementsButtonAbout = ''
+  if (menu.showAchievements) {
+    sdp390About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '390' })
+    menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '390', spaces: 4 })
+
+    achievementsButtonAbout = `\n
+      val buttonAchievements = Button(this)
+      buttonAchievements.text = "Achievements"
+      buttonAchievements.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13About.variable})
+      buttonAchievements.setTextColor(0xFF${menu.footer.textColor}.toInt())
+      buttonAchievements.background = null
+
+      val layoutParamsAchievements = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        LayoutParams.WRAP_CONTENT
+      )
+
+      ${sdp390About.definition}layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAchievements.setMargins(${sdp390About.variable}, 0, 0, ${sdpMinus3About.variable})
+
+      buttonAchievements.layoutParams = layoutParamsAchievements
+
+      buttonAchievements.setOnClickListener {
+        achievements(false)
+      }
+
+      frameLayout.addView(buttonAchievements)`
+  }
 
   const ssp15About = helper.getMultipleResources(menu, menu.pages.about, { type: 'ssp', dp: '15' })
   menu.pages.about = helper.addResource(menu.pages.about, { type: 'ssp', dp: '15', spaces: 4 })
@@ -1024,7 +1108,7 @@ function finalize(menu) {
         saves(false)
       }
 
-      frameLayout.addView(buttonSaves)
+      frameLayout.addView(buttonSaves)${achievementsButtonAbout}
 
       ${ssp15About.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
@@ -1042,16 +1126,16 @@ function finalize(menu) {
 
       buttonBack.layoutParams = layoutParamsBack
 
+      buttonBack.setOnClickListener {
+        menu()
+      }
+
       val animationTexts = AlphaAnimation(0f, 1f)
       animationTexts.duration = 500
       animationTexts.interpolator = LinearInterpolator()
       animationTexts.fillAfter = true
 
       buttonBack.startAnimation(animationTexts)
-
-      buttonBack.setOnClickListener {
-        menu()
-      }
 
       frameLayout.addView(buttonBack)
 
@@ -1108,7 +1192,6 @@ function finalize(menu) {
 
   helper.writeFunction(aboutCode)
 
-
   const sdp30Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '30' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '30', spaces: 4 })
 
@@ -1129,6 +1212,36 @@ function finalize(menu) {
 
   const sdp320Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '320' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '320', spaces: 4 })
+
+  let sdp390Settings = null
+  let achievementsButtonSettings = ''
+  if (menu.showAchievements) {
+    sdp390Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '390' })
+    menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '390', spaces: 4 })
+
+    achievementsButtonSettings = `\n
+      val buttonAchievements = Button(this)
+      buttonAchievements.text = "Achievements"
+      buttonAchievements.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Settings.variable})
+      buttonAchievements.setTextColor(0xFF${menu.footer.textColor}.toInt())
+      buttonAchievements.background = null
+
+      val layoutParamsAchievements = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        LayoutParams.WRAP_CONTENT
+      )
+
+      ${sdp390Settings.definition}layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAchievements.setMargins(${sdp390Settings.variable}, 0, 0, ${sdpMinus3Settings.variable})
+
+      buttonAchievements.layoutParams = layoutParamsAchievements
+
+      buttonAchievements.setOnClickListener {
+        achievements(false)
+      }
+
+      frameLayout.addView(buttonAchievements)`
+  }
 
   const ssp15Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '15' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '15', spaces: 4 })
@@ -1291,7 +1404,7 @@ function finalize(menu) {
         saves(false)
       }
 
-      frameLayout.addView(buttonSaves)
+      frameLayout.addView(buttonSaves)${achievementsButtonSettings}
 
       ${ssp15Settings.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
@@ -1309,16 +1422,16 @@ function finalize(menu) {
 
       buttonBack.layoutParams = layoutParamsBack
 
+      buttonBack.setOnClickListener {
+        menu()
+      }
+
       val animationTexts = AlphaAnimation(0f, 1f)
       animationTexts.duration = 500
       animationTexts.interpolator = LinearInterpolator()
       animationTexts.fillAfter = true
 
       buttonBack.startAnimation(animationTexts)
-
-      buttonBack.setOnClickListener {
-        menu()
-      }
 
       frameLayout.addView(buttonBack)
 
@@ -1653,11 +1766,44 @@ function finalize(menu) {
   const sdp320Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '320' })
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '320', spaces: 4 })
 
+  let sdp390Saves = null
+  let achievementsButtonSaves = ''
+  if (menu.showAchievements) {
+    sdp390Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '390' })
+    menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '390', spaces: 4 })
+
+    achievementsButtonSaves = `\n
+      val buttonAchievements = Button(this)
+      buttonAchievements.text = "Achievements"
+      buttonAchievements.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Saves.variable})
+      buttonAchievements.setTextColor(0xFF${menu.footer.textColor}.toInt())
+      buttonAchievements.background = null
+
+      val layoutParamsAchievements = LayoutParams(
+        LayoutParams.WRAP_CONTENT,
+        LayoutParams.WRAP_CONTENT
+      )
+
+      ${sdp390Saves.definition}layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
+      layoutParamsAchievements.setMargins(${sdp390Saves.variable}, 0, 0, ${sdpMinus3Saves.variable})
+
+      buttonAchievements.layoutParams = layoutParamsAchievements
+
+      buttonAchievements.setOnClickListener {
+        achievements(false)
+      }
+
+      frameLayout.addView(buttonAchievements)`
+  }
+
   const ssp15Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'ssp', dp: '15' })
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'ssp', dp: '15', spaces: 4 })
 
   const sdp73Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '73' })
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '73', spaces: 4 })
+
+  const sdp300Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '287' })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '287', spaces: 4 })
 
   const sdp100Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
   menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100' })
@@ -1787,7 +1933,7 @@ function finalize(menu) {
 
       buttonSaves.layoutParams = layoutParamsSaves
 
-      frameLayout.addView(buttonSaves)
+      frameLayout.addView(buttonSaves)${achievementsButtonSaves}
 
       ${ssp15Saves.definition}val buttonBack = Button(this)
       buttonBack.text = "Back"
@@ -1805,6 +1951,10 @@ function finalize(menu) {
 
       buttonBack.layoutParams = layoutParamsBack
 
+      buttonBack.setOnClickListener {
+        menu()
+      }
+
       val animationTexts = AlphaAnimation(0f, 1f)
       animationTexts.duration = 500
       animationTexts.interpolator = LinearInterpolator()
@@ -1812,18 +1962,18 @@ function finalize(menu) {
 
       buttonBack.startAnimation(animationTexts)
 
-      buttonBack.setOnClickListener {
-        menu()
-      }
-
       frameLayout.addView(buttonBack)
 
       val scrollView = ScrollView(this)
 
-      scrollView.layoutParams = LayoutParams(
+      ${sdp300Saves.definition}val layoutParamsScroll = LayoutParams(
         LayoutParams.MATCH_PARENT,
-        LayoutParams.MATCH_PARENT
+        ${sdp300Saves.variable}
       )
+
+      layoutParamsScroll.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+
+      scrollView.layoutParams = layoutParamsScroll
 
       val frameLayoutScenes = FrameLayout(this)
 
@@ -1866,7 +2016,13 @@ function finalize(menu) {
         savesBackground.setOnClickListener {
   __PERFORVNM_RELEASE_MEDIA_PLAYER__
 
-  __PERFORVNM_SWITCHES__
+          val historyScenes = buttonData.getJSONArray("history")
+          for (j in 0 until historyScenes.length()) {
+            scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
+          }
+          scenesLength = historyScenes.length()
+          
+          switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))
         }
 
         frameLayoutScenes.addView(savesBackground)
@@ -1907,7 +2063,7 @@ function finalize(menu) {
   )
 
   saverCode = helper.finalizeMultipleResources(menu, menu.pages.saves, saverCode)
-  saverCode = helper.finalizeMultipleResources(menu, menu.pages.savesFor, saverCode)
+  saverCode = helper.finalizeResources(menu.pages.savesFor, saverCode)
 
   if (menu.custom.length != 0) {
     saverCode += customCode
@@ -1920,11 +2076,230 @@ function finalize(menu) {
 
   helper.writeFunction(saverCode)
 
-  visualNovel.menu = {
-    name: 'menu()',
-    backgroundMusic: menu.background.music,
-    options: menu
+  if (menu.showAchievements) {
+    const sdp30Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '30' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '30', spaces: 4 })
+
+    const ssp13Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'ssp', dp: '13' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'ssp', dp: '13', spaces: 4 })
+
+    const sdp88Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '88' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '88', spaces: 4 })
+
+    const sdpMinus3Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: 'minus3' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+    const sdp161Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '161' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '161', spaces: 4 })
+
+    const sdp233Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '233' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '233', spaces: 4 })
+
+    const sdp320Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '320' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '320', spaces: 4 })
+
+    const ssp15Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'ssp', dp: '15' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'ssp', dp: '15', spaces: 4 })
+
+    const sdp73Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '73' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '73', spaces: 4 })
+
+    const sdp390Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '390' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '390', spaces: 4 })
+
+    let achievementsCode = helper.codePrepare(`
+      private fun achievements(animate: Boolean) {
+        val frameLayout = FrameLayout(this)
+        frameLayout.setBackgroundColor(0xFF000000.toInt())
+
+        val imageView = ImageView(this)
+        imageView.setImageResource(R.raw.${menu.background.image})
+        imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+
+        frameLayout.addView(imageView)
+
+        val rectangleGrayView = RectangleView(this)
+
+        val layoutParamsGrayRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        layoutParamsGrayRectangle.gravity = Gravity.CENTER
+
+        rectangleGrayView.layoutParams = layoutParamsGrayRectangle
+        rectangleGrayView.setColor(0xFF000000.toInt())
+
+        frameLayout.addView(rectangleGrayView)
+
+        if (animate) {
+          val animationRectangleGray = AlphaAnimation(0f, 0.8f)
+          animationRectangleGray.duration = 500
+          animationRectangleGray.interpolator = LinearInterpolator()
+          animationRectangleGray.fillAfter = true
+
+          rectangleGrayView.startAnimation(animationRectangleGray)
+        } else {
+          rectangleGrayView.setAlpha(0.8f)
+        }
+
+        val rectangleView = RectangleView(this)
+
+        ${sdp30Achievements.definition}val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, ${sdp30Achievements.variable})
+        layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+
+        rectangleView.layoutParams = layoutParamsRectangle
+        rectangleView.setAlpha(${menu.footer.opacity}f)
+
+        frameLayout.addView(rectangleView)
+
+        ${ssp13Achievements.definition}val buttonStart = Button(this)
+        buttonStart.text = "Start"
+        buttonStart.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Achievements.variable})
+        buttonStart.setTextColor(0xFF${menu.footer.textColor}.toInt())
+        buttonStart.background = null
+
+        val layoutParamsStart = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp88Achievements.definition}${sdpMinus3Achievements.definition}layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsStart.setMargins(${sdp88Achievements.variable}, 0, 0, ${sdpMinus3Achievements.variable})
+
+        buttonStart.layoutParams = layoutParamsStart
+
+        __PERFORVNM_MENU_START__
+
+        frameLayout.addView(buttonStart)
+
+        val buttonAbout = Button(this)
+        buttonAbout.text = "About"
+        buttonAbout.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Achievements.variable})
+        buttonAbout.setTextColor(0xFF${menu.footer.textColor}.toInt())
+        buttonAbout.background = null
+
+        val layoutParamsAbout = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp161Achievements.definition}layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsAbout.setMargins(${sdp161Achievements.variable}, 0, 0, ${sdpMinus3Achievements.variable})
+
+        buttonAbout.layoutParams = layoutParamsAbout
+
+        buttonAbout.setOnClickListener {
+          about(false)
+        }
+
+        frameLayout.addView(buttonAbout)
+
+        val buttonSettings = Button(this)
+        buttonSettings.text = "Settings"
+        buttonSettings.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Achievements.variable})
+        buttonSettings.setTextColor(0xFF${menu.footer.textColor}.toInt())
+        buttonSettings.background = null
+
+        val layoutParamsSettings = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp233Achievements.definition}layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsSettings.setMargins(${sdp233Achievements.variable}, 0, 0, ${sdpMinus3Achievements.variable})
+
+        buttonSettings.layoutParams = layoutParamsSettings
+
+        buttonSettings.setOnClickListener {
+          settings(false)
+        }
+
+        frameLayout.addView(buttonSettings)
+
+        val buttonSaves = Button(this)
+        buttonSaves.text = "Saves"
+        buttonSaves.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Achievements.variable})
+        buttonSaves.setTextColor(0xFF${menu.footer.textColor}.toInt())
+        buttonSaves.background = null
+
+        val layoutParamsSaves = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp320Achievements.definition}layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsSaves.setMargins(${sdp320Achievements.variable}, 0, 0, ${sdpMinus3Achievements.variable})
+
+        buttonSaves.layoutParams = layoutParamsSaves
+
+        buttonSaves.setOnClickListener {
+          saves(false)
+        }
+
+        frameLayout.addView(buttonSaves)
+
+        val buttonAchievements = Button(this)
+        buttonAchievements.text = "Achievements"
+        buttonAchievements.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp13Achievements.variable})
+        buttonAchievements.setTextColor(0xFF${menu.footer.textColor}.toInt())
+        buttonAchievements.background = null
+
+        val layoutParamsAchievements = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp390Achievements.definition}layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
+        layoutParamsAchievements.setMargins(${sdp390Achievements.variable}, 0, 0, ${sdpMinus3Achievements.variable})
+
+        buttonAchievements.layoutParams = layoutParamsAchievements
+
+        frameLayout.addView(buttonAchievements)
+
+        ${ssp15Achievements.definition}val buttonBack = Button(this)
+        buttonBack.text = "Back"
+        buttonBack.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${ssp15Achievements.variable})
+        buttonBack.setTextColor(0xFF${menu.backTextColor}.toInt())
+        buttonBack.background = null
+
+        val layoutParamsBack = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
+
+        ${sdp73Achievements.definition}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
+        layoutParamsBack.setMargins(${sdp73Achievements.variable}, 0, 0, 0)
+
+        buttonBack.layoutParams = layoutParamsBack
+
+        buttonBack.setOnClickListener {
+          menu()
+        }
+
+        val animationTexts = AlphaAnimation(0f, 1f)
+        animationTexts.duration = 500
+        animationTexts.interpolator = LinearInterpolator()
+        animationTexts.fillAfter = true
+
+        buttonBack.startAnimation(animationTexts)
+
+        frameLayout.addView(buttonBack)
+
+    __PERFORVNM_ACHIEVEMENTS_MENU__\n\n`, 4
+    )
+
+    achievementsCode = helper.finalizeMultipleResources(menu, menu.pages.achievements, achievementsCode)
+
+    if (menu.custom.length != 0) {
+      achievementsCode += customCode
+    }
+
+    achievementsCode += helper.codePrepare(`
+        setContentView(frameLayout)
+      }`, 4
+    )
+
+    helper.writeFunction(achievementsCode)
   }
+
+  visualNovel.menu = menu
 
   helper.logOk('Main, about, settings and saves menu coded.', 'Android')
 }

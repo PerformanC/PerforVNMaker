@@ -3,10 +3,12 @@ import fs from 'fs'
 import helper from './helper.js'
 import finalizer from './finalizer.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], customXML: [], optimizations: {} }
+import achievements from './achievements.js'
+
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], customXML: [], optimizations: {} }
 global.PerforVNM = {
-  codeGeneratorVersion: '1.22.0',
-  generatedCodeVersion: '1.20.0',
+  codeGeneratorVersion: '1.23.0',
+  generatedCodeVersion: '1.21.0',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -98,6 +100,8 @@ function init(options) {
     import android.text.method.LinkMovementMethod
     import android.graphics.Paint
     import android.graphics.Canvas
+    import android.graphics.ColorMatrix
+    import android.graphics.ColorMatrixColorFilter
     import android.content.Context
     import android.content.SharedPreferences
 
@@ -153,6 +157,8 @@ function init(options) {
 
 function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
+
+  if (visualNovel.menu.showAchievements) achievements._SetAchievementsMenu()
 
   let switchesCode = helper.codePrepare(`
     private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
@@ -590,6 +596,9 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
 
   helper.writeFunction(switchesCode)
 
+  if (visualNovel.achievements.length != 0)
+    helper.writeFunction(achievements._AchievementGiveFunction())
+
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
@@ -639,8 +648,9 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
 
   if (visualNovel.menu) {
     let menuCode = 'buttonStart.setOnClickListener {\n'
+    let releaseCode = ''
 
-    if (visualNovel.menu.options.background.music) {
+    if (visualNovel.menu.background.music) {
       menuCode += helper.codePrepare(`
         if (mediaPlayer != null) {
           mediaPlayer!!.stop()
@@ -648,6 +658,16 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           mediaPlayer = null
         }\n\n`, 2
       )
+
+      releaseCode = helper.codePrepare(`
+        if (mediaPlayer != null) {
+          mediaPlayer!!.stop()
+          mediaPlayer!!.release()
+          mediaPlayer = null
+        }`
+      )
+    } else {
+      releaseCode = '// No music to release.'
     }
 
     menuCode += helper.codePrepare(`
@@ -656,32 +676,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     )
 
     helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
-
-    let releaseCode;
-
-    if (visualNovel.menu.options.background.music) {
-      releaseCode = helper.codePrepare(`
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }`
-      )
-    } else releaseCode = '// No music to release.'
-
     helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
-
-    const savesCode = helper.codePrepare(`
-      val historyScenes = buttonData.getJSONArray("history")
-      for (j in 0 until historyScenes.length()) {
-        scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
-      }
-      scenesLength = historyScenes.length()
-      
-      switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))`, 0, 2
-    )
-
-    helper.replace('__PERFORVNM_SWITCHES__', savesCode)
   }
 
   let addHeaders = helper.codePrepare(`
@@ -782,7 +777,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
   const startMusicCode = helper.codePrepare(`
-    mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.backgroundMusic})
+    mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.background.music})
 
     if (mediaPlayer != null) {
       mediaPlayer!!.start()

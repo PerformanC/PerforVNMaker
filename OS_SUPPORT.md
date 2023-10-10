@@ -6,6 +6,18 @@ This file is made to show the features supported by PerforVNM for each OS in a s
 
 Android System is the most used OS in the world, found in everything from drones to fridges, and it's the first OS that PerforVNM is being developed for.
 
+### Coder options
+
+The coder options are the options that the coder can use to customize the VN code.
+
+#### Optimizations
+
+The optimizations are the options that the coder can use to optimize the VN code, for speed, size and etc.
+
+##### Version support
+
+\>= `v1.22.0 & v1.20.0`: Supported
+
 ### Scenes
 
 The scenes are the place where the story happens.
@@ -110,7 +122,15 @@ Custom elements are elements that can be added to the scene, like a button, a te
 
 ###### Version support
 
-\>= `v1.20.2 & 1.18.8`: Supported
+\>= `v1.20.2 & v1.18.8`: Supported
+
+##### Achievements
+
+Achievements are a way to reward the player for doing something in the game, like finishing the game, or finding a secret.
+
+###### Version support
+
+\>= `1.23.0 & v1.21.0`: Supported
 
 ### Menu
 
@@ -147,6 +167,26 @@ The settings menu is the place where the player can change the text speed, menu 
 \>= `v1.5.3-beta`: Supported but with bugs (dimensions)
 
 \>= `v1.16.2-b.0 & v1.14.8-b.0`: Supported
+
+#### Saves
+
+The saves menu is the place where the player can save and load their progress.
+
+##### Version support
+
+\>= `v1.18.2-b.0 & v1.16.8-b.0`: Supported but with bugs (saving)
+
+\>= `v1.19.2-b.0 & v1.17.8-b.0`: Supported but with bugs with scene name hashing optimizations and bugs with sub-scenes on history.
+
+\>= `v1.22.0 & v1.20.0`: Supported
+
+#### Achievements
+
+The achievements menu is the place where the player can see the achievements that they got.
+
+##### Version support
+
+\>= `1.23.0 & v1.21.0`: Supported
 
 #### Background music
 
@@ -195,9 +235,9 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Save/Load system (Completed)
 - [x] Custom paths (Completed)
 - [x] Custom Views (Completed)
+- [x] Achievements (Completed)
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
-- [ ] Achievements
 - [ ] Inventory
 - [ ] Text effects
 - [ ] Speech bubbles
