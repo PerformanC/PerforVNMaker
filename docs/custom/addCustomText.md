@@ -2,12 +2,12 @@
 
 ## Description
 
-Adds a custom text to the scene.
+Adds a custom text to either `menu` or `scene`.
 
 ## Syntax
 
 ```js
-scene.addCustomText(scene, {
+page.addCustomText(page, {
   text: 'Hello world!',
   color: 'FFFFFF',
   fontSize: 12,
@@ -25,7 +25,7 @@ scene.addCustomText(scene, {
 
 ## Parameters
 
-- `scene`: The scene configurations from the `init` function.
+- `page`: The page configurations from the `init` function.
 - `options`: The options of the custom text. An object with the following properties:
   - `text`: The text of the text.
   - `color`: The color of the text.
@@ -41,7 +41,7 @@ scene.addCustomText(scene, {
 
 ## Return value
 
-This function will return the scene configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return the page configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 

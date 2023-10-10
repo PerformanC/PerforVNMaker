@@ -39,7 +39,7 @@ let menu = perfor.menu.init({
 })
 
 /*
-menu = perfor.menu.addCustomText(menu, {
+menu = perfor.custom.addCustomText(menu, {
   text: 'This is a custom text',
   color: 'FFFFFF',
   fontSize: 9,
@@ -52,7 +52,7 @@ menu = perfor.menu.addCustomText(menu, {
   }
 })
 
-menu = perfor.menu.addCustomButton(menu, {
+menu = perfor.custom.addCustomButton(menu, {
   text: 'Customizations!',
   color: 'FFFFFF',
   fontSize: 9,
@@ -67,7 +67,7 @@ menu = perfor.menu.addCustomButton(menu, {
   width: 10,
 })
 
-menu = perfor.menu.addCustomRectangle(menu, {
+menu = perfor.custom.addCustomRectangle(menu, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',
@@ -123,7 +123,7 @@ firstScene = perfor.scene.addCharacter(firstScene, {
 }) /* Adds a character to the scene */
 
 /*
-firstScene = perfor.scene.addCustomRectangle(firstScene, {
+firstScene = perfor.custom.addCustomRectangle(firstScene, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',
@@ -136,7 +136,7 @@ firstScene = perfor.scene.addCustomRectangle(firstScene, {
     }
   }
 })
-firstScene = perfor.scene.addCustomRectangle(firstScene, {
+firstScene = perfor.custom.addCustomRectangle(firstScene, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',
@@ -197,7 +197,7 @@ secondScene = perfor.scene.addSpeech(secondScene, {
 }) /* Adds a speech to the scene */
 secondScene = perfor.scene.setNextScene(secondScene, { scene: 'scene4' })
 /*
-secondScene = perfor.scene.addCustomRectangle(secondScene, {
+secondScene = perfor.custom.addCustomRectangle(secondScene, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',

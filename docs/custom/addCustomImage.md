@@ -1,16 +1,14 @@
-# Menu - Add custom text
+# Scene - Add custom image
 
 ## Description
 
-Adds a custom text to the menu.
+Adds a custom image to either `menu` or `scene`.
 
 ## Syntax
 
 ```js
-menu.addCustomText(menu, {
-  text: 'Hello world!',
-  color: 'FFFFFF',
-  fontSize: 12,
+page.addCustomImage(page, {
+  image: 'background_thanking',
   height: 'match',
   width: 'match',
   position: {
@@ -25,11 +23,9 @@ menu.addCustomText(menu, {
 
 ## Parameters
 
-- `menu`: The menu configurations from the `init` function.
+- `page`: The page configurations from the `init` function.
 - `options`: The options of the custom text. An object with the following properties:
-  - `text`: The text of the text.
-  - `color`: The color of the text.
-  - `fontSize`: The font size of the text.
+  - `image`: The image of the text.
   - `height`: The height of the text. Must be either `match`, `wrap` or a `number`. (dp)
   - `width`: The width of the text. Must be either `match`, `wrap` or a `number`. (dp)
   - `position`: The position of the text. An object with the following properties:
@@ -41,7 +37,7 @@ menu.addCustomText(menu, {
 
 ## Return value
 
-This function will return the scene configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return the page configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 

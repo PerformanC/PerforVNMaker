@@ -1,13 +1,13 @@
-# Scene - Add custom button
+# Menu - Add custom button
 
 ## Description
 
-Adds a custom button to the scene.
+Adds a custom button to either `menu` or `scene`.
 
 ## Syntax
 
 ```js
-scene.addCustomButton(scene, {
+page.addCustomButton(page, {
   text: 'Hello world!',
   color: 'FFFFFF',
   fontSize: 12,
@@ -23,7 +23,7 @@ scene.addCustomButton(scene, {
 
 ## Parameters
 
-- `scene`: The scene configurations from the `init` function.
+- `page`: The page configurations from the `init` function.
 - `options`: The options of the custom button. An object with the following properties:
   - `text`: The text of the button.
   - `color`: The color of the button.
@@ -39,7 +39,7 @@ scene.addCustomButton(scene, {
 
 ## Return value
 
-This function will return the scene configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
+This function will return the page configurations if the addition was successful, otherwise, it will execute `new Error` to terminate the generation process.
 
 ## Platform support
 
