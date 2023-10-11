@@ -9,9 +9,11 @@ perfor.coder.init({
     android: './android'
   },
   optimizations: {
+    preCalculateScenesInfo: true,
     preCalculateRounding: true,
-    reuseResources: true,
+    hashAchievementIds: true,
     hashScenesNames: true,
+    reuseResources: true,
     // minify: true
   }
 })

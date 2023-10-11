@@ -889,7 +889,6 @@ function finalize(scene) {
     sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
     if (visualNovel.scenes.length == 0 || !oldScene.speech) {
-      console.log('ACT1', scene.name)
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)
@@ -1148,27 +1147,32 @@ function finalize(scene) {
     sceneJson.characters = []
 
     scene.characters.forEach((character) => {
-      let positionType = character.position.side
-
-      if (character.position.side != 'center') {
-        if (character.position.margins.top != 0)
-          positionType += 'Top'
-
-        if (character.position.margins.side == 0 && character.position.margins.top != 0)
-          positionType = 'top'
+      const characterJson = {
+        name: character.name
       }
 
-      sceneJson.characters.push({
-        name: character.name,
-        image: character.image,
-        position: {
-          sideType: positionType,
-          ...(character.position.side == 'center' ? {} : {
-            side: character.position.margins.side,
-            ...(character.position.margins.top == 0 ? {} : { top: character.position.margins.top })
-          })
+      if (!visualNovel.optimizations.preCalculateScenesInfo)
+        characterJson.image = character.image
+
+      if (!visualNovel.optimizations.preCalculateRounding) {
+        characterJson.position = {
+          sideType: character.position.side,
+          side: character.position.margins.side,
         }
-      })
+
+        if (character.position.side != 'center') {
+          if (character.position.margins.top != 0) {
+            characterJson.position.sideType += 'Top'
+
+            characterJson.position.top = character.position.margins.top
+          }
+
+          if (character.position.margins.side == 0 && character.position.margins.top != 0)
+            characterJson.position.sideType = 'top'
+        }
+      }
+
+      sceneJson.characters.push(characterJson)
     })
   }
 
@@ -1723,8 +1727,12 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
 
   if (scene.achievements.length != 0) {
     sceneCode += helper.codePrepare(`
-      ${scene.achievements.map((achievement) => `giveAchievement("${achievement.id}", "\\"${achievement.id}\\"")`).join('\n')}\n\n`, 2
-    )
+      ${scene.achievements.map((achievement) => {
+        if (visualNovel.optimizations.hashAchievementIds)
+          return `giveAchievement(${helper.getAchievementId(achievement.id)})`
+        else
+          return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
+      }).join('\n')}\n\n`, 2)
   }
 
   if (scene.type == 'normal') {

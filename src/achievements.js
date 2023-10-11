@@ -43,20 +43,20 @@ function give(page, achievementId) {
 
 function _AchievementGiveFunction() {
   return helper.codePrepare(`
-    private fun giveAchievement(achievement: String, achievementParsed: String) {
+    private fun giveAchievement(${visualNovel.optimizations.hashAchievementIds ? 'achievement: Int' : 'achievement: String, achievementParsed: String'}) {
       val inputStream = openFileInput("achievements.json")
       var text = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      if (text == "[]") text = "[" + achievementParsed + "]"
+      if (text == "[]") text = "[" + ${visualNovel.optimizations.hashAchievementIds ? 'achievement' : 'achievementParsed'} + "]"
       else {
         val achievementsJson = JSONArray(text)
 
         for (i in 0 until achievementsJson.length()) {
-          if (achievementsJson.getString(i) == achievement) return
+          if (achievementsJson.get${visualNovel.optimizations.hashAchievementIds ? 'Int' : 'String'}(i) == achievement) return
         }
 
-        text = text.dropLast(1) + ", " + achievementParsed + "]"
+        text = text.dropLast(1) + ", " + ${visualNovel.optimizations.hashAchievementIds ? 'achievement' : 'achievementParsed'} + "]"
       }
 
       val outputStream = openFileOutput("achievements.json", Context.MODE_PRIVATE)
@@ -70,9 +70,9 @@ function _SetAchievementsMenu() {
   const menu = visualNovel.menu
 
   let achievementsSwitch = helper.codePrepare(`
-    when (achievements.getString(i)) {
+    when (achievements.get${visualNovel.optimizations.hashAchievementIds ? 'Int' : 'String'}(i)) {
 ${visualNovel.achievements.map((achievement) => helper.codePrepare(`
-      "${achievement.id}" -> {
+      ${helper.getAchievementId(achievement.id)} -> {
         achievement_${achievement.id}.setColorFilter(null)
         achievement_${achievement.id}.setAlpha(1.0f)
       }`)).join('\n')}

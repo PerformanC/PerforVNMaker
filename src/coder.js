@@ -43,19 +43,27 @@ function init(options) {
         'reuseResources': {
           type: 'boolean',
           required: false
-        }, /* This option will utilize the same sdp & ssp files for resources of the same scene. */
+        },
         'hashScenesNames': {
           type: 'boolean',
           required: false
-        }, /* Agresssive optimization: This option will hash the scenes names and use integers for the switch. */
+        },
+        'hashAchievementIds': {
+          type: 'boolean',
+          required: false
+        },
         'preCalculateRounding': {
           type: 'boolean',
           required: false
-        }, /* This option will make PerforVNM generate a switch with the pre-made configurations for the each scene in the saves menu. */
+        },
+        'preCalculateScenesInfo': {
+          type: 'boolean',
+          required: false
+        },
         'minify': {
           type: 'boolean',
           required: false
-        } /* This option will remove identation (minify) the generated code. */
+        }
       },
       required: true
     }

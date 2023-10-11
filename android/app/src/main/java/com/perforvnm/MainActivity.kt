@@ -137,7 +137,7 @@ class MainActivity : Activity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName())))
+    val layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
     layoutParams.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParams
@@ -158,10 +158,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+    val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, sdpminus3)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -189,7 +189,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, sdpminus3)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -211,7 +211,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, sdpminus3)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -233,7 +233,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, sdpminus3)
 
     buttonSaves.layoutParams = layoutParamsSaves
 
@@ -255,7 +255,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_390sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._390sdp), 0, 0, sdpminus3)
 
     buttonAchievements.layoutParams = layoutParamsAchievements
 
@@ -301,7 +301,7 @@ class MainActivity : Activity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName())))
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -322,9 +322,9 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp88 = resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName()))
+    val sdp88 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp)
 
-    val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+    val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
     layoutParamsStart.setMargins(sdp88, 0, 0, sdpminus3)
@@ -355,7 +355,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, sdpminus3)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -373,7 +373,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, sdpminus3)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -395,7 +395,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, sdpminus3)
 
     buttonSaves.layoutParams = layoutParamsSaves
 
@@ -417,7 +417,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_390sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._390sdp), 0, 0, sdpminus3)
 
     buttonAchievements.layoutParams = layoutParamsAchievements
 
@@ -439,7 +439,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -476,7 +476,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(sdp88, resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsText.setMargins(sdp88, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp), 0, 0)
 
     textView.layoutParams = layoutParamsText
     textView.startAnimation(animationTexts)
@@ -522,7 +522,7 @@ class MainActivity : Activity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName())))
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -543,10 +543,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+    val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, sdpminus3)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -574,7 +574,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, sdpminus3)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -596,7 +596,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, sdpminus3)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -614,7 +614,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, sdpminus3)
 
     buttonSaves.layoutParams = layoutParamsSaves
 
@@ -636,7 +636,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_390sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._390sdp), 0, 0, sdpminus3)
 
     buttonAchievements.layoutParams = layoutParamsAchievements
 
@@ -658,7 +658,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -687,10 +687,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val sdp53 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
 
     layoutParamsText.gravity = Gravity.TOP or Gravity.START
-    layoutParamsText.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_149sdp", "dimen", getPackageName())), sdp53, 0, 0)
+    layoutParamsText.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._149sdp), sdp53, 0, 0)
 
     textViewTextSpeed.layoutParams = layoutParamsText
     textViewTextSpeed.startAnimation(animationTexts)
@@ -714,16 +714,16 @@ class MainActivity : Activity() {
 
     seekBarTextSpeed.thumbOffset = 0
 
-    val sdp150 = resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName()))
+    val sdp150 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp)
 
     val layoutParamsSeekBar = LayoutParams(
       sdp150,
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp135 = resources.getDimensionPixelSize(resources.getIdentifier("_135sdp", "dimen", getPackageName()))
+    val sdp135 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._135sdp)
 
-    val sdp77 = resources.getDimensionPixelSize(resources.getIdentifier("_77sdp", "dimen", getPackageName()))
+    val sdp77 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._77sdp)
 
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBar.setMargins(sdp135, sdp77, 0, 0)
@@ -764,7 +764,7 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp443 = resources.getDimensionPixelSize(resources.getIdentifier("_443sdp", "dimen", getPackageName()))
+    val sdp443 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._443sdp)
 
     layoutParamsTextMusicVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsTextMusicVolume.setMargins(sdp443, sdp53, 0, 0)
@@ -796,7 +796,7 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp432 = resources.getDimensionPixelSize(resources.getIdentifier("_432sdp", "dimen", getPackageName()))
+    val sdp432 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._432sdp)
 
     layoutParamsSeekBarMusicVolume.gravity = Gravity.TOP or Gravity.START
     layoutParamsSeekBarMusicVolume.setMargins(sdp432, sdp77, 0, 0)
@@ -834,7 +834,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsTextSEffectVolume.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextSEffectVolume.setMargins(sdp443, resources.getDimensionPixelSize(resources.getIdentifier("_111sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsTextSEffectVolume.setMargins(sdp443, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._111sdp), 0, 0)
 
     textViewSEffectVolume.layoutParams = layoutParamsTextSEffectVolume
     textViewSEffectVolume.startAnimation(animationTexts)
@@ -899,7 +899,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsTextSceneMusic.gravity = Gravity.TOP or Gravity.START
-    layoutParamsTextSceneMusic.setMargins(sdp443, resources.getDimensionPixelSize(resources.getIdentifier("_166sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsTextSceneMusic.setMargins(sdp443, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._166sdp), 0, 0)
 
     textViewSceneMusic.layoutParams = layoutParamsTextSceneMusic
     textViewSceneMusic.startAnimation(animationTexts)
@@ -929,7 +929,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSeekBarSceneMusic.gravity = Gravity.TOP or Gravity.START
-    layoutParamsSeekBarSceneMusic.setMargins(sdp432, resources.getDimensionPixelSize(resources.getIdentifier("_190sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSeekBarSceneMusic.setMargins(sdp432, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._190sdp), 0, 0)
 
     seekBarSceneMusic.layoutParams = layoutParamsSeekBarSceneMusic
     seekBarSceneMusic.startAnimation(animationTexts)
@@ -989,7 +989,7 @@ class MainActivity : Activity() {
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName())))
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -1010,10 +1010,10 @@ class MainActivity : Activity() {
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+    val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, sdpminus3)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -1041,7 +1041,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, sdpminus3)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -1063,7 +1063,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, sdpminus3)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -1085,7 +1085,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, sdpminus3)
 
     buttonSaves.layoutParams = layoutParamsSaves
 
@@ -1103,7 +1103,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_390sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._390sdp), 0, 0, sdpminus3)
 
     buttonAchievements.layoutParams = layoutParamsAchievements
 
@@ -1125,7 +1125,7 @@ class MainActivity : Activity() {
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1146,7 +1146,7 @@ class MainActivity : Activity() {
 
     val layoutParamsScroll = LayoutParams(
       LayoutParams.MATCH_PARENT,
-      resources.getDimensionPixelSize(resources.getIdentifier("_287sdp", "dimen", getPackageName()))
+      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._287sdp)
     )
 
     layoutParamsScroll.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -1178,11 +1178,11 @@ class MainActivity : Activity() {
         savesBackground.setColor(0xFF000000.toInt())
       }
 
-      val sdp100 = resources.getDimensionPixelSize(resources.getIdentifier("_100sdp", "dimen", getPackageName()))
+      val sdp100 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp)
 
-val sdp70 = resources.getDimensionPixelSize(resources.getIdentifier("_70sdp", "dimen", getPackageName()))
+      val sdp70 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
 
-val layoutParamsSavesBackground = LayoutParams(
+      val layoutParamsSavesBackground = LayoutParams(
         sdp100,
         sdp70
       )
@@ -1219,7 +1219,6 @@ val layoutParamsSavesBackground = LayoutParams(
         val characterData = characters.getJSONObject(j)
 
         val imageViewCharacter = ImageView(this)
-        imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))
 
         val layoutParamsImageViewCharacter = LayoutParams(
           sdp100,
@@ -1232,6 +1231,8 @@ val layoutParamsSavesBackground = LayoutParams(
           1722916382 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
+                imageViewCharacter.setImageResource(R.raw.pedro_staring)
+
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
               }
             }
@@ -1239,7 +1240,9 @@ val layoutParamsSavesBackground = LayoutParams(
           1722916385 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
-                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
+                imageViewCharacter.setImageResource(R.raw.pedro_staring)
+
+                val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._5sdp)
 
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
               }
@@ -1248,7 +1251,9 @@ val layoutParamsSavesBackground = LayoutParams(
           1722916386 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
-                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
+                imageViewCharacter.setImageResource(R.raw.pedro_staring)
+
+                val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._5sdp)
 
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
               }
@@ -1257,7 +1262,9 @@ val layoutParamsSavesBackground = LayoutParams(
           1722916383 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
-                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
+                imageViewCharacter.setImageResource(R.raw.pedro_staring)
+
+                val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._5sdp)
 
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
               }
@@ -1266,7 +1273,9 @@ val layoutParamsSavesBackground = LayoutParams(
           1722916384 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
-                val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_5sdp", "dimen", getPackageName()))
+                imageViewCharacter.setImageResource(R.raw.pedro_staring)
+
+                val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._5sdp)
 
                 layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
               }
@@ -1327,7 +1336,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val rectangleView = RectangleView(this)
 
-    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(resources.getIdentifier("_30sdp", "dimen", getPackageName())))
+    val layoutParamsRectangle = LayoutParams(LayoutParams.WRAP_CONTENT, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._30sdp))
     layoutParamsRectangle.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
 
     rectangleView.layoutParams = layoutParamsRectangle
@@ -1348,10 +1357,10 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdpminus3 = resources.getDimensionPixelSize(resources.getIdentifier("_minus3sdp", "dimen", getPackageName()))
+    val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsStart.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_88sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsStart.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp), 0, 0, sdpminus3)
 
     buttonStart.layoutParams = layoutParamsStart
 
@@ -1379,7 +1388,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAbout.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_161sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAbout.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._161sdp), 0, 0, sdpminus3)
 
     buttonAbout.layoutParams = layoutParamsAbout
 
@@ -1401,7 +1410,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSettings.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_233sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSettings.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._233sdp), 0, 0, sdpminus3)
 
     buttonSettings.layoutParams = layoutParamsSettings
 
@@ -1423,7 +1432,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSaves.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_320sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsSaves.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._320sdp), 0, 0, sdpminus3)
 
     buttonSaves.layoutParams = layoutParamsSaves
 
@@ -1445,7 +1454,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAchievements.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_390sdp", "dimen", getPackageName())), 0, 0, sdpminus3)
+    layoutParamsAchievements.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._390sdp), 0, 0, sdpminus3)
 
     buttonAchievements.layoutParams = layoutParamsAchievements
 
@@ -1463,7 +1472,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_73sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParamsBack.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._73sdp), 0, 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1484,7 +1493,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val layoutParamsScroll = LayoutParams(
       LayoutParams.MATCH_PARENT,
-      resources.getDimensionPixelSize(resources.getIdentifier("_300sdp", "dimen", getPackageName()))
+      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._300sdp)
     )
 
     layoutParamsScroll.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -1506,12 +1515,12 @@ val layoutParamsSavesBackground = LayoutParams(
     achievement_first_achievement.setImageResource(R.raw.achievement)
 
     val layoutParamsAchievement_first_achievement = LayoutParams(
-      resources.getDimensionPixelSize(resources.getIdentifier("_100sdp", "dimen", getPackageName())),
-      resources.getDimensionPixelSize(resources.getIdentifier("_70sdp", "dimen", getPackageName()))
+      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp),
+      resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
     )
 
     layoutParamsAchievement_first_achievement.gravity = Gravity.TOP or Gravity.START
-    layoutParamsAchievement_first_achievement.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName())), resources.getDimensionPixelSize(resources.getIdentifier("_50sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsAchievement_first_achievement.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._120sdp), resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._50sdp), 0, 0)
     
     achievement_first_achievement.layoutParams = layoutParamsAchievement_first_achievement
 
@@ -1522,8 +1531,8 @@ val layoutParamsSavesBackground = LayoutParams(
     frameLayoutScenes.addView(achievement_first_achievement)
 
     for (i in 0 until achievements.length()) {
-      when (achievements.getString(i)) {
-        "first_achievement" -> {
+      when (achievements.getInt(i)) {
+        1183596997 -> {
           achievement_first_achievement.setColorFilter(null)
           achievement_first_achievement.setAlpha(1.0f)
         }
@@ -1637,7 +1646,7 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+    val sdp15 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
 
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
@@ -1649,7 +1658,7 @@ val layoutParamsSavesBackground = LayoutParams(
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scene\":1722916382,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"center\"}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916382,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\"}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1673,7 +1682,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp), 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1720,7 +1729,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSubScenes.gravity = Gravity.CENTER_HORIZONTAL
-    layoutParamsSubScenes.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_120sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSubScenes.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._120sdp), 0, 0)
 
     buttonSubScenes.layoutParams = layoutParamsSubScenes
 
@@ -1742,7 +1751,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
-    layoutParamsSubScenes2.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_150sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSubScenes2.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._150sdp), 0, 0)
 
     buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
@@ -1752,7 +1761,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     frameLayout.addView(buttonSubScenes2)
 
-    giveAchievement("first_achievement", "\"first_achievement\"")
+    giveAchievement(1183596997)
 
     setContentView(frameLayout)
   }
@@ -1777,7 +1786,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp), 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -1785,7 +1794,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val sdp53 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
 
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -1806,7 +1815,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -1852,7 +1861,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, sdp53)
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -1871,7 +1880,7 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+    val sdp15 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
 
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
@@ -1883,7 +1892,7 @@ val layoutParamsSavesBackground = LayoutParams(
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scene\":1722916385,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916385,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\"}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1907,7 +1916,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp), 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -1946,7 +1955,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp), 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -1999,7 +2008,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp), 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -2007,7 +2016,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val sdp53 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
 
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -2028,7 +2037,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -2070,7 +2079,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, sdp53)
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -2089,7 +2098,7 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+    val sdp15 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
 
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
@@ -2101,7 +2110,7 @@ val layoutParamsSavesBackground = LayoutParams(
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scene\":1722916386,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916386,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\"}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2125,7 +2134,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp), 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -2164,7 +2173,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp), 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -2204,7 +2213,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp), 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -2212,7 +2221,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val sdp53 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
 
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -2243,7 +2252,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -2299,7 +2308,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, sdp53)
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -2327,7 +2336,7 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+    val sdp15 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
 
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
@@ -2339,7 +2348,7 @@ val layoutParamsSavesBackground = LayoutParams(
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scene\":1722916383,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916383,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\"}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2363,7 +2372,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp), 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -2402,7 +2411,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp), 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -2446,7 +2455,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParams_Pedro.gravity = Gravity.CENTER
-    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_20sdp", "dimen", getPackageName())), 0, 0, 0)
+    layoutParams_Pedro.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._20sdp), 0, 0, 0)
 
     imageView_Pedro.layoutParams = layoutParams_Pedro
 
@@ -2454,7 +2463,7 @@ val layoutParamsSavesBackground = LayoutParams(
 
     val rectangleViewSpeech = RectangleView(this)
 
-    val sdp53 = resources.getDimensionPixelSize(resources.getIdentifier("_53sdp", "dimen", getPackageName()))
+    val sdp53 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._53sdp)
 
     val layoutParamsRectangleSpeech = LayoutParams(LayoutParams.WRAP_CONTENT, sdp53)
     layoutParamsRectangleSpeech.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -2485,7 +2494,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsSpeech.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(resources.getIdentifier("_270sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsSpeech.setMargins(0, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._270sdp), 0, 0)
 
     textViewSpeech.layoutParams = layoutParamsSpeech
 
@@ -2541,7 +2550,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsAuthor.gravity = Gravity.BOTTOM or Gravity.START
-    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(resources.getIdentifier("_155sdp", "dimen", getPackageName())), 0, 0, sdp53)
+    layoutParamsAuthor.setMargins(resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._155sdp), 0, 0, sdp53)
 
     textViewAuthor.layoutParams = layoutParamsAuthor
 
@@ -2569,7 +2578,7 @@ val layoutParamsSavesBackground = LayoutParams(
       LayoutParams.WRAP_CONTENT
     )
 
-    val sdp15 = resources.getDimensionPixelSize(resources.getIdentifier("_15sdp", "dimen", getPackageName()))
+    val sdp15 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._15sdp)
 
     layoutParamsSave.gravity = Gravity.TOP or Gravity.START
     layoutParamsSave.setMargins(sdp15, 0, 0, 0)
@@ -2581,7 +2590,7 @@ val layoutParamsSavesBackground = LayoutParams(
       var saves = inputStream.bufferedReader().use { it.readText() }
       inputStream.close()
 
-      val newSave = "{\"scene\":1722916384,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\",\"image\":\"pedro_staring\",\"position\":{\"sideType\":\"left\",\"side\":20}}],\"history\":" + scenesToJson() + "}"
+      val newSave = "{\"scene\":1722916384,\"scenario\":\"background_thanking\",\"characters\":[{\"name\":\"Pedro\"}],\"history\":" + scenesToJson() + "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -2605,7 +2614,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsMenu.gravity = Gravity.TOP or Gravity.START
-    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_23sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsMenu.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._23sdp), 0, 0)
 
     buttonMenu.layoutParams = layoutParamsMenu
 
@@ -2644,7 +2653,7 @@ val layoutParamsSavesBackground = LayoutParams(
     )
 
     layoutParamsBack.gravity = Gravity.TOP or Gravity.START
-    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(resources.getIdentifier("_46sdp", "dimen", getPackageName())), 0, 0)
+    layoutParamsBack.setMargins(sdp15, resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._46sdp), 0, 0)
 
     buttonBack.layoutParams = layoutParamsBack
 
@@ -2678,20 +2687,20 @@ val layoutParamsSavesBackground = LayoutParams(
     }
   }
 
-  private fun giveAchievement(achievement: String, achievementParsed: String) {
+  private fun giveAchievement(achievement: Int) {
     val inputStream = openFileInput("achievements.json")
     var text = inputStream.bufferedReader().use { it.readText() }
     inputStream.close()
 
-    if (text == "[]") text = "[" + achievementParsed + "]"
+    if (text == "[]") text = "[" + achievement + "]"
     else {
       val achievementsJson = JSONArray(text)
 
       for (i in 0 until achievementsJson.length()) {
-        if (achievementsJson.getString(i) == achievement) return
+        if (achievementsJson.getInt(i) == achievement) return
       }
 
-      text = text.dropLast(1) + ", " + achievementParsed + "]"
+      text = text.dropLast(1) + ", " + achievement + "]"
     }
 
     val outputStream = openFileOutput("achievements.json", Context.MODE_PRIVATE)

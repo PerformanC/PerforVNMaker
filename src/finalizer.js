@@ -13,11 +13,17 @@ function sceneEach(scene) {
   )
 
   scene.characters.forEach((character) => {
+    let optimizedSetImage = ''
+    if (visualNovel.optimizations.preCalculateScenesInfo) {
+      optimizedSetImage = helper.codePrepare(`
+        imageViewCharacter.setImageResource(R.raw.${character.image})\n\n                    `, 8
+      )
+    }
     switch (character.position.side) {
       case 'left': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${Math.round(character.position.margins.side * 0.25)}sdp", "dimen", getPackageName()))
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
             layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
           }`, 0, 4, false
@@ -28,8 +34,8 @@ function sceneEach(scene) {
       case 'leftTop': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("top") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
 
             layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
           }`, 0, 4, false
@@ -40,7 +46,7 @@ function sceneEach(scene) {
       case 'right': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${Math.round(character.position.margins.side * 0.25)}sdp", "dimen", getPackageName()))
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
             layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
           }`, 0, 4, false
@@ -51,8 +57,8 @@ function sceneEach(scene) {
       case 'rightTop': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            val rightDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${Math.round(character.position.margins.side * 0.25)}sdp", "dimen", getPackageName()))
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${Math.round(character.position.margins.top * 0.25)}sdp", "dimen", getPackageName()))
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
 
             layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
           }`, 0, 4, false
@@ -63,7 +69,7 @@ function sceneEach(scene) {
       case 'top': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            val topDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_${Math.round(character.position.margins.side * 0.25)}sdp", "dimen", getPackageName()))
+            ${optimizedSetImage}val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
             layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
           }`, 0, 4, false
@@ -74,7 +80,7 @@ function sceneEach(scene) {
       case 'center': {
         savesSwitchLocal += helper.codePrepare(`
           "${character.name}" -> {
-            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+            ${optimizedSetImage}layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
           }`, 0, 4, false
         )
 
