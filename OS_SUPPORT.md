@@ -16,7 +16,9 @@ The optimizations are the options that the coder can use to optimize the VN code
 
 ##### Version support
 
-\>= `v1.22.0 & v1.20.0`: Supported
+\>= `v1.22.0 & v1.20.0`: Supported without `preCalculateScenesInfo` & `hashAchievementIds`
+
+\>= `v1.23.0 & v1.21.0`: Supported
 
 ### Scenes
 

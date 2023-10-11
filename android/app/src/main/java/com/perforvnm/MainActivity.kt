@@ -323,7 +323,6 @@ class MainActivity : Activity() {
     )
 
     val sdp88 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._88sdp)
-
     val sdpminus3 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._minus3sdp)
 
     layoutParamsStart.gravity = Gravity.BOTTOM or Gravity.START
@@ -722,7 +721,6 @@ class MainActivity : Activity() {
     )
 
     val sdp135 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._135sdp)
-
     val sdp77 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._77sdp)
 
     layoutParamsSeekBar.gravity = Gravity.TOP or Gravity.START
@@ -1179,7 +1177,6 @@ class MainActivity : Activity() {
       }
 
       val sdp100 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._100sdp)
-
       val sdp70 = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._70sdp)
 
       val layoutParamsSavesBackground = LayoutParams(

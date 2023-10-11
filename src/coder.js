@@ -1,10 +1,8 @@
 import fs from 'fs'
 
 import helper from './helper.js'
-import finalizer from './finalizer.js'
 
 import achievements from './achievements.js'
-import { nextTick } from 'process'
 
 global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], customXML: [], optimizations: {} }
 global.PerforVNM = {
@@ -174,13 +172,13 @@ function finalize() {
       when (scene) {`, 2
   )
 
-  let savesSwitchCode = finalizer.sceneEachInit()
+  let savesSwitchCode = ''
 
   if (visualNovel.scenes.length) {
     let scenesCode = ''
 
     visualNovel.scenes.forEach((scene, i) => {
-      savesSwitchCode += finalizer.sceneEach(scene)
+      savesSwitchCode += helper.sceneEach(scene)
 
       if (i != visualNovel.scenes.length - 1) {
         const nextScene = visualNovel.scenes[i + 1]
@@ -419,7 +417,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
     })
 
     visualNovel.subScenes.forEach((scene, i) => {
-      savesSwitchCode += finalizer.sceneEach(scene)
+      savesSwitchCode += helper.sceneEach(scene)
 
       if (scene.next) {
         const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next)
@@ -650,7 +648,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     helper.replace('__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
     helper.replace('__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
   } else {
-    helper.replace('__PERFORVNM_SAVES_SWITCH__', finalizer.sceneEachFinalize(savesSwitchCode))
+    helper.replace('__PERFORVNM_SAVES_SWITCH__', helper.sceneEachFinalize(savesSwitchCode))
   }
 
   helper.replace('__PERFORVNM_HEADERS__', '')

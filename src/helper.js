@@ -199,19 +199,14 @@ function addResource(page, resource) {
   return page
 }
 
-function addMultipleResources(page, page2, resource) {
-  addResource(page, resource)
-  addResource(page2, resource)
-}
-
-function getResource(page, resource, add) {
+function getResource(page, resource) {
   const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
 
   if (resource.type == 'sdp') {
     if (!visualNovel.optimizations.reuseResources) return {
       definition: null,
-      inlined: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
-      variable: `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`,
+      inlined: `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`,
+      variable: `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`,
       additionalSpace: '\n'
     }
 
@@ -237,8 +232,6 @@ function getResource(page, resource, add) {
       additionalSpace: '\n'
     }
 
-    if (add) console.log(page.resources)
-
     if (cResource) return {
       definition: null,
       inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
@@ -256,13 +249,11 @@ function getResource(page, resource, add) {
   }
 }
 
-function getMultipleResources(page, page2, resource, add) {
+function getMultipleResources(page, page2, resource) {
   let cResource = null
 
-  cResource = getResource(page, resource, add)
-  if (add) console.log(cResource)
-  if (cResource.definition) cResource = getResource(page2, resource, add)
-  if (add) console.log(cResource)
+  cResource = getResource(page, resource)
+  if (cResource.definition) cResource = getResource(page2, resource)
 
   return cResource
 }
@@ -291,11 +282,11 @@ function finalizeResources(page, code) {
     }
 
     if (resource.type == 'sdp') {
-      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})${resource.newLines ? resource.newLines : '\n\n'}${spaces}`)
       code = code.replace(inlineRegex, `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`)
       code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
     } else {
-      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})${resource.newLines ? resource.newLines : '\n\n'}${spaces}`)
       code = code.replace(inlineRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
       code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
     }
@@ -341,6 +332,100 @@ function removeAllDoubleLines(code) {
   }
 }
 
+
+function sceneEach(scene) {
+  let savesSwitchLocal = helper.codePrepare(`
+    ${helper.getSceneId(scene.name)} -> {
+      when (characterData.getString("name")) {`, 0, 6, false
+  )
+
+  scene.characters.forEach((character) => {
+    let optimizedSetImage = ''
+    if (visualNovel.optimizations.preCalculateScenesInfo) {
+      optimizedSetImage = helper.codePrepare(`
+        imageViewCharacter.setImageResource(R.raw.${character.image})\n\n                    `, 8
+      )
+    }
+    switch (character.position.side) {
+      case 'left': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'leftTop': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'right': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'rightTop': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'top': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'center': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+    }
+  })
+
+  return savesSwitchLocal + '\n' + helper.codePrepare('}\n', 0, 12, false) + helper.codePrepare('}', 0, 10, false)
+}
+
+function sceneEachFinalize(savesSwitchCode) {
+  return helper.codePrepare(`
+    when (buttonData.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}("scene")) {`, 0, 4
+  ) + savesSwitchCode + '\n' + 
+  helper.codePrepare('}', 0, 8, false)
+}
+
 export default {
   writeFunction,
   replace,
@@ -352,7 +437,6 @@ export default {
   verifyParams,
   codePrepare,
   addResource,
-  addMultipleResources,
   getResource,
   getMultipleResources,
   finalizeResources,
@@ -360,5 +444,7 @@ export default {
   hash,
   getSceneId,
   getAchievementId,
-  removeAllDoubleLines
+  removeAllDoubleLines,
+  sceneEach,
+  sceneEachFinalize
 }

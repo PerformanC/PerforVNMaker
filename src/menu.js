@@ -1,7 +1,5 @@
 import helper from './helper.js'
 
-let gCustomCode = null
-
 function init(options) {
   const checks = {
     'textColor': {
@@ -473,8 +471,6 @@ function finalize(menu) {
 
   customCode = helper.finalizeResources(menu, customCode)
 
-  gCustomCode = customCode
-
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)\n'
 
   if (menu.background.music) {
@@ -527,11 +523,11 @@ function finalize(menu) {
   const ssp13Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'ssp', dp: '13' })
   menu.pages.main = helper.addResource(menu.pages.main, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const sdp88Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '88' })
-  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '88', spaces: 4 })
-
   const sdpMinus3Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: 'minus3' })
   menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp88Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '88' })
+  menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Main.definition ? '\n' : '\n\n' })
 
   const sdp161Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '161' })
   menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '161', spaces: 4 })
@@ -724,7 +720,7 @@ function finalize(menu) {
   menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
   const sdp88About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '88' })
-  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '88', spaces: 4 })
+  menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3About.definition ? '\n' : '\n\n' })
 
   const sdp53About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '53' })
   menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '53', spaces: 4 })
@@ -989,11 +985,11 @@ function finalize(menu) {
   const ssp13Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '13' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const sdp88Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '88' })
-  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '88', spaces: 4 })
-
   const sdpMinus3Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: 'minus3' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp88Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '88' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Settings.definition ? '\n' : '\n\n' })
 
   const sdp161Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '161' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '161', spaces: 4 })
@@ -1043,20 +1039,20 @@ function finalize(menu) {
   const ssp16Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'ssp', dp: '16' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'ssp', dp: '16', spaces: 4 })
 
-  const sdp149Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '149' })
-  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '149', spaces: 4 })
-
   const sdp53Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '53' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '53', spaces: 4 })
+
+  const sdp149Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '149' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '149', spaces: 4, newLines: sdp53Settings.definition ? '\n' : '\n\n' })
 
   const sdp150Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '150' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '150', spaces: 4 })
 
-  const sdp135Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '135' })
-  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '135', spaces: 4 })
-
   const sdp77Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '77' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '77', spaces: 4 })
+
+  const sdp135Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '135' })
+  menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '135', spaces: 4, newLines: sdp77Settings.definition ? '\n' : '\n\n' })
 
   const sdp443Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '443' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '443', spaces: 4 })
@@ -1546,7 +1542,7 @@ function finalize(menu) {
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
   const sdp88Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '88' })
-  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '88', spaces: 4 })
+  menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Saves.definition ? '\n' : '\n\n' })
 
   const sdp161Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '161' })
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '161', spaces: 4 })
@@ -1596,11 +1592,11 @@ function finalize(menu) {
   const sdp300Saves = helper.getMultipleResources(menu, menu.pages.saves, { type: 'sdp', dp: '287' })
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '287', spaces: 4 })
 
-  const sdp100Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
-  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6 })
-
   const sdp70Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '70' })
   menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '70', spaces: 6 })
+
+  const sdp100Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
+  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6, newLines: sdp70Saves.definition ? '\n' : '\n\n' })
 
   let scenesInfoCalculations = ''
   if (visualNovel.optimizations.preCalculateScenesInfo) {
@@ -1896,11 +1892,11 @@ __PERFORVNM_SAVES_SWITCH__
     const ssp13Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'ssp', dp: '13' })
     menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'ssp', dp: '13', spaces: 4 })
 
-    const sdp88Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '88' })
-    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '88', spaces: 4 })
-
     const sdpMinus3Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: 'minus3' })
     menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+    const sdp88Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '88' })
+    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Achievements.definition ? '\n' : '\n\n' })
 
     const sdp161Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '161' })
     menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '161', spaces: 4 })
