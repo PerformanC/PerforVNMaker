@@ -1734,6 +1734,16 @@ class MainActivity : Activity() {
     buttonSubScenes.layoutParams = layoutParamsSubScenes
 
     buttonSubScenes.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       scene2(true)
     }
 
@@ -1756,6 +1766,16 @@ class MainActivity : Activity() {
     buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
     buttonSubScenes2.setOnClickListener {
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }
+
+      handler.removeCallbacksAndMessages(null)
+
+      findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
+
       scene3(true)
     }
 

@@ -1209,14 +1209,10 @@ function finalize(scene) {
     buttonMenu.layoutParams = layoutParamsMenu\n\n`
   )
 
-  if (finishScene.length != 0) {
-    sceneCode += helper.codePrepare(`
+  sceneCode += helper.codePrepare(`
       buttonMenu.setOnClickListener {
-${finishScene.join('\n\n')}
-  __PERFORVNM_START_MUSIC__\n\n`, 2, 0)
-  } else {
-    sceneCode += helper.codePrepare('buttonMenu.setOnClickListener {__PERFORVNM_START_MUSIC__' + '\n\n', 0, 4, false)
-  }
+${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 2
+  )
 
   sceneCode += helper.codePrepare(`
       ${(visualNovel.menu ? 'menu()' : '__PERFORVNM_MENU__')}
@@ -1247,13 +1243,10 @@ ${finishScene.join('\n\n')}
       buttonBack.layoutParams = layoutParamsBack\n\n`, 2
     )
 
-    if (finishScene.length != 0) {
-      sceneCode += helper.codePrepare(`
+    sceneCode += helper.codePrepare(`
       buttonBack.setOnClickListener {
-${finishScene.join('\n\n')}\n\n`, 2, 0)
-    } else {
-      sceneCode += helper.codePrepare('buttonBack.setOnClickListener {\n', 0, 2, false)
-    }
+${finishScene.join('\n\n')}\n\n`, 2
+    )
 
     const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
 
@@ -1320,6 +1313,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
 
     sceneCode += helper.codePrepare(`
       buttonSubScenes.setOnClickListener {
+${finishScene.join('\n\n')}
+
         __PERFORVNM_SUBSCENE_1__
       }
 
@@ -1342,6 +1337,8 @@ ${finishScene.join('\n\n')}\n\n`, 2, 0)
       buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
       buttonSubScenes2.setOnClickListener {
+${finishScene.join('\n\n')}
+
         __PERFORVNM_SUBSCENE_2__
       }
 

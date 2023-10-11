@@ -785,7 +785,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
 
   helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
-  const startMusicCode = helper.codePrepare(`
+  const startMusicCode = helper.codePrepare(`\n
     mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.background.music})
 
     if (mediaPlayer != null) {
