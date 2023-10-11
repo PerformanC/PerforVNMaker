@@ -1597,10 +1597,48 @@ function finalize(menu) {
   menu.pages.saves = helper.addResource(menu.pages.saves, { type: 'sdp', dp: '287', spaces: 4 })
 
   const sdp100Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
-  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100' })
+  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6 })
 
   const sdp70Saves = helper.getMultipleResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '70' })
-  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '70' })
+  menu.pages.savesFor = helper.addResource(menu.pages.savesFor, { type: 'sdp', dp: '70', spaces: 6 })
+
+  let scenesInfoCalculations = ''
+  if (visualNovel.optimizations.preCalculateScenesInfo) {
+    scenesInfoCalculations = helper.codePrepare(`\n
+        val imageViewCharacter = ImageView(this)
+
+        val layoutParamsImageViewCharacter = LayoutParams(
+          ${sdp100Saves.variable},
+          ${sdp70Saves.variable}
+        )
+
+        layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
+
+__PERFORVNM_SAVES_SWITCH__
+
+        imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
+
+        frameLayoutScenes.addView(imageViewCharacter)`, 0, 2, false
+    )
+  } else {
+    scenesInfoCalculations = helper.codePrepare(`\n
+        val imageViewCharacter = ImageView(this)
+        imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))
+
+        val layoutParamsImageViewCharacter = LayoutParams(
+          ${sdp100Saves.variable},
+          ${sdp70Saves.variable}
+        )
+
+        layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
+
+__PERFORVNM_SAVES_SWITCH__
+
+        imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
+
+        frameLayoutScenes.addView(imageViewCharacter)`, 0, 2, false
+    )
+  }
 
   let saverCode = helper.codePrepare(`
     private fun saves(animate: Boolean) {
@@ -1821,23 +1859,7 @@ function finalize(menu) {
         val characters = buttonData.getJSONArray("characters")
 
         for (j in 0 until characters.length()) {
-          val characterData = characters.getJSONObject(j)
-
-          val imageViewCharacter = ImageView(this)
-          imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))
-
-          val layoutParamsImageViewCharacter = LayoutParams(
-            ${sdp100Saves.variable},
-            ${sdp70Saves.variable}
-          )
-
-          layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
-
-  __PERFORVNM_SAVES_SWITCH__
-
-          imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
-
-          frameLayoutScenes.addView(imageViewCharacter)
+          val characterData = characters.getJSONObject(j)${scenesInfoCalculations}
         }
 
         if (i != 0 && (i + 1).mod(4) == 0) {

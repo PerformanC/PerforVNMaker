@@ -279,7 +279,7 @@ function finalizeResources(page, code) {
       code = code.replace(defineRegex, '')
 
       if (resource.type == 'sdp') {
-        code = code.replace(variableRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+        code = code.replace(variableRegex, `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`)
       } else {
         code = code.replace(variableRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
       }
@@ -291,8 +291,8 @@ function finalizeResources(page, code) {
     }
 
     if (resource.type == 'sdp') {
-      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))\n\n${spaces}`)
-      code = code.replace(inlineRegex, `resources.getDimensionPixelSize(resources.getIdentifier("_${resource.dp}${resource.type}", "dimen", getPackageName()))`)
+      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
+      code = code.replace(inlineRegex, `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`)
       code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
     } else {
       code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})\n\n${spaces}`)
@@ -321,7 +321,15 @@ function hash(str) {
 
 function getSceneId(scene) {
   if (visualNovel.optimizations.hashScenesNames) return hash(scene)
-  else `"${scene}"`
+  else return `"${scene}"`
+}
+
+function getAchievementId(achievement, parsed) {
+  if (visualNovel.optimizations.hashAchievementIds) return hash(achievement)
+  else {
+    if (parsed) return `\\"${achievement}\\"`
+    else return `"${achievement}"`
+  }
 }
 
 function removeAllDoubleLines(code) {
@@ -351,5 +359,6 @@ export default {
   finalizeMultipleResources,
   hash,
   getSceneId,
+  getAchievementId,
   removeAllDoubleLines
 }
