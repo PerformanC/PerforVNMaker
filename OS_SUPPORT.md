@@ -251,9 +251,6 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
 - [ ] Inventory
-- [ ] Text effects
-- [ ] Speech bubbles
-- [ ] Text box effects
 
 ## Code generation support
 
