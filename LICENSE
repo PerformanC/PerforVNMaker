@@ -1,4 +1,4 @@
-PerformanC's Custom License
+PerformanC's PerforVNMaker Custom License
 
 Copyright (c) 2023 PerformanC <performancorg@gmail.com>
 
@@ -8,10 +8,12 @@ and it can even be used for commercial purposes.
 However, the software code neither can be used to train a neural network,
 nor any part of the code can be copied in any way without the permission
 of the PerformanC Organization team members. An exception is made for the
-generated code, which can be used without only one exception: the generated
-code cannot be used for other code generations or any software that creates apps.
+generated code, which can be used with one exception: the generated
+code cannot be used for or any type of software that creates softwares
+of any kind.
 
-The license can be included at the source code of the PerformanC software, although it is not required.
+The license must included at the source code of the PerformanC software
+outside the official PerformanC repository.
 
 The Software is given "as is" and without any warranties, 
 and its developers disclaim all liability for any harm it (The Software) may cause.

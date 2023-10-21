@@ -7,13 +7,28 @@ Adds a fade in transition to the scenes when entering the scene.
 ## Syntax
 
 ```js
-scene.setNextScene(scene, 'scene4')
+scene.setNextScene(scene, {
+  scene: 'scene4',
+  item: {
+    require: {
+      id: 'first_item',
+      fallback: 'no_items'
+    },
+    remove: true
+  }
+})
 ```
 
 ## Parameters
 
 - `scene`: The scene configurations from the `init` function.
-- `nextScene`: The name of the next scene.
+- `options`: The options of the scenario. An object with the following property:
+  - `scene`: The name of the scene that will be called when the scene ends.
+  - `item`: The item configurations. An object with the following properties:
+    - `require`: The item that is required to go to the next scene. An object with the following properties:
+      - `id`: The unique ID of the item.
+      - `fallback`: The scene that will be called if the player does not have the item.
+    - `remove`: If the item will be removed from the player's inventory.
 
 ## Return value
 

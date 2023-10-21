@@ -1,3 +1,6 @@
+/* TODO: Allow to remove footer and add buttons manually */
+/* TODO (Critical): Fix saves, if saves topDp > 620 then it will crash the app */
+
 import helper from './helper.js'
 
 function init(options) {
@@ -94,6 +97,7 @@ function init(options) {
 }
 
 function finalize(menu) {
+  /* TODO: Centralized private function that will generate custom code */
   let customCode = ''
   menu.custom.forEach((custom, index) => {
     switch (custom.type) {
@@ -1845,7 +1849,7 @@ __PERFORVNM_SAVES_SWITCH__
           for (j in 0 until historyScenes.length()) {
             scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
           }
-          scenesLength = historyScenes.length()
+          scenesLength = historyScenes.length()__PERFORVNM_ITEMS_RESTORE__
           
           switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))
         }

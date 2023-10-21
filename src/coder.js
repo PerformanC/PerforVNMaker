@@ -1,10 +1,13 @@
+/* TODO: Remove ability to use achievements, items and menu init functions after using scene.finalize */
+
 import fs from 'fs'
 
 import helper from './helper.js'
 
 import achievements from './achievements.js'
+import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], customXML: [], optimizations: {} }
+global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], items: [], customXML: [], optimizations: {} }
 global.PerforVNM = {
   codeGeneratorVersion: '1.23.0',
   generatedCodeVersion: '1.21.0',
@@ -50,6 +53,10 @@ function init(options) {
           type: 'boolean',
           required: false
         },
+        'hashItemsId': {
+          type: 'boolean',
+          required: false
+        },
         'preCalculateRounding': {
           type: 'boolean',
           required: false
@@ -73,6 +80,7 @@ function init(options) {
 
   visualNovel.info = options
 
+  /* TODO: Only add necessary `import`s */
   visualNovel.code = helper.codePrepare(`
     package ${options.applicationId}
 
@@ -87,6 +95,7 @@ function init(options) {
     import android.app.Activity
     import android.util.TypedValue
     import android.media.MediaPlayer
+    import android.widget.Toast
     import android.widget.TextView
     import android.widget.ImageView
     import android.widget.ScrollView
@@ -162,6 +171,7 @@ function init(options) {
   helper.logOk('Base configuration files and main function coded.', 'Android')
 }
 
+/* TODO: Create functions for stopping the music and sound effects */
 function finalize() {
   helper.replace('__PERFORVNM_CODE__', '')
 
@@ -180,43 +190,57 @@ function finalize() {
     visualNovel.scenes.forEach((scene, i) => {
       savesSwitchCode += helper.sceneEach(scene)
 
-      if (i != visualNovel.scenes.length - 1) {
-        const nextScene = visualNovel.scenes[i + 1]
+      if (scene.next) {
+        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
         const finishScene = []
 
-        if (scene.effect || scene.music) {
-          finishScene.push(
-            helper.codePrepare(`
-              if (mediaPlayer != null) {
-                mediaPlayer!!.stop()
-                mediaPlayer!!.release()
-                mediaPlayer = null
-              }\n`, 14
-            )
-          )
+        if (scene.next.item?.require?.fallback) {
+          const fallbackScene = visualNovel.scenes.find((fScene) => fScene.name == scene.next.item.require.fallback)
+          const functionParams = []
+
+          if (fallbackScene.speech && !scene.speech) {
+            functionParams.push('true')
+          }
+          if (fallbackScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
+            functionParams.push('true')
+          }
+
+          scene.code = scene.code.replace('__PERFORVNM_FALLBACK_SCENE_PARAMS__', functionParams.join(', '))
         }
-      
-        if (scene.effect && scene.music) {
-          finishScene.push(
-            helper.codePrepare(`
-              if (mediaPlayer2 != null) {
-                mediaPlayer2!!.stop()
-                mediaPlayer2!!.release()
-                mediaPlayer2 = null
-              }\n`, 14
-            )
-          )
-        }
-
-        if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-          finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
-
-        if (i == visualNovel.scenes.length - 2)
-          finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
-
-        finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
 
         if (scene.subScenes.length == 0) {
+          if (scene.effect || scene.music) {
+            finishScene.push(
+              helper.codePrepare(`
+                if (mediaPlayer != null) {
+                  mediaPlayer!!.stop()
+                  mediaPlayer!!.release()
+                  mediaPlayer = null
+                }\n`, 14
+              )
+            )
+          }
+        
+          if (scene.effect && scene.music) {
+            finishScene.push(
+              helper.codePrepare(`
+                if (mediaPlayer2 != null) {
+                  mediaPlayer2!!.stop()
+                  mediaPlayer2!!.release()
+                  mediaPlayer2 = null
+                }\n`, 14
+              )
+            )
+          }
+  
+          if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
+            finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
+  
+          if (i == visualNovel.scenes.length - 2)
+            finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
+  
+          finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
+
           let code = '\n\n' + helper.codePrepare(`
             findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
 ${finishScene.join('\n')}\n\n`, 8, 0)
@@ -321,9 +345,18 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           functionParams2.switch.push('true')
         }
 
+        const functionParams = []
+        if (scene.speech && !nextScene.speech) {
+          functionParams.push('true')
+        }
+        if (scene.speech?.author?.name && nextScene.speech && !nextScene.speech?.author?.name) {
+          functionParams.push('true')
+        }
+
         switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
         scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
+        scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams.join(', '))
 
         if (scene.speech) {
           const speechHandler = helper.codePrepare(`
@@ -419,8 +452,8 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
     visualNovel.subScenes.forEach((scene, i) => {
       savesSwitchCode += helper.sceneEach(scene)
 
-      if (scene.next) {
-        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next)
+      if (scene.next.scene) {
+        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
 
         if (!nextScene)
           helper.logFatal('Next scene does not exist.')
@@ -606,6 +639,16 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   if (visualNovel.achievements.length != 0)
     helper.writeFunction(achievements._AchievementGiveFunction())
 
+  if (visualNovel.items.length != 0) {
+    helper.writeFunction(_ItemsParsingFunction())
+
+    helper.replace('__PERFORVNM_ITEMS_RESTORE__', _ItemsRestore())
+    helper.replace(/__PERFORVNM_ITEMS_SAVER__/g, _ItemsSaver())
+  } else {
+    helper.replace('__PERFORVNM_ITEMS_RESTORE__', '')
+    helper.replace(/__PERFORVNM_ITEMS_SAVER__/g, '')
+  }
+
   helper.replace('__PERFORVNM_SCENES__', '')
   helper.replace('__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('__PERFORVNM_CLASSES__', '')
@@ -686,10 +729,17 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
   }
 
+  helper.replace(/__PERFORVNM_SCENES_LENGTH__/g, visualNovel.scenes.length + visualNovel.subScenes.length)
+
   let addHeaders = helper.codePrepare(`
     private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
     private var scenesLength = 1\n`, 2
   )
+
+  if (visualNovel.items.length != 0)
+    addHeaders += helper.codePrepare(`
+      private var items = MutableList<${visualNovel.optimizations.hashItemsId ? 'Int' : 'String'}>(${visualNovel.items.length}) { ${visualNovel.optimizations.hashItemsId ? '0' : '""'} }
+      private var itemsLength = 0\n`, 4)
 
   if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += helper.codePrepare('private val handler = Handler(Looper.getMainLooper())\n', 0, 2, false)

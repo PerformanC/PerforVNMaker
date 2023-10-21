@@ -6,9 +6,8 @@ This is the Security Policy of the PerforVNMaker project. Made to ensure the qua
 
 | Version                     | Supported          |
 | --------------------------- | ------------------ |
-| > 1.16.2-b.0 (1.14.8-b.0)   | :white_check_mark: |
-| 1.16.2-b.0 (1.14.7-b.0)     | :white_check_mark: |
-| < 1.16.2-b.0 (1.14.6-b.0)   | :x:                |
+| >= v1.22.0 - v1.20.0        | :white_check_mark: |
+| < v1.22.0 - v1.20.0         | :x:                |
 
 Observation: This can be dismissed if it's proved that the newest versions don't fix the vulnerability.
 

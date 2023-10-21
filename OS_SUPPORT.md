@@ -134,6 +134,14 @@ Achievements are a way to reward the player for doing something in the game, lik
 
 \>= `1.23.0 & v1.21.0`: Supported
 
+##### Items
+
+Items are a way to reward the player for doing something in the game, like finishing the game, or finding a secret. Allows also to unlock custom paths.
+
+###### Version support
+
+\>= `1.23.0 & v1.21.0`: Supported
+
 ### Menu
 
 The menu is the place where the player can access the settings, the About menu, and start the VN.
@@ -248,9 +256,9 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [x] Custom paths (Completed)
 - [x] Custom Views (Completed)
 - [x] Achievements (Completed)
+- [x] Items (Completed)
 - [x] Menu (Missing vertical footer)
 - [x] Settings (Misses some additional configurations)
-- [ ] Inventory
 
 ## Code generation support
 
