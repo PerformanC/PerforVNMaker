@@ -1,6 +1,6 @@
 /* TODO: Sub-scene searchs from O(n) to O(1) through objects */
 
-import helper from './helper.js'
+import helper from '../main/helper.js'
 
 function init(options) {
   const checks = {
@@ -8,7 +8,7 @@ function init(options) {
       type: 'string',
       notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
       extraVerification: (param) => {
-        if (visualNovel.subScenes.find((subScene) => subScene.name == param))
+        if (AndroidVisualNovel.subScenes.find((subScene) => subScene.name == param))
           helper.logFatal('A scene already exists with this name.')
       }
     },

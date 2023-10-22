@@ -1,6 +1,6 @@
 import helper from './helper.js'
 
-function addCustomText(menu, options) {
+function addCustomText(page, options) {
   const checks = {
     'text': {
       type: 'string'
@@ -35,15 +35,15 @@ function addCustomText(menu, options) {
   
   helper.verifyParams(checks, options)
 
-  menu.custom.push({
+  page.custom.push({
     type: 'text',
     ...options
   })
 
-  return menu
+  return page
 }
 
-function addCustomButton(menu, options) {
+function addCustomButton(page, options) {
   const checks = {
     'text': {
       type: 'string'
@@ -92,15 +92,15 @@ function addCustomButton(menu, options) {
 
   helper.verifyParams(checks, options)
 
-  menu.custom.push({
+  page.custom.push({
     type: 'button',
     ...options
   })
 
-  return menu
+  return page
 }
 
-function addCustomRectangle(menu, options) {
+function addCustomRectangle(page, options) {
   const checks = {
     'color': {
       type: 'string'
@@ -148,15 +148,15 @@ function addCustomRectangle(menu, options) {
 
   helper.verifyParams(checks, options)
 
-  menu.custom.push({
+  page.custom.push({
     type: 'rectangle',
     ...options
   })
 
-  return menu
+  return page
 }
 
-function addCustomImage(menu, options) {
+function addCustomImage(page, options) {
   const checks = {
     'image': {
       type: 'fileInitial',
@@ -200,12 +200,12 @@ function addCustomImage(menu, options) {
 
   helper.verifyParams(checks, options)
 
-  menu.custom.push({
+  page.custom.push({
     type: 'image',
     ...options
   })
 
-  return menu
+  return page
 }
 
 export default {

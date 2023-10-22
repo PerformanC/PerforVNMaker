@@ -2,45 +2,9 @@
 /* TODO: Cross-saves items */
 /* TODO: Option for scenes to require an item and if not, fallback to another scene */
 
-import helper from './helper.js'
+import helper from '../main/helper.js'
 
-export function init(options) {
-  const checks = {
-    'id': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (visualNovel.items.find((achievement) => achievement.id == param))
-          helper.logFatal('An item already exists with this id.')
-      }
-    },
-    'name': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (visualNovel.items.find((item) => item.name == param))
-          helper.logFatal('An item already exists with this name.')
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  visualNovel.items = options || []
-}
-
-export function give(page, itemId) {
-  const checks = {
-    'id': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (!visualNovel.items.find((item) => item.id == param))
-          helper.logFatal(`The item '${param}' doesn't exist.`)
-
-        if (page.items.give.find((item) => item.id == param))
-          helper.logFatal(`The item '${param}' was already given.`)
-      }
-    }
-  }
-
+function give(page, itemId) {
   page.items.give.push(itemId)
 
   return page
@@ -85,6 +49,5 @@ export function _ItemsSaver() {
 }
 
 export default {
-  init,
   give
 }

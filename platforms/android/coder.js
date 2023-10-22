@@ -2,12 +2,12 @@
 
 import fs from 'fs'
 
-import helper from './helper.js'
+import helper from '../main/helper.js'
 
 import achievements from './achievements.js'
 import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
 
-global.visualNovel = { menu: null, info: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], items: [], customXML: [], optimizations: {} }
+global.AndroidVisualNovel = { menu: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], items: [], customXML: [] }
 global.PerforVNM = {
   codeGeneratorVersion: '1.23.0',
   generatedCodeVersion: '1.21.0',
@@ -17,71 +17,8 @@ global.PerforVNM = {
 function init(options) {
   helper.logOk('Starting VN, coding main code.', 'Android')
 
-  const checks = {
-    'name': {
-      type: 'string'
-    },
-    'fullName': {
-      type: 'string'
-    },
-    'version': {
-      type: 'string'
-    },
-    'applicationId': {
-      type: 'string'
-    },
-    'paths': {
-      type: 'object',
-      params: {
-        'android': {
-          type: 'string'
-        }
-      }
-    },
-    'optimizations': {
-      type: 'object',
-      params: {
-        'reuseResources': {
-          type: 'boolean',
-          required: false
-        },
-        'hashScenesNames': {
-          type: 'boolean',
-          required: false
-        },
-        'hashAchievementIds': {
-          type: 'boolean',
-          required: false
-        },
-        'hashItemsId': {
-          type: 'boolean',
-          required: false
-        },
-        'preCalculateRounding': {
-          type: 'boolean',
-          required: false
-        },
-        'preCalculateScenesInfo': {
-          type: 'boolean',
-          required: false
-        },
-        'minify': {
-          type: 'boolean',
-          required: false
-        }
-      },
-      required: true
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  if (options.optimizations) visualNovel.optimizations = options.optimizations
-
-  visualNovel.info = options
-
   /* TODO: Only add necessary `import`s */
-  visualNovel.code = helper.codePrepare(`
+  AndroidVisualNovel.code = helper.codePrepare(`
     package ${options.applicationId}
 
     import java.io.File
@@ -158,7 +95,7 @@ function init(options) {
     __PERFORVNM_CLASSES__`, 4
   )
 
-  visualNovel.customXML.push({
+  AndroidVisualNovel.customXML.push({
     path: 'values/strings.xml',
     content: helper.codePrepare(`
       <?xml version="1.0" encoding="utf-8"?>
@@ -173,7 +110,7 @@ function init(options) {
 
 /* TODO: Create functions for stopping the music and sound effects */
 function finalize() {
-  helper.replace('__PERFORVNM_CODE__', '')
+  helper.replace('Android', '__PERFORVNM_CODE__', '')
 
   if (visualNovel.menu.showAchievements) achievements._SetAchievementsMenu()
 
@@ -184,18 +121,18 @@ function finalize() {
 
   let savesSwitchCode = ''
 
-  if (visualNovel.scenes.length) {
+  if (AndroidVisualNovel.scenes.length) {
     let scenesCode = ''
 
-    visualNovel.scenes.forEach((scene, i) => {
+    AndroidVisualNovel.scenes.forEach((scene, i) => {
       savesSwitchCode += helper.sceneEach(scene)
 
       if (scene.next) {
-        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
+        const nextScene = AndroidVisualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
         const finishScene = []
 
         if (scene.next.item?.require?.fallback) {
-          const fallbackScene = visualNovel.scenes.find((fScene) => fScene.name == scene.next.item.require.fallback)
+          const fallbackScene = AndroidVisualNovel.scenes.find((fScene) => fScene.name == scene.next.item.require.fallback)
           const functionParams = []
 
           if (fallbackScene.speech && !scene.speech) {
@@ -236,7 +173,7 @@ function finalize() {
           if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
             finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
   
-          if (i == visualNovel.scenes.length - 2)
+          if (i == AndroidVisualNovel.scenes.length - 2)
             finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
   
           finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
@@ -246,8 +183,8 @@ function finalize() {
 ${finishScene.join('\n')}\n\n`, 8, 0)
 
           const functionParams = []
-          if (nextScene.speech && i != visualNovel.scenes.length - 2) functionParams.push('true')
-          if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+          if (nextScene.speech && i != AndroidVisualNovel.scenes.length - 2) functionParams.push('true')
+          if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
 
           if (scene.speech && !nextScene.speech) {
             code += helper.codePrepare(`
@@ -304,8 +241,8 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
 
           scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
         } else {
-          const subScene1 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-          const subScene2 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
+          const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
+          const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
 
           if (!subScene1 || !subScene2)
             helper.logFatal('A subscene does not exist.')
@@ -380,7 +317,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
         }
       } else {
-        const oldScene = visualNovel.scenes[i - 1]
+        const oldScene = AndroidVisualNovel.scenes[i - 1]
 
         const functionParams = { function: [], switch: [] }
         if (scene.speech && !oldScene.speech) {
@@ -393,8 +330,8 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
         }
 
         if (scene.subScenes.length != 0) {
-          const subScene1 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-          const subScene2 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
+          const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
+          const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
 
           if (!subScene1 || !subScene2)
             helper.logFatal('A subscene does not exist.')
@@ -449,11 +386,11 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
       scenesCode += '\n\n' + scene.code
     })
 
-    visualNovel.subScenes.forEach((scene, i) => {
+    AndroidVisualNovel.subScenes.forEach((scene, i) => {
       savesSwitchCode += helper.sceneEach(scene)
 
       if (scene.next.scene) {
-        const nextScene = visualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
+        const nextScene = AndroidVisualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
 
         if (!nextScene)
           helper.logFatal('Next scene does not exist.')
@@ -487,7 +424,7 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
         if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
           finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 12, false))
 
-        if (i == visualNovel.subScenes.length - 2)
+        if (i == AndroidVisualNovel.subScenes.length - 2)
           finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 12, false))
 
         finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 12, false))
@@ -497,8 +434,8 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
 ${finishScene.join('\n')}\n\n`, 6, 0)
 
         const functionParams = []
-        if (nextScene.speech && i != visualNovel.subScenes.length - 2) functionParams.push('true')
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+        if (nextScene.speech && i != AndroidVisualNovel.subScenes.length - 2) functionParams.push('true')
+        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
 
         if (scene.speech && !nextScene.speech) {
           code += helper.codePrepare(`
@@ -584,7 +521,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
         }
       } else {
-        const oldScene = visualNovel.scenes.find((pScene) => pScene.name == scene.parent)
+        const oldScene = AndroidVisualNovel.scenes.find((pScene) => pScene.name == scene.parent)
 
         if (!oldScene)
           helper.logFatal('Parent scene does not exist.')
@@ -626,7 +563,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
       scenesCode += '\n\n' + scene.code
     })
 
-    helper.replace('__PERFORVNM_SCENES__', `${scenesCode}__PERFORVNM_SCENES__`)
+    helper.replace('Android', '__PERFORVNM_SCENES__', `${scenesCode}__PERFORVNM_SCENES__`)
   }
 
   switchesCode += helper.codePrepare(`
@@ -634,25 +571,25 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     }`, 2, 0, false
   )
 
-  helper.writeFunction(switchesCode)
+  helper.writeFunction('Android', switchesCode)
 
   if (visualNovel.achievements.length != 0)
-    helper.writeFunction(achievements._AchievementGiveFunction())
+    helper.writeFunction('Android', achievements._AchievementGive())
 
   if (visualNovel.items.length != 0) {
-    helper.writeFunction(_ItemsParsingFunction())
+    helper.writeFunction('Android', _ItemsParsingFunction())
 
-    helper.replace('__PERFORVNM_ITEMS_RESTORE__', _ItemsRestore())
-    helper.replace(/__PERFORVNM_ITEMS_SAVER__/g, _ItemsSaver())
+    helper.replace('Android', '__PERFORVNM_ITEMS_RESTORE__', _ItemsRestore())
+    helper.replace('Android', /__PERFORVNM_ITEMS_SAVER__/g, _ItemsSaver())
   } else {
-    helper.replace('__PERFORVNM_ITEMS_RESTORE__', '')
-    helper.replace(/__PERFORVNM_ITEMS_SAVER__/g, '')
+    helper.replace('Android', '__PERFORVNM_ITEMS_RESTORE__', '')
+    helper.replace('Android', /__PERFORVNM_ITEMS_SAVER__/g, '')
   }
 
-  helper.replace('__PERFORVNM_SCENES__', '')
-  helper.replace('__PERFORVNM_MENU__', '// No menu created.')
-  helper.replace('__PERFORVNM_CLASSES__', '')
-  helper.replace('__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[0].name)})` : '// No scenes created.')
+  helper.replace('Android', '__PERFORVNM_SCENES__', '')
+  helper.replace('Android', '__PERFORVNM_MENU__', '// No menu created.')
+  helper.replace('Android', '__PERFORVNM_CLASSES__', '')
+  helper.replace('Android', '__PERFORVNM_MULTI_PATH__', AndroidVisualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(AndroidVisualNovel.scenes[0].name)})` : '// No scenes created.')
   if (!visualNovel.optimizations.preCalculateRounding) {
     const defaultSaveSwitchCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
@@ -688,13 +625,13 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
         }
       }`, 0, 2)
 
-    helper.replace('__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
-    helper.replace('__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
+    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
+    helper.replace('Android', '__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
   } else {
-    helper.replace('__PERFORVNM_SAVES_SWITCH__', helper.sceneEachFinalize(savesSwitchCode))
+    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', helper.sceneEachFinalize(savesSwitchCode))
   }
 
-  helper.replace('__PERFORVNM_HEADERS__', '')
+  helper.replace('Android', '__PERFORVNM_HEADERS__', '')
 
   if (visualNovel.menu) {
     let menuCode = 'buttonStart.setOnClickListener {\n'
@@ -721,18 +658,18 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     }
 
     menuCode += helper.codePrepare(`
-        ${visualNovel.scenes.length != 0 ? `${visualNovel.scenes[0].name}(${(visualNovel.scenes[0].speech ? 'true' : '')})` : '// No scenes created.'}
+        ${AndroidVisualNovel.scenes.length != 0 ? `${AndroidVisualNovel.scenes[0].name}(${(AndroidVisualNovel.scenes[0].speech ? 'true' : '')})` : '// No scenes created.'}
       }`, 2
     )
 
-    helper.replace(/__PERFORVNM_MENU_START__/g, menuCode)
-    helper.replace(/__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
+    helper.replace('Android', /__PERFORVNM_MENU_START__/g, menuCode)
+    helper.replace('Android', /__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
   }
 
-  helper.replace(/__PERFORVNM_SCENES_LENGTH__/g, visualNovel.scenes.length + visualNovel.subScenes.length)
+  helper.replace('Android', /__PERFORVNM_SCENES_LENGTH__/g, AndroidVisualNovel.scenes.length + AndroidVisualNovel.subScenes.length)
 
   let addHeaders = helper.codePrepare(`
-    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenes.length + visualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
+    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${AndroidVisualNovel.scenes.length + AndroidVisualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
     private var scenesLength = 1\n`, 2
   )
 
@@ -741,23 +678,23 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
       private var items = MutableList<${visualNovel.optimizations.hashItemsId ? 'Int' : 'String'}>(${visualNovel.items.length}) { ${visualNovel.optimizations.hashItemsId ? '0' : '""'} }
       private var itemsLength = 0\n`, 4)
 
-  if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasDelayedSoundEffect || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasDelayedMusic || visualNovel.internalInfo.hasDelayedAnimation)
+  if (AndroidVisualNovel.internalInfo.hasSpeech || AndroidVisualNovel.internalInfo.hasDelayedSoundEffect || AndroidVisualNovel.internalInfo.hasEffect || AndroidVisualNovel.internalInfo.hasDelayedMusic || AndroidVisualNovel.internalInfo.hasDelayedAnimation)
     addHeaders += helper.codePrepare('private val handler = Handler(Looper.getMainLooper())\n', 0, 2, false)
 
-  if (visualNovel.menu || visualNovel.internalInfo.hasSpeech)
+  if (visualNovel.menu || AndroidVisualNovel.internalInfo.hasSpeech)
     addHeaders += helper.codePrepare(`private var textSpeed = ${visualNovel.menu?.textSpeed || 1000}L\n`, 0, 2, false)
 
-  if (visualNovel.menu || visualNovel.internalInfo.hasEffect)
+  if (visualNovel.menu || AndroidVisualNovel.internalInfo.hasEffect)
     addHeaders += helper.codePrepare('private var sEffectVolume = 1f\n', 0, 2, false)
 
-  if (visualNovel.menu || visualNovel.internalInfo.hasSceneMusic)
+  if (visualNovel.menu || AndroidVisualNovel.internalInfo.hasSceneMusic)
     addHeaders += helper.codePrepare('private var sceneMusicVolume = 1f\n', 0, 2, false)
 
-  if (visualNovel.internalInfo.needs2Players)
+  if (AndroidVisualNovel.internalInfo.needs2Players)
     addHeaders += helper.codePrepare('private var mediaPlayer2: MediaPlayer? = null\n', 0, 2, false)
 
-  if (visualNovel.internalInfo.menuMusic || visualNovel.internalInfo.hasEffect || visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasSceneMusic) {
-    if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
+  if (AndroidVisualNovel.internalInfo.menuMusic || AndroidVisualNovel.internalInfo.hasEffect || AndroidVisualNovel.internalInfo.hasSpeech || AndroidVisualNovel.internalInfo.hasSceneMusic) {
+    if (visualNovel.menu?.backgroundMusic || AndroidVisualNovel.internalInfo.hasEffect) {
       addHeaders += helper.codePrepare(`
         private var mediaPlayer: MediaPlayer? = null
 
@@ -767,7 +704,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           mediaPlayer?.pause()\n`, 6
       )
 
-      if (visualNovel.internalInfo.needs2Players) {
+      if (AndroidVisualNovel.internalInfo.needs2Players) {
         addHeaders += helper.codePrepare('mediaPlayer2?.pause()\n', 0, 4, false)
       }
 
@@ -783,7 +720,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
           }\n`, 6
       )
 
-      if (visualNovel.internalInfo.needs2Players) {
+      if (AndroidVisualNovel.internalInfo.needs2Players) {
         addHeaders += helper.codePrepare(`
           if (mediaPlayer2 != null) {
             mediaPlayer2!!.seekTo(mediaPlayer2!!.getCurrentPosition())
@@ -802,11 +739,11 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
         super.onDestroy()`, 4
     )
 
-    if (visualNovel.internalInfo.hasSpeech || visualNovel.internalInfo.hasEffect) {
+    if (AndroidVisualNovel.internalInfo.hasSpeech || AndroidVisualNovel.internalInfo.hasEffect) {
       addHeaders += '\n\n' + helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 4, false)
     }
 
-    if (visualNovel.menu?.backgroundMusic || visualNovel.internalInfo.hasEffect) {
+    if (visualNovel.menu?.backgroundMusic || AndroidVisualNovel.internalInfo.hasEffect) {
       addHeaders += helper.codePrepare(`
 
         if (mediaPlayer != null) {
@@ -817,7 +754,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
       )
     }
 
-    if (visualNovel.internalInfo.needs2Players) {
+    if (AndroidVisualNovel.internalInfo.needs2Players) {
       addHeaders += helper.codePrepare(`
 
         if (mediaPlayer2 != null) {
@@ -831,7 +768,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     addHeaders += '\n' + helper.codePrepare('}\n', 0, 2, false)
   }
 
-  helper.replace('__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
+  helper.replace('Android', '__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
   const startMusicCode = helper.codePrepare(`\n
     mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.background.music})
@@ -848,15 +785,15 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     }`, 0, 2, false
   )
 
-  helper.replace(/__PERFORVNM_START_MUSIC__/g, startMusicCode)
+  helper.replace('Android', /__PERFORVNM_START_MUSIC__/g, startMusicCode)
 
-  if (visualNovel.optimizations.minify) visualNovel.code = helper.removeAllDoubleLines(visualNovel.code)
+  if (visualNovel.optimizations.minify) AndroidVisualNovel.code = helper.removeAllDoubleLines(AndroidVisualNovel.code)
 
   helper.logOk('Code finished up.', 'Android')
 
   let finished = [ false, false ]
 
-  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, visualNovel.code, (err) => {
+  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, AndroidVisualNovel.code, (err) => {
     if (err) return helper.logFatal(err)
 
     helper.logOk('Visual Novel output code written.', 'Android')
@@ -866,9 +803,9 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     helper.lastMessage(finished)
   })
 
-  let i = 0, j = visualNovel.customXML.length - 1
-  while (visualNovel.customXML.length > 0) {
-    const customXML = visualNovel.customXML.shift()
+  let i = 0, j = AndroidVisualNovel.customXML.length - 1
+  while (AndroidVisualNovel.customXML.length > 0) {
+    const customXML = AndroidVisualNovel.customXML.shift()
 
     fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/res/${customXML.path}`, customXML.content, (err) => {
       if (err) return helper.logFatal(err)

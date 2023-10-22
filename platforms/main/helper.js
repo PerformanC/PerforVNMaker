@@ -3,14 +3,24 @@
 
 import fs from 'fs'
 
-function writeFunction(sceneCode) {
+function writeFunction(platform, sceneCode) {
   const writenCode = `\n\n${sceneCode}__PERFORVNM_SCENES__`
 
-  visualNovel.code = visualNovel.code.replace('__PERFORVNM_SCENES__', writenCode)
+  switch (platform) {
+    case 'Android': AndroidVisualNovel.code = AndroidVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+    // case 'iOS': iOSVisualNovel.code = iOSVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+    // case 'Web': WebVisualNovel.code = WebVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+    // case 'Desktop': DesktopVisualNovel.code = DesktopVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+  }
 }
 
-function replace(header, content) {
-  visualNovel.code = visualNovel.code.replace(header, content)
+function replace(platform, header, content) {
+  switch (platform) {
+    case 'Android': AndroidVisualNovel.code = AndroidVisualNovel.code.replace(header, content); break;
+    // case 'iOS': iOSVisualNovel.code = iOSVisualNovel.code.replace(header, content); break;
+    // case 'Web': WebVisualNovel.code = WebVisualNovel.code.replace(header, content); break;
+    // case 'Desktop': DesktopVisualNovel.code = DesktopVisualNovel.code.replace(header, content); break;
+  }
 }
 
 function makeLog(message) {

@@ -1,10 +1,10 @@
-import coder from './src/coder.js'
-import scene from './src/scene.js'
-import subScene from './src/sub-scene.js'
-import menu from './src/menu.js'
-import achievements from './src/achievements.js'
-import custom from './src/custom.js'
-import items from './src/items.js'
+import coder from './platforms/main/coder.js'
+import scene from './platforms/main/scene.js'
+import subScene from './platforms/main/sub-scene.js'
+import menu from './platforms/main/menu.js'
+import achievements from './platforms/main/achievements.js'
+import custom from './platforms/main/custom.js'
+import items from './platforms/main/items.js'
 
 export default {
   coder,
