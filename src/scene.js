@@ -54,7 +54,7 @@ function init(options) {
       require: []
     },
     custom: [],
-    resources: []
+    resources: {}
   }
 }
 

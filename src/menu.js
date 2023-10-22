@@ -71,28 +71,28 @@ function init(options) {
     custom: [],
     pages: {
       main: {
-        resources: []
+        resources: {}
       },
       about: {
-        resources: []
+        resources: {}
       },
       settings: {
-        resources: []
+        resources: {}
       },
       saves: {
-        resources: []
+        resources: {}
       },
       savesFor: {
-        resources: []
+        resources: {}
       },
       achievements: {
-        resources: []
+        resources: {}
       },
       achievementsFor: {
-        resources: []
+        resources: {}
       }
     },
-    resources: []
+    resources: {}
   }
 }
 

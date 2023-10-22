@@ -195,15 +195,23 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
 }
 
 function addResource(page, resource) {
-  if (page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return page
+  if (page.resources[`${resource.dp}${resource.type}`]) return page
 
-  page.resources.push(resource)
+  page.resources = {
+    ...page.resources,
+    [`${resource.dp}${resource.type}`]: {
+      type: resource.type,
+      dp: resource.dp,
+      spaces: resource.spaces,
+      ...(resource.newLines ? { newLines: resource.newLines } : {})
+    }
+  }
 
   return page
 }
 
 function getResource(page, resource) {
-  const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
+  const cResource = page.resources[`${resource.dp}${resource.type}`]
 
   if (resource.type == 'sdp') {
     if (!visualNovel.optimizations.reuseResources) return {
@@ -262,7 +270,9 @@ function getMultipleResources(page, page2, resource) {
 }
 
 function finalizeResources(page, code) {
-  page.resources.forEach((resource) => {
+  Object.keys(page.resources).forEach((key) => {
+    const resource = page.resources[key]
+
     const defineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`, 'g')
     const inlineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`, 'g')
     const variableRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`, 'g')
