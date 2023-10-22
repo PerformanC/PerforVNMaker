@@ -1,3 +1,5 @@
+/* TODO: Sub-scene searchs from O(n) to O(1) through objects */
+
 import helper from './helper.js'
 
 function init(options) {
@@ -44,8 +46,12 @@ function init(options) {
     music: null,
     transition: null,
     achievements: [],
+    items: {
+      give: [],
+      require: []
+    },
     custom: [],
-    resources: []
+    resources: {}
   }
 }
 

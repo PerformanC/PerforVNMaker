@@ -1,4 +1,9 @@
+/* TODO: Scenes searchs from O(n) to O(1) through objects */
+/* TODO (unconfirmed): Set the scenes in order through a queue [ 'scene1', 'scene2', ... ] */
+
 import helper from './helper.js'
+
+import { _ItemGive, _ItemRemove } from './items.js'
 
 function init(options) {
   const checks = {
@@ -44,8 +49,12 @@ function init(options) {
     music: null,
     transition: null,
     achievements: [],
+    items: {
+      give: [],
+      require: []
+    },
     custom: [],
-    resources: []
+    resources: {}
   }
 }
 
@@ -299,12 +308,41 @@ function setNextScene(scene, options) {
   const checks = {
     'scene': {
       type: 'string'
+    },
+    'item': {
+      type: 'object',
+      required: false,
+      params: {
+        'require': {
+          type: 'object',
+          params: {
+            'id': {
+              type: 'string',
+              extraVerification: (param) => {
+                if (!visualNovel.items.find((item) => item.id == param))
+                  helper.logFatal(`The item '${param}' doesn't exist.`)
+              }
+            },
+            'fallback': {
+              type: 'string',
+            }
+          }
+        },
+        'remove': {
+          type: 'boolean',
+          required: false,
+          extraVerification: (param, additionalinfo) => {
+            if (param && !additionalinfo.parent?.require?.id)
+              helper.logFatal('You must specify an item to be removed once used.')
+          }
+        }
+      }
     }
   }
 
   helper.verifyParams(checks, options)
 
-  scene.next = options.scene
+  scene.next = options
 
   return scene
 }
@@ -313,6 +351,27 @@ function addSubScenes(scene, options) {
   const checks = {
     'text': {
       type: 'string'
+    },
+    'item': {
+      type: 'object',
+      required: false,
+      params: {
+        'require': {
+          type: 'string',
+          extraVerification: (param) => {
+            if (!visualNovel.items.find((item) => item.id == param))
+              helper.logFatal(`The item '${param}' doesn't exist.`)
+          }
+        },
+        'remove': {
+          type: 'boolean',
+          required: false,
+          extraVerification: (param, additionalinfo) => {
+            if (param && !additionalinfo.parent?.item?.require)
+              helper.logFatal('You must specify an item to be removed once used.')
+          }
+        }
+      }
     },
     'scene': {
       type: 'string',
@@ -822,7 +881,7 @@ function finalize(scene) {
       rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
     )
 
-    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
 
     if (visualNovel.scenes.length != 0 && oldScene.speech) {
       sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
@@ -930,7 +989,7 @@ function finalize(scene) {
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
 
-      const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+      const oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
 
       if (
         visualNovel.scenes.length == 0 ||
@@ -1074,7 +1133,7 @@ function finalize(scene) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`
+        }`, 0, 2
       )
     )
   }
@@ -1086,7 +1145,7 @@ function finalize(scene) {
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`
+        }`, 0, 2
       )
     )
 
@@ -1096,15 +1155,22 @@ function finalize(scene) {
           mediaPlayer2!!.stop()
           mediaPlayer2!!.release()
           mediaPlayer2 = null
-        }`
+        }`, 0, 2
       )
     )
   }
 
   if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-    finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 8, false))
+    finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 10, false))
 
-  finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 8, false))
+  finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 10, false))
+
+  const itemRemover = []
+  if (scene.items.give.length != 0) {
+    scene.items.give.forEach((item) => {
+      itemRemover.push(_ItemRemove(item))
+    })
+  }
 
   const buttonSizeSsp = helper.getResource(scene, { type: 'ssp', dp: '8' })
   scene = helper.addResource(scene, { type: 'ssp', dp: '8', spaces: 4 })
@@ -1180,7 +1246,7 @@ function finalize(scene) {
   scene = helper.addResource(scene, { type: 'sdp', dp: '23', spaces: 4 })
 
   sceneCode += helper.codePrepare(`
-      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() + "}"
+      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() +__PERFORVNM_ITEMS_SAVER__ "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -1209,9 +1275,23 @@ function finalize(scene) {
     buttonMenu.layoutParams = layoutParamsMenu\n\n`
   )
 
+  let itemsRemove = ''
+  if (visualNovel.items.length != 0) {
+    itemsRemove = helper.codePrepare(`\n
+      for (j in 0 until itemsLength) {
+        items.set(j, ${visualNovel.optimizations.hashItemsId ? '0' : '""'})
+      }
+      itemsLength = 0`, 0, 4, false
+    )
+  }
   sceneCode += helper.codePrepare(`
-      buttonMenu.setOnClickListener {
-${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 2
+        buttonMenu.setOnClickListener {
+          for (j in 0 until scenesLength) {
+            scenes.set(j, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
+          }
+          scenesLength = 0${itemsRemove}
+
+${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
   )
 
   sceneCode += helper.codePrepare(`
@@ -1244,13 +1324,13 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 2
     )
 
     sceneCode += helper.codePrepare(`
-      buttonBack.setOnClickListener {
-${finishScene.join('\n\n')}\n\n`, 2
+        buttonBack.setOnClickListener {
+${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
     )
 
-    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+    let oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) 
 
-    if (visualNovel.subScenes.find((subScene) => subScene.next == scene.name)) {
+    if (oldScene || visualNovel.scenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback) || visualNovel.subScenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback)) {
       sceneCode += helper.codePrepare(`
         val scene = scenes.get(scenesLength - 1)
 
@@ -1260,14 +1340,24 @@ ${finishScene.join('\n\n')}\n\n`, 2
         switchScene(scene)\n`, 2
       )
     } else {
+      oldScene = visualNovel.scenes[visualNovel.scenes.length - 1]
+
+      const functionParams = []
+      const olderOldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == oldScene.name)
+
+      if (olderOldScene) {
+        if (olderOldScene.speech && oldScene.speech) functionParams.push('false')
+        if (olderOldScene.speech?.author?.name && olderOldScene.speech && !olderOldScene.speech?.author?.name) functionParams.push('false')
+      }
+
       if (visualNovel.scenes.length == 1) {
-        sceneCode += helper.codePrepare(`${oldScene.name}(${(oldScene.speech ? 'false' : '' )})\n`, 0, 6, false)
+        sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.join(', ')})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
           scenes.set(scenesLength, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
 
-          ${oldScene.name}(${(oldScene.speech ? 'false' : '' )})\n`, 4
+          ${oldScene.name}(${functionParams.join(', ')})\n`, 4
         )
       }
     }
@@ -1311,43 +1401,72 @@ ${finishScene.join('\n\n')}\n\n`, 2
     const sdp150 = helper.getResource(scene, { type: 'sdp', dp: '150' })
     scene = helper.addResource(scene, { type: 'sdp', dp: '150', spaces: 4 })
 
+    let requireItems = [ '', '' ]
+    let i = 0
+
+    while (true) {
+      if (scene.subScenes[i].item?.require) {
+        requireItems[i] = helper.codePrepare(`
+          if (!items.contains(${helper.getItemId(scene.subScenes[0].item.require)})) {
+            Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()`)
+
+        if (scene.subScenes[i].item.remove) {
+          requireItems[i] += helper.codePrepare(`
+              items.remove(${helper.getItemId(scene.subScenes[0].item.require)})
+
+              return@setOnClickListener
+            }\n\n`, 2, 0, false)
+        } else {
+          requireItems[i] += helper.codePrepare(`\n
+              return@setOnClickListener
+            }\n\n`, 2, 0, false)
+        }
+      }
+
+      if (i == 1) break
+
+      i++
+    }
+
     sceneCode += helper.codePrepare(`
-      buttonSubScenes.setOnClickListener {
-${finishScene.join('\n\n')}
+        buttonSubScenes.setOnClickListener {
+${requireItems[0]}${finishScene.join('\n\n')}
 
-        __PERFORVNM_SUBSCENE_1__
-      }
+          __PERFORVNM_SUBSCENE_1__
+        }
 
-      frameLayout.addView(buttonSubScenes)
+        frameLayout.addView(buttonSubScenes)
 
-      val buttonSubScenes2 = Button(this)
-      buttonSubScenes2.text = "${scene.subScenes[1].text}"
-      buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${subScenesTextSsp.variable})
-      buttonSubScenes2.setTextColor(0xFF${scene.options.buttonsColor}.toInt())
-      buttonSubScenes2.background = null
+        val buttonSubScenes2 = Button(this)
+        buttonSubScenes2.text = "${scene.subScenes[1].text}"
+        buttonSubScenes2.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${subScenesTextSsp.variable})
+        buttonSubScenes2.setTextColor(0xFF${scene.options.buttonsColor}.toInt())
+        buttonSubScenes2.background = null
 
-      val layoutParamsSubScenes2 = LayoutParams(
-        LayoutParams.WRAP_CONTENT,
-        LayoutParams.WRAP_CONTENT
-      )
+        val layoutParamsSubScenes2 = LayoutParams(
+          LayoutParams.WRAP_CONTENT,
+          LayoutParams.WRAP_CONTENT
+        )
 
-      ${sdp150.definition}layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
-      layoutParamsSubScenes2.setMargins(0, ${sdp150.variable}, 0, 0)
+        ${sdp150.definition}layoutParamsSubScenes2.gravity = Gravity.CENTER_HORIZONTAL
+        layoutParamsSubScenes2.setMargins(0, ${sdp150.variable}, 0, 0)
 
-      buttonSubScenes2.layoutParams = layoutParamsSubScenes2
+        buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
-      buttonSubScenes2.setOnClickListener {
-${finishScene.join('\n\n')}
+        buttonSubScenes2.setOnClickListener {
+${requireItems[1]}${finishScene.join('\n\n')}
 
-        __PERFORVNM_SUBSCENE_2__
-      }
+          __PERFORVNM_SUBSCENE_2__
+        }
 
-      frameLayout.addView(buttonSubScenes2)\n\n`, 2
+        frameLayout.addView(buttonSubScenes2)\n\n`, 4
     )
   } else if (scene.subScenes.length != 0) {
+    /* TODO: Allow to have more than 2 sub-scenes */
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
 
+  /* TODO: Centralized private function that will generate custom code */
   scene.custom.forEach((custom, index) => {
     switch (custom.type) {
       case 'text': {
@@ -1730,32 +1849,39 @@ ${finishScene.join('\n\n')}
         else
           return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
       }).join('\n')}\n\n`, 2)
-  }
+  } /* TODO: Move this to private function of achievements.js */
 
-  if (scene.type == 'normal') {
+  scene.items.give.forEach((item) => sceneCode += _ItemGive(item))
+
+  if (scene.next?.scene) {
+    let nextCode = helper.codePrepare(`${scene.next.scene}(__PERFORVNM_NEXT_SCENE_PARAMS__)`, 0, 10, false)
+
+    if (scene.next.item?.require) {
+      nextCode = helper.codePrepare(`
+        if (!items.contains(${helper.getItemId(scene.next.item.require.id)})) {
+          ${scene.next.item.require.fallback}(__PERFORVNM_FALLBACK_SCENE_PARAMS__)
+        } else {
+          ${scene.next.scene}(__PERFORVNM_NEXT_SCENE_PARAMS__)
+        }`, 0, 2)
+    }
     sceneCode += helper.codePrepare(`
-        setContentView(frameLayout)__PERFORVNM_SCENE_${scene.name.toUpperCase()}__
+        findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+${finishScene.join('\n\n')}
+
+          scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
+          scenesLength++
+
+${nextCode}
+        }
+
+        setContentView(frameLayout)
       }`, 4
     )
   } else {
-    if (scene.next) {
-      sceneCode += helper.codePrepare(`
-          findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-            scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
-            scenesLength++
-
-            ${scene.next}(__PERFORVNM_NEXT_SCENE_PARAMS__)
-          }
-
-          setContentView(frameLayout)
-        }`, 6
-      )
-    } else {
-      sceneCode += helper.codePrepare(`
-          setContentView(frameLayout)
-        }`, 6
-      )
-    }
+    sceneCode += helper.codePrepare(`
+        setContentView(frameLayout)
+      }`, 4
+    )
   }
 
   sceneCode = helper.finalizeResources(scene, sceneCode)

@@ -14,6 +14,7 @@ perfor.coder.init({
     hashAchievementIds: true,
     hashScenesNames: true,
     reuseResources: true,
+    hashItemsId: true,
     // minify: true
   }
 })
@@ -92,6 +93,11 @@ perfor.achievements.init([{
   image: 'achievement'
 }])
 
+perfor.items.init([{
+  id: 'first_item',
+  name: 'First item'
+}])
+
 let firstScene = perfor.scene.init({
   name: 'scene1',
   textColor: 'FFFFFF',
@@ -155,8 +161,20 @@ firstScene = perfor.custom.addCustomRectangle(firstScene, {
 firstScene = perfor.scene.addScenario(firstScene, { image: 'background_thanking' }) /* Adds a scenario to the scene */
 firstScene = perfor.scene.addSoundEffects(firstScene, [{ sound: 'menu_music', delay: 0 }]) /* Adds a sound effect to the scene at second 1 */
 firstScene = perfor.scene.addTransition(firstScene, { duration: 1000 }) /* Adds a transition to the scene */
-firstScene = perfor.scene.addSubScenes(firstScene, [{ text: 'second', scene: 'scene2' }, { text: 'third', scene: 'scene3' }]) /* Adds the subscenes to the first scene */
+firstScene = perfor.scene.addSubScenes(firstScene, [{
+    text: 'second',
+    scene: 'scene2',
+    item: {
+      require: 'first_item',
+      remove: true
+    }
+  }, {
+    text: 'third',
+    scene: 'scene3'
+  }
+]) /* Adds the subscenes to the first scene */
 firstScene = perfor.achievements.give(firstScene, 'first_achievement') /* Gives the first achievement to the scene */
+firstScene = perfor.items.give(firstScene, 'first_item') /* Gives the first item to the scene */
 perfor.scene.finalize(firstScene) /* Finishes up the scene */
 
 let secondScene = perfor.subScene.init({
@@ -295,7 +313,16 @@ fourthScene = perfor.scene.addSpeech(fourthScene, {
     }
   }
 })
-fourthScene = perfor.scene.setNextScene(fourthScene, { scene: 'scene5' })
+fourthScene = perfor.scene.setNextScene(fourthScene, {
+  scene: 'scene5',
+  item: {
+    require: {
+      id: 'first_item',
+      fallback: 'no_items'
+    },
+    remove: true
+  }
+})
 perfor.scene.finalize(fourthScene)
 
 let fifthScene = perfor.scene.init({
@@ -337,5 +364,45 @@ fifthScene = perfor.scene.addSpeech(fifthScene, {
   }
 })
 perfor.scene.finalize(fifthScene)
+
+let noItemsScene = perfor.scene.init({
+  name: 'no_items',
+  textColor: 'FFFFFF',
+  backTextColor: 'FFFFFF',
+  buttonsColor: 'FFFFFF',
+  footerTextColor: 'FFFFFF'
+})
+noItemsScene = perfor.scene.addCharacter(noItemsScene, {
+  name: 'Pedro',
+  image: 'pedro_staring',
+  position: {
+    side: 'left',
+    margins: {
+      side: 20,
+      top: 0
+    }
+  }
+})
+noItemsScene = perfor.scene.addScenario(noItemsScene, { image: 'background_thanking' })
+noItemsScene = perfor.scene.addSpeech(noItemsScene, {
+  author: {
+    name: 'Pedro',
+    textColor: 'FFFFFF',
+    rectangle: {
+      color: '000000',
+      opacity: 0.6
+    }
+  },
+  text: {
+    content: '"You don\'t have the item, sorry."',
+    color: 'FFFFFF',
+    fontSize: 9,
+    rectangle: {
+      color: '000000',
+      opacity: 0.8
+    }
+  }
+})
+perfor.scene.finalize(noItemsScene)
 
 perfor.coder.finalize() /* Finishes up the code */

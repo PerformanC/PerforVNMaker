@@ -1,3 +1,6 @@
+/* TODO: Create helper folder and move functions to there */
+/* CRITICAL TODO: Avoid collisions in hash functions */
+
 import fs from 'fs'
 
 function writeFunction(sceneCode) {
@@ -192,15 +195,23 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
 }
 
 function addResource(page, resource) {
-  if (page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)) return page
+  if (page.resources[`${resource.dp}${resource.type}`]) return page
 
-  page.resources.push(resource)
+  page.resources = {
+    ...page.resources,
+    [`${resource.dp}${resource.type}`]: {
+      type: resource.type,
+      dp: resource.dp,
+      spaces: resource.spaces,
+      ...(resource.newLines ? { newLines: resource.newLines } : {})
+    }
+  }
 
   return page
 }
 
 function getResource(page, resource) {
-  const cResource = page.resources.find((cResource) => resource.dp == cResource.dp && resource.type == cResource.type)
+  const cResource = page.resources[`${resource.dp}${resource.type}`]
 
   if (resource.type == 'sdp') {
     if (!visualNovel.optimizations.reuseResources) return {
@@ -259,7 +270,9 @@ function getMultipleResources(page, page2, resource) {
 }
 
 function finalizeResources(page, code) {
-  page.resources.forEach((resource) => {
+  Object.keys(page.resources).forEach((key) => {
+    const resource = page.resources[key]
+
     const defineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`, 'g')
     const inlineRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`, 'g')
     const variableRegex = new RegExp(`__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`, 'g')
@@ -323,6 +336,11 @@ function getAchievementId(achievement, parsed) {
   }
 }
 
+function getItemId(item) {
+  if (visualNovel.optimizations.hashItemsId) return hash(item)
+  else return `"${item}"`
+}
+
 function removeAllDoubleLines(code) {
   switch (process.platform) {
     case 'win32':
@@ -334,21 +352,21 @@ function removeAllDoubleLines(code) {
 
 
 function sceneEach(scene) {
-  let savesSwitchLocal = helper.codePrepare(`
-    ${helper.getSceneId(scene.name)} -> {
+  let savesSwitchLocal = codePrepare(`
+    ${getSceneId(scene.name)} -> {
       when (characterData.getString("name")) {`, 0, 6, false
   )
 
   scene.characters.forEach((character) => {
     let optimizedSetImage = ''
     if (visualNovel.optimizations.preCalculateScenesInfo) {
-      optimizedSetImage = helper.codePrepare(`
+      optimizedSetImage = codePrepare(`
         imageViewCharacter.setImageResource(R.raw.${character.image})\n\n                    `, 8
       )
     }
     switch (character.position.side) {
       case 'left': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
@@ -359,7 +377,7 @@ function sceneEach(scene) {
         break
       }
       case 'leftTop': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
             val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
@@ -371,7 +389,7 @@ function sceneEach(scene) {
         break
       }
       case 'right': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
@@ -382,7 +400,7 @@ function sceneEach(scene) {
         break
       }
       case 'rightTop': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
             val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
@@ -394,7 +412,7 @@ function sceneEach(scene) {
         break
       }
       case 'top': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
 
@@ -405,7 +423,7 @@ function sceneEach(scene) {
         break
       }
       case 'center': {
-        savesSwitchLocal += helper.codePrepare(`
+        savesSwitchLocal += codePrepare(`
           "${character.name}" -> {
             ${optimizedSetImage}layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
           }`, 0, 4, false
@@ -416,14 +434,14 @@ function sceneEach(scene) {
     }
   })
 
-  return savesSwitchLocal + '\n' + helper.codePrepare('}\n', 0, 12, false) + helper.codePrepare('}', 0, 10, false)
+  return savesSwitchLocal + '\n' + codePrepare('}\n', 0, 12, false) + codePrepare('}', 0, 10, false)
 }
 
 function sceneEachFinalize(savesSwitchCode) {
-  return helper.codePrepare(`
+  return codePrepare(`
     when (buttonData.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}("scene")) {`, 0, 4
   ) + savesSwitchCode + '\n' + 
-  helper.codePrepare('}', 0, 8, false)
+  codePrepare('}', 0, 8, false)
 }
 
 export default {
@@ -444,6 +462,7 @@ export default {
   hash,
   getSceneId,
   getAchievementId,
+  getItemId,
   removeAllDoubleLines,
   sceneEach,
   sceneEachFinalize

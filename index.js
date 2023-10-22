@@ -4,6 +4,7 @@ import subScene from './src/sub-scene.js'
 import menu from './src/menu.js'
 import achievements from './src/achievements.js'
 import custom from './src/custom.js'
+import items from './src/items.js'
 
 export default {
   coder,
@@ -11,5 +12,6 @@ export default {
   subScene,
   menu,
   achievements,
-  custom
+  custom,
+  items
 }
