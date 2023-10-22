@@ -1,71 +1,9 @@
 /* TODO: Allow to remove footer and add buttons manually */
 /* TODO (Critical): Fix saves, if saves topDp > 620 then it will crash the app */
 
-import helper from './helper.js'
+import helper from '../main/helper.js'
 
 function init(options) {
-  const checks = {
-    'textColor': {
-      type: 'string'
-    },
-    'backTextColor': {
-      type: 'string'
-    },
-    'textSpeed': {
-      type: 'number'
-    },
-    'aboutText': {
-      type: 'string'
-    },
-    'seekBar': {
-      type: 'object',
-      params: {
-        'backgroundColor': {
-          type: 'string'
-        },
-        'progressColor': {
-          type: 'string'
-        },
-        'thumbColor': {
-          type: 'string'
-        }
-      }
-    },
-    'background': {
-      type: 'object',
-      params: {
-        'image': {
-          type: 'string'
-        },
-        'music': {
-          type: 'string',
-          required: false
-        }
-      }
-    },
-    'footer': {
-      type: 'object',
-      params: {
-        'color': {
-          type: 'string'
-        },
-        'textColor': {
-          type: 'string'
-        },
-        'opacity': {
-          type: 'number',
-          min: 0,
-          max: 1
-        }
-      }
-    },
-    'showAchievements': {
-      type: 'boolean'
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   return {
     ...options,
     custom: [],
@@ -519,7 +457,7 @@ function finalize(menu) {
     menu()`
   )
 
-  helper.replace(/__PERFORVNM_MENU__/g, mainCode)
+  helper.replace('Android', /__PERFORVNM_MENU__/g, mainCode)
 
   const sdp30Main = helper.getMultipleResources(menu, menu.pages.main, { type: 'sdp', dp: '30' })
   menu.pages.main = helper.addResource(menu.pages.main, { type: 'sdp', dp: '30', spaces: 4 })
@@ -691,7 +629,7 @@ function finalize(menu) {
     }`, 2
   )
 
-  helper.writeFunction(menuCode)
+  helper.writeFunction('Android', menuCode)
 
   const rectangleViewCode = helper.codePrepare(`
     class RectangleView(context: Context) : View(context) {
@@ -712,7 +650,7 @@ function finalize(menu) {
     }\n`, 4, 0, false
   )
 
-  helper.replace('__PERFORVNM_CLASSES__', rectangleViewCode)
+  helper.replace('Android', '__PERFORVNM_CLASSES__', rectangleViewCode)
 
   const sdp30About = helper.getMultipleResources(menu, menu.pages.about, { type: 'sdp', dp: '30' })
   menu.pages.about = helper.addResource(menu.pages.about, { type: 'sdp', dp: '30', spaces: 4 })
@@ -981,7 +919,7 @@ function finalize(menu) {
     }`, 2
   )
 
-  helper.writeFunction(aboutCode)
+  helper.writeFunction('Android', aboutCode)
 
   const sdp30Settings = helper.getMultipleResources(menu, menu.pages.settings, { type: 'sdp', dp: '30' })
   menu.pages.settings = helper.addResource(menu.pages.settings, { type: 'sdp', dp: '30', spaces: 4 })
@@ -1502,9 +1440,9 @@ function finalize(menu) {
     }`, 2
   )
 
-  helper.writeFunction(settingsCode)
+  helper.writeFunction('Android', settingsCode)
 
-  visualNovel.customXML.push({
+  AndroidVisualNovel.customXML.push({
     path: 'drawable/custom_seekbar_progress.xml',
     content: helper.codePrepare(`
       <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
@@ -1526,7 +1464,7 @@ function finalize(menu) {
     )
   })
 
-  visualNovel.customXML.push({
+  AndroidVisualNovel.customXML.push({
     path: 'drawable/custom_seekbar_thumb.xml',
     content: helper.codePrepare(`
       <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
@@ -1887,7 +1825,7 @@ __PERFORVNM_SAVES_SWITCH__
     }`, 2
   )
 
-  helper.writeFunction(saverCode)
+  helper.writeFunction('Android', saverCode)
 
   if (menu.showAchievements) {
     const sdp30Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '30' })
@@ -2109,10 +2047,10 @@ __PERFORVNM_SAVES_SWITCH__
       }`, 4
     )
 
-    helper.writeFunction(achievementsCode)
+    helper.writeFunction('Android', achievementsCode)
   }
 
-  visualNovel.menu = menu
+  AndroidVisualNovel.menu = menu
 
   helper.logOk('Main, about, settings and saves menu coded.', 'Android')
 }

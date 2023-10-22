@@ -1,7 +1,7 @@
 /* TODO: Scenes searchs from O(n) to O(1) through objects */
 /* TODO (unconfirmed): Set the scenes in order through a queue [ 'scene1', 'scene2', ... ] */
 
-import helper from './helper.js'
+import helper from '../main/helper.js'
 
 import { _ItemGive, _ItemRemove } from './items.js'
 
@@ -11,7 +11,7 @@ function init(options) {
       type: 'string',
       notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
       extraVerification: (param) => {
-        if (visualNovel.scenes.find((scene) => scene.name == param))
+        if (AndroidVisualNovel.scenes.find((scene) => scene.name == param))
           helper.logFatal('A scene already exists with this name.')
       }
     },
@@ -148,7 +148,7 @@ function addCharacter(scene, options) {
       },
       extraVerification: (param) => {
         if (param.delay != 0)
-          visualNovel.internalInfo.hasDelayedAnimation = true
+          AndroidVisualNovel.internalInfo.hasDelayedAnimation = true
       },
       required: false
     }
@@ -162,85 +162,21 @@ function addCharacter(scene, options) {
 }
 
 function addScenario(scene, options) {
-  const checks = {
-    'image': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.background = options.image
 
   return scene
 }
 
 function addSpeech(scene, options) {
-  const checks = {
-    'author': {
-      type: 'object',
-      params: {
-        'name': {
-          type: 'string'
-        },
-        'textColor': {
-          type: 'string'
-        },
-        'rectangle': {
-          type: 'object',
-          params: {
-            'color': {
-              type: 'string'
-            },
-            'opacity': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    },
-    'text': {
-      type: 'object',
-      params: {
-        'content': {
-          type: 'string'
-        },
-        'color': {
-          type: 'string'
-        },
-        'fontSize': {
-          type: 'number'
-        },
-        'rectangle': {
-          type: 'object',
-          params: {
-            'color': {
-              type: 'string'
-            },
-            'opacity': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.speech = options
   scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
 
-  visualNovel.internalInfo.hasSpeech = true
+  AndroidVisualNovel.internalInfo.hasSpeech = true
 
   return scene
 }
 
 function addSoundEffects(scene, options) {
-  if (!Array.isArray(options))
-    helper.logFatal('Sound effects must be an array.')
-
   const checks = {
     'sound': {
       type: 'fileInitial',
@@ -250,7 +186,7 @@ function addSoundEffects(scene, options) {
       type: 'number',
       extraVerification: (param) => {
         if (param != 0)
-          visualNovel.internalInfo.hasDelayedSoundEffect = true
+          AndroidVisualNovel.internalInfo.hasDelayedSoundEffect = true
       },
       required: false
     }
@@ -260,7 +196,7 @@ function addSoundEffects(scene, options) {
 
   scene.effect = options
 
-  visualNovel.internalInfo.hasEffect = true
+  AndroidVisualNovel.internalInfo.hasEffect = true
 
   return scene
 }
@@ -275,7 +211,7 @@ function addMusic(scene, options) {
       type: 'number',
       extraVerification: (param) => {
         if (param != 0)
-          visualNovel.internalInfo.hasDelayedMusic = true
+          AndroidVisualNovel.internalInfo.hasDelayedMusic = true
       },
       required: false
     }
@@ -285,63 +221,18 @@ function addMusic(scene, options) {
 
   scene.music = options
 
-  visualNovel.internalInfo.hasSceneMusic = true
+  AndroidVisualNovel.internalInfo.hasSceneMusic = true
 
   return scene
 }
 
 function addTransition(scene, options) {
-  const checks = {
-    'duration': {
-      type: 'number'
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.transition = options
 
   return scene
 }
 
 function setNextScene(scene, options) {
-  const checks = {
-    'scene': {
-      type: 'string'
-    },
-    'item': {
-      type: 'object',
-      required: false,
-      params: {
-        'require': {
-          type: 'object',
-          params: {
-            'id': {
-              type: 'string',
-              extraVerification: (param) => {
-                if (!visualNovel.items.find((item) => item.id == param))
-                  helper.logFatal(`The item '${param}' doesn't exist.`)
-              }
-            },
-            'fallback': {
-              type: 'string',
-            }
-          }
-        },
-        'remove': {
-          type: 'boolean',
-          required: false,
-          extraVerification: (param, additionalinfo) => {
-            if (param && !additionalinfo.parent?.require?.id)
-              helper.logFatal('You must specify an item to be removed once used.')
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.next = options
 
   return scene
@@ -376,7 +267,7 @@ function addSubScenes(scene, options) {
     'scene': {
       type: 'string',
       extraVerification: (param) => {
-        if (visualNovel.subScenes.find((subScene) => subScene.name == param))
+        if (AndroidVisualNovel.subScenes.find((subScene) => subScene.name == param))
           helper.logFatal('A sub-scene already exists with this name.')
       }
     }
@@ -385,214 +276,6 @@ function addSubScenes(scene, options) {
   helper.verifyParams(checks, options)
 
   scene.subScenes = options
-
-  return scene
-}
-
-function addCustomText(scene, options) {
-  const checks = {
-    'text': {
-      type: 'string'
-    },
-    'color': {
-      type: 'string'
-    },
-    'fontSize': {
-      type: 'number'
-    },
-    'position': {
-      type: 'object',
-      params: {
-        'side': {
-          type: 'string',
-          values: [ 'center', 'left', 'right' ]
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  scene.custom.push({
-    type: 'text',
-    ...options
-  })
-
-  return scene
-}
-
-function addCustomButton(scene, options) {
-  const checks = {
-    'text': {
-      type: 'string'
-    },
-    'color': {
-      type: 'string'
-    },
-    'fontSize': {
-      type: 'number'
-    },
-    'height': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'width': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'position': {
-      type: 'object',
-      params: {
-        'side': {
-          type: 'string',
-          values: [ 'center', 'left', 'right' ]
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  scene.custom.push({
-    type: 'button',
-    ...options
-  })
-
-  return scene
-}
-
-function addCustomRectangle(scene, options) {
-  const checks = {
-    'color': {
-      type: 'string'
-    },
-    'opacity': {
-      type: 'number',
-      min: 0,
-      max: 1
-    },
-    'height': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'width': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'position': {
-      type: 'object',
-      params: {
-        'side': {
-          type: 'string',
-          values: [ 'center', 'left', 'right' ]
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  scene.custom.push({
-    type: 'rectangle',
-    ...options
-  })
-
-  return scene
-}
-
-function addCustomImage(scene, options) {
-  const checks = {
-    'image': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    },
-    'height': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'width': {
-      type: [ 'number', 'string' ],
-      shouldCheckValues: (value) => {
-        return typeof value != 'number'
-      },
-      values: [ 'match', 'wrap' ]
-    },
-    'position': {
-      type: 'object',
-      params: {
-        'side': {
-          type: 'string',
-          values: [ 'center', 'left', 'right' ]
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  scene.custom.push({
-    type: 'image',
-    ...options
-  })
 
   return scene
 }
@@ -881,15 +564,15 @@ function finalize(scene) {
       rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
     )
 
-    const oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+    const oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
 
-    if (visualNovel.scenes.length != 0 && oldScene.speech) {
+    if (AndroidVisualNovel.scenes.length != 0 && oldScene.speech) {
       sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !oldScene.speech) {
+    if (AndroidVisualNovel.scenes.length == 0 || !oldScene.speech) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleSpeech = AlphaAnimation(0f, ${scene.speech.text.rectangle.opacity}f)
@@ -941,13 +624,13 @@ function finalize(scene) {
       rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2
     )
 
-    if (visualNovel.scenes.length != 0 && oldScene.speech) {
+    if (AndroidVisualNovel.scenes.length != 0 && oldScene.speech) {
       sceneCode += helper.codePrepare(`rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !oldScene.speech) {
+    if (AndroidVisualNovel.scenes.length == 0 || !oldScene.speech) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)
@@ -989,17 +672,17 @@ function finalize(scene) {
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
 
-      const oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || visualNovel.scenes[visualNovel.scenes.length - 1]
+      const oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
 
       if (
-        visualNovel.scenes.length == 0 ||
+        AndroidVisualNovel.scenes.length == 0 ||
         !oldScene.speech ||
-        (visualNovel.scenes.length != 0 &&
+        (AndroidVisualNovel.scenes.length != 0 &&
           scene.speech?.author?.name &&
           oldScene.speech &&
           !oldScene.speech?.author?.name)
         ) {
-          if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
+          if (AndroidVisualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
             sceneCode += helper.codePrepare('if (animateAuthor) {', 0, 4, false)
           } else {
             sceneCode += helper.codePrepare('if (animate) {', 0, 4, false)
@@ -1301,7 +984,7 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
     frameLayout.addView(buttonMenu)\n\n`
   )
 
-  if (visualNovel.scenes.length != 0) {
+  if (AndroidVisualNovel.scenes.length != 0) {
     const sdp46 = helper.getResource(scene, { type: 'sdp', dp: '46' })
     scene = helper.addResource(scene, { type: 'sdp', dp: '46', spaces: 4 })
 
@@ -1328,9 +1011,9 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
 ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
     )
 
-    let oldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) 
+    let oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) 
 
-    if (oldScene || visualNovel.scenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback) || visualNovel.subScenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback)) {
+    if (oldScene || AndroidVisualNovel.scenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback) || AndroidVisualNovel.subScenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback)) {
       sceneCode += helper.codePrepare(`
         val scene = scenes.get(scenesLength - 1)
 
@@ -1340,17 +1023,17 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
         switchScene(scene)\n`, 2
       )
     } else {
-      oldScene = visualNovel.scenes[visualNovel.scenes.length - 1]
+      oldScene = AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
 
       const functionParams = []
-      const olderOldScene = visualNovel.subScenes.find((subScene) => subScene.next.scene == oldScene.name)
+      const olderOldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == oldScene.name)
 
       if (olderOldScene) {
         if (olderOldScene.speech && oldScene.speech) functionParams.push('false')
         if (olderOldScene.speech?.author?.name && olderOldScene.speech && !olderOldScene.speech?.author?.name) functionParams.push('false')
       }
 
-      if (visualNovel.scenes.length == 1) {
+      if (AndroidVisualNovel.scenes.length == 1) {
         sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.join(', ')})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
@@ -1396,7 +1079,7 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
 
     const functionParams = []
     if (scene.subScenes[0].speech && !scene.speech) functionParams.push('true')
-    if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != visualNovel.scenes.length - 1) functionParams.push('true')
+    if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
 
     const sdp150 = helper.getResource(scene, { type: 'sdp', dp: '150' })
     scene = helper.addResource(scene, { type: 'sdp', dp: '150', spaces: 4 })
@@ -1886,8 +1569,8 @@ ${nextCode}
 
   sceneCode = helper.finalizeResources(scene, sceneCode)
 
-  if (scene.type == 'normal') visualNovel.scenes.push({ ...scene, code: sceneCode })
-  else visualNovel.subScenes.push({ ...scene, code: sceneCode })
+  if (scene.type == 'normal') AndroidVisualNovel.scenes.push({ ...scene, code: sceneCode })
+  else AndroidVisualNovel.subScenes.push({ ...scene, code: sceneCode })
 
   helper.logOk(`Scene "${scene.name}" coded.`, 'Android')
 }
@@ -1902,9 +1585,5 @@ export default {
   addTransition,
   setNextScene,
   addSubScenes,
-  addCustomText,
-  addCustomButton,
-  addCustomRectangle,
-  addCustomImage,
   finalize
 }

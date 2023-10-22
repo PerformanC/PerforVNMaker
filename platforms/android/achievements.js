@@ -1,42 +1,9 @@
 /* TODO: Achievements searchs from O(n) to O(1) through objects */
 /* TODO: Option for scenes to require an achievement and if not, fallback to another scene */
 
-import helper from './helper.js'
-
-function init(options) {
-  const checks = {
-    'id': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (visualNovel.achievements.find((achievement) => achievement.id == param))
-          helper.logFatal('An achievement already exists with this id.')
-      }
-    },
-    'name': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (visualNovel.achievements.find((achievement) => achievement.name == param))
-          helper.logFatal('An achievement already exists with this name.')
-      }
-    },
-    'image': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
-  visualNovel.achievements = options || []
-}
+import helper from '../main/helper.js'
 
 function give(page, achievementId) {
-  if (!visualNovel.achievements.find((achievement) => achievement.id == achievementId))
-    helper.logFatal(`The achievement '${achievementId}' doesn't exist.`)
-
-  if (page.achievements.find((achievement) => achievement.id == achievementId))
-    helper.logFatal(`The achievement '${achievementId}' was already given.`)
-
   page.achievements.push({
     id: achievementId
   })
@@ -44,7 +11,7 @@ function give(page, achievementId) {
   return page
 }
 
-function _AchievementGiveFunction() {
+function _AchievementGive() {
   return helper.codePrepare(`
     private fun giveAchievement(${visualNovel.optimizations.hashAchievementIds ? 'achievement: Int' : 'achievement: String, achievementParsed: String'}) {
       val inputStream = openFileInput("achievements.json")
@@ -70,7 +37,7 @@ function _AchievementGiveFunction() {
 }
 
 function _SetAchievementsMenu() {
-  const menu = visualNovel.menu
+  const menu = AndroidVisualNovel.menu
 
   let achievementsSwitch = helper.codePrepare(`
     when (achievements.get${visualNovel.optimizations.hashAchievementIds ? 'Int' : 'String'}(i)) {
@@ -168,12 +135,11 @@ ${achievementsSwitch}
 
   achievementsCode = helper.finalizeMultipleResources(menu, menu.pages.achievements, achievementsCode)
 
-  helper.replace('__PERFORVNM_ACHIEVEMENTS_MENU__', achievementsCode)
+  helper.replace('Android', '__PERFORVNM_ACHIEVEMENTS_MENU__', achievementsCode)
 }
 
 export default {
-  init,
   give,
-  _AchievementGiveFunction,
+  _AchievementGive,
   _SetAchievementsMenu
 }
