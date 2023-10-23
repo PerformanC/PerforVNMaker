@@ -2,6 +2,7 @@
 /* TODO: Option for scenes to require an achievement and if not, fallback to another scene */
 
 import helper from '../main/helper.js'
+import { _GetMultiResources, _AddResource, _FinalizeMultiResources } from './helpers/optimizations.js'
 
 function give(page, achievementId) {
   page.achievements.push({
@@ -11,7 +12,7 @@ function give(page, achievementId) {
   return page
 }
 
-function _AchievementGive() {
+export function _AchievementGive() {
   return helper.codePrepare(`
     private fun giveAchievement(${visualNovel.optimizations.hashAchievementIds ? 'achievement: Int' : 'achievement: String, achievementParsed: String'}) {
       val inputStream = openFileInput("achievements.json")
@@ -36,7 +37,7 @@ function _AchievementGive() {
   )
 }
 
-function _SetAchievementsMenu() {
+export function _SetAchievementsMenu() {
   const menu = AndroidVisualNovel.menu
 
   let achievementsSwitch = helper.codePrepare(`
@@ -49,16 +50,16 @@ ${visualNovel.achievements.map((achievement) => helper.codePrepare(`
     }`, 0, 2
   )
 
-  const sdp300Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '300' })
-  menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '300', spaces: 4 })
+  const sdp300Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '300' })
+  menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '300', spaces: 4 })
 
   let achievementsView = ''
   if (visualNovel.achievements.length != 0) {
-    const sdp100Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '100' })
-    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '100', spaces: 4 })
+    const sdp100Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '100' })
+    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '100', spaces: 4 })
   
-    const sdp70Achievements = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: '70' })
-    menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: '70', spaces: 0 })
+    const sdp70Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '70' })
+    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '70', spaces: 0 })
 
     achievementsView = helper.codePrepare(`\n
       ${sdp100Achievements.definition}${sdp70Achievements.definition}val ColorMatrixAchievements = ColorMatrix()
@@ -69,11 +70,11 @@ ${visualNovel.achievements.map((achievement) => helper.codePrepare(`
     let topDp = 50
   
     visualNovel.achievements.forEach((achievement, index) => {
-      let customLeftSdpAchievement = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: leftDp })
-      menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: leftDp, spaces: 4 })
+      let customLeftSdpAchievement = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: leftDp })
+      menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: leftDp, spaces: 4 })
 
-      let customTopSdpAchievement = helper.getMultipleResources(menu, menu.pages.achievements, { type: 'sdp', dp: topDp })
-      menu.pages.achievements = helper.addResource(menu.pages.achievements, { type: 'sdp', dp: topDp, spaces: 4 })
+      let customTopSdpAchievement = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: topDp })
+      menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: topDp, spaces: 4 })
 
       achievementsView += helper.codePrepare(`
         val achievement_${achievement.id} = ImageView(this)
@@ -133,13 +134,22 @@ ${achievementsSwitch}
 
     frameLayout.addView(scrollView)`)
 
-  achievementsCode = helper.finalizeMultipleResources(menu, menu.pages.achievements, achievementsCode)
+  achievementsCode = _FinalizeMultiResources(menu, menu.pages.achievements, achievementsCode)
 
   helper.replace('Android', '__PERFORVNM_ACHIEVEMENTS_MENU__', achievementsCode)
 }
 
+export function _AchievementWrapperGive(achievements) {
+  return helper.codePrepare(`
+    ${achievements.map((achievement) => {
+      if (visualNovel.optimizations.hashAchievementIds)
+        return `giveAchievement(${helper.getAchievementId(achievement.id)})`
+      else
+        return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
+    }).join('\n')}\n\n`
+  )
+}
+
 export default {
-  give,
-  _AchievementGive,
-  _SetAchievementsMenu
+  give
 }

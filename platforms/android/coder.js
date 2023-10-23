@@ -3,8 +3,9 @@
 import fs from 'fs'
 
 import helper from '../main/helper.js'
+import { _ProcessWNextScene, _ProcessWONextScene, _ProcessSceneSave, _FinalizeScenesSave } from './helpers/coder.js'
 
-import achievements from './achievements.js'
+import { _SetAchievementsMenu, _AchievementGive } from './achievements.js'
 import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
 
 global.AndroidVisualNovel = { menu: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], items: [], customXML: [] }
@@ -112,7 +113,7 @@ function init(options) {
 function finalize() {
   helper.replace('Android', '__PERFORVNM_CODE__', '')
 
-  if (visualNovel.menu.showAchievements) achievements._SetAchievementsMenu()
+  if (visualNovel.menu.showAchievements) _SetAchievementsMenu()
 
   let switchesCode = helper.codePrepare(`
     private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
@@ -125,439 +126,32 @@ function finalize() {
     let scenesCode = ''
 
     AndroidVisualNovel.scenes.forEach((scene, i) => {
-      savesSwitchCode += helper.sceneEach(scene)
+      savesSwitchCode += _ProcessSceneSave(scene)
 
       if (scene.next) {
-        const nextScene = AndroidVisualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
-        const finishScene = []
-
-        if (scene.next.item?.require?.fallback) {
-          const fallbackScene = AndroidVisualNovel.scenes.find((fScene) => fScene.name == scene.next.item.require.fallback)
-          const functionParams = []
-
-          if (fallbackScene.speech && !scene.speech) {
-            functionParams.push('true')
-          }
-          if (fallbackScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            functionParams.push('true')
-          }
-
-          scene.code = scene.code.replace('__PERFORVNM_FALLBACK_SCENE_PARAMS__', functionParams.join(', '))
-        }
-
-        if (scene.subScenes.length == 0) {
-          if (scene.effect || scene.music) {
-            finishScene.push(
-              helper.codePrepare(`
-                if (mediaPlayer != null) {
-                  mediaPlayer!!.stop()
-                  mediaPlayer!!.release()
-                  mediaPlayer = null
-                }\n`, 14
-              )
-            )
-          }
-        
-          if (scene.effect && scene.music) {
-            finishScene.push(
-              helper.codePrepare(`
-                if (mediaPlayer2 != null) {
-                  mediaPlayer2!!.stop()
-                  mediaPlayer2!!.release()
-                  mediaPlayer2 = null
-                }\n`, 14
-              )
-            )
-          }
-  
-          if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-            finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
-  
-          if (i == AndroidVisualNovel.scenes.length - 2)
-            finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
-  
-          finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
-
-          let code = '\n\n' + helper.codePrepare(`
-            findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-${finishScene.join('\n')}\n\n`, 8, 0)
-
-          const functionParams = []
-          if (nextScene.speech && i != AndroidVisualNovel.scenes.length - 2) functionParams.push('true')
-          if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
-
-          if (scene.speech && !nextScene.speech) {
-            code += helper.codePrepare(`
-              val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)
-              animationRectangleSpeech.duration = 500
-              animationRectangleSpeech.interpolator = LinearInterpolator()
-              animationRectangleSpeech.fillAfter = true
-
-              rectangleViewSpeech.startAnimation(animationRectangleSpeech)
-
-              val animationTextSpeech = AlphaAnimation(1f, 0f)
-              animationTextSpeech.duration = 500
-              animationTextSpeech.interpolator = LinearInterpolator()
-              animationTextSpeech.fillAfter = true
-
-              textViewSpeech.startAnimation(animationTextSpeech)
-
-              val animationAuthorSpeech = AlphaAnimation(${scene.speech.author.rectangle.opacity}f, 0f)
-              animationAuthorSpeech.duration = 500
-              animationAuthorSpeech.interpolator = LinearInterpolator()
-              animationAuthorSpeech.fillAfter = true
-
-              rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8
-            )
-
-            if (scene.speech.author?.name) {
-              code += helper.codePrepare('textViewAuthor.startAnimation(animationTextSpeech)\n\n', 0, 6, false)
-            }
-
-            code += helper.codePrepare(`
-              animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation?) {}
-
-                override fun onAnimationEnd(animation: Animation?) {
-                  scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
-                  scenesLength++
-
-                  ${nextScene.name}(${functionParams.join(', ')})
-                }
-
-                override fun onAnimationRepeat(animation: Animation?) {}
-              })\n`, 8
-            )
-          } else {
-            code += helper.codePrepare(`
-              scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
-              scenesLength++
-
-              ${nextScene.name}(${functionParams.join(', ')})\n`, 8
-            )
-          }
-
-          code += helper.codePrepare('}', 0, 4, false)
-
-          scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
-        } else {
-          const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-          const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
-
-          if (!subScene1 || !subScene2)
-            helper.logFatal('A subscene does not exist.')
-
-          subScene1.parent = scene.name
-          subScene2.parent = scene.name
-
-          const subFunctionParams = []
-          if (!scene.speech && subScene1.speech) {
-            subFunctionParams.push('true')
-          }
-          if (subScene1.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams.push('true')
-          }
-
-          const subFunctionParams2 = []
-          if (subScene2.speech && !scene.speech) {
-            subFunctionParams2.push('true')
-          }
-          if (subScene2.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams2.push('true')
-          }
-
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.join(', ')})`)
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.join(', ')})`)
-
-          scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
-        }
-
-        const functionParams2 = { function: [], switch: [] }
-        if (scene.speech) {
-          functionParams2.function.push('animate: Boolean')
-          functionParams2.switch.push('true')
-        }
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-          functionParams2.function.push('animateAuthor: Boolean')
-          functionParams2.switch.push('true')
-        }
-
-        const functionParams = []
-        if (scene.speech && !nextScene.speech) {
-          functionParams.push('true')
-        }
-        if (scene.speech?.author?.name && nextScene.speech && !nextScene.speech?.author?.name) {
-          functionParams.push('true')
-        }
-
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
-
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
-        scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams.join(', '))
-
-        if (scene.speech) {
-          const speechHandler = helper.codePrepare(`
-            if (animate) {
-              var i = 0
-
-              handler.postDelayed(object : Runnable {
-                override fun run() {
-                  if (i < speechText.length) {
-                    textViewSpeech.text = speechText.substring(0, i + 1)
-                    i++
-                    handler.postDelayed(this, textSpeed)
-                  }
-                }
-              }, textSpeed)
-            } else {
-              textViewSpeech.text = speechText
-            }\n`, 8, 0, false
-          )
-
-          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
-        }
+        const tmp = _ProcessWNextScene(i, scene, switchesCode, 'scene')
+        scene.code = tmp.code
+        switchesCode = tmp.switchesCode
       } else {
-        const oldScene = AndroidVisualNovel.scenes[i - 1]
-
-        const functionParams = { function: [], switch: [] }
-        if (scene.speech && !oldScene.speech) {
-          functionParams.function.push('animate: Boolean')
-          functionParams.switch.push('true')
-        }
-        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
-          functionParams.function.push('animateAuthor: Boolean')
-          functionParams.switch.push('true')
-        }
-
-        if (scene.subScenes.length != 0) {
-          const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-          const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
-
-          if (!subScene1 || !subScene2)
-            helper.logFatal('A subscene does not exist.')
-
-          subScene1.parent = scene.name
-          subScene2.parent = scene.name
-
-          const subFunctionParams = { function: [], switch: [] }
-          if (subScene1.speech && !scene.speech) {
-            subFunctionParams.switch.push('true')
-          }
-          if (subScene1.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams.switch.push('true')
-          }
-
-          const subFunctionParams2 = { function: [], switch: [] }
-          if (subScene2.speech && !scene.speech) {
-            subFunctionParams2.switch.push('true')
-          }
-          if (subScene2.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-            subFunctionParams2.switch.push('true')
-          }
-
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.switch.join(', ')})`)
-          scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
-        }
-
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
-
-        scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
-
-        if (scene.speech) {
-          const speechHandler = helper.codePrepare(`
-            var i = 0
-
-            handler.postDelayed(object : Runnable {
-              override fun run() {
-                if (i < speechText.length) {
-                  textViewSpeech.text = speechText.substring(0, i + 1)
-                  i++
-                  handler.postDelayed(this, textSpeed)
-                }
-              }
-            }, textSpeed)\n`, 8, 0, false
-          )
-
-          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
-        }
+        const tmp = _ProcessWONextScene(i, scene, switchesCode, 'scene')
+        scene.code = tmp.code
+        switchesCode = tmp.switchesCode
       }
 
       scenesCode += '\n\n' + scene.code
     })
 
     AndroidVisualNovel.subScenes.forEach((scene, i) => {
-      savesSwitchCode += helper.sceneEach(scene)
+      savesSwitchCode += _ProcessSceneSave(scene)
 
       if (scene.next.scene) {
-        const nextScene = AndroidVisualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
-
-        if (!nextScene)
-          helper.logFatal('Next scene does not exist.')
-
-        const finishScene = []
-
-        if (scene.effect || scene.music) {
-          finishScene.push(
-            helper.codePrepare(`
-              if (mediaPlayer != null) {
-                mediaPlayer!!.stop()
-                mediaPlayer!!.release()
-                mediaPlayer = null
-              }\n`, 12
-            )
-          )
-        }
-      
-        if (scene.effect && scene.music) {
-          finishScene.push(
-            helper.codePrepare(`
-              if (mediaPlayer2 != null) {
-                mediaPlayer2!!.stop()
-                mediaPlayer2!!.release()
-                mediaPlayer2 = null
-              }\n`, 12
-            )
-          )
-        }
-
-        if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-          finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 12, false))
-
-        if (i == AndroidVisualNovel.subScenes.length - 2)
-          finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 12, false))
-
-        finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 12, false))
-
-        let code = '\n\n' + helper.codePrepare(`
-          findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
-${finishScene.join('\n')}\n\n`, 6, 0)
-
-        const functionParams = []
-        if (nextScene.speech && i != AndroidVisualNovel.subScenes.length - 2) functionParams.push('true')
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
-
-        if (scene.speech && !nextScene.speech) {
-          code += helper.codePrepare(`
-            val animationRectangleSpeech = AlphaAnimation(${scene.speech.text.rectangle.opacity}f, 0f)
-            animationRectangleSpeech.duration = 500
-            animationRectangleSpeech.interpolator = LinearInterpolator()
-            animationRectangleSpeech.fillAfter = true
-
-            rectangleViewSpeech.startAnimation(animationRectangleSpeech)
-
-            val animationTextSpeech = AlphaAnimation(1f, 0f)
-            animationTextSpeech.duration = 500
-            animationTextSpeech.interpolator = LinearInterpolator()
-            animationTextSpeech.fillAfter = true
-
-            textViewSpeech.startAnimation(animationTextSpeech)
-
-            val animationAuthorSpeech = AlphaAnimation(${scene.speech.author.rectangle.opacity}f, 0f)
-            animationAuthorSpeech.duration = 500
-            animationAuthorSpeech.interpolator = LinearInterpolator()
-            animationAuthorSpeech.fillAfter = true
-
-            rectangleViewAuthor.startAnimation(animationAuthorSpeech)\n\n`, 8
-          )
-
-          if (scene.speech.author?.name) {
-            code += helper.codePrepare('textViewAuthor.startAnimation(animationTextSpeech)\n\n', 0, 6, false)
-          }
-
-          code += helper.codePrepare(`
-            animationAuthorSpeech.setAnimationListener(object : Animation.AnimationListener {
-              override fun onAnimationStart(animation: Animation?) {}
-
-              override fun onAnimationEnd(animation: Animation?) {
-                ${nextScene.name}(${functionParams.join(', ')})
-              }
-
-              override fun onAnimationRepeat(animation: Animation?) {}
-            })\n`, 8
-          )
-        } else {
-          code += helper.codePrepare(`${nextScene.name}(${functionParams.join(', ')})\n`, 0, 6, false)
-        }
-
-        code += helper.codePrepare('}', 0, 4, false)
-
-        scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
-
-        const functionParams2 = { function: [], switch: [] }
-        if (scene.speech) {
-          functionParams2.function.push('animate: Boolean')
-          functionParams2.switch.push('true')
-        }
-        if (nextScene.speech?.author?.name && scene.speech && !scene.speech?.author?.name) {
-          functionParams2.function.push('animateAuthor: Boolean')
-          functionParams2.switch.push('true')
-        }
-
-        scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
-
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
-
-        if (scene.speech) {
-          const speechHandler = helper.codePrepare(`
-            if (animate) {
-              var i = 0
-
-              handler.postDelayed(object : Runnable {
-                override fun run() {
-                  if (i < speechText.length) {
-                    textViewSpeech.text = speechText.substring(0, i + 1)
-                    i++
-                    handler.postDelayed(this, textSpeed)
-                  }
-                }
-              }, textSpeed)
-            } else {
-              textViewSpeech.text = speechText
-            }\n`, 8, 0, false
-          )
-
-          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
-        }
+        const tmp = _ProcessWNextScene(i, scene, switchesCode, 'subScene')
+        scene.code = tmp.code
+        switchesCode = tmp.switchesCode
       } else {
-        const oldScene = AndroidVisualNovel.scenes.find((pScene) => pScene.name == scene.parent)
-
-        if (!oldScene)
-          helper.logFatal('Parent scene does not exist.')
-
-        const functionParams = { function: [], switch: [] }
-        if (scene.speech && !oldScene.speech) {
-          functionParams.function.push('animate: Boolean')
-          functionParams.switch.push('true')
-        }
-        if (scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
-          functionParams.function.push('animateAuthor: Boolean')
-          functionParams.switch.push('true')
-        }
-
-        switchesCode += '\n' + helper.codePrepare(`${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
-
-        scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}`, '')
-        scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
-
-        if (scene.speech) {
-          const speechHandler = helper.codePrepare(`
-            var i = 0
-
-            handler.postDelayed(object : Runnable {
-              override fun run() {
-                if (i < speechText.length) {
-                  textViewSpeech.text = speechText.substring(0, i + 1)
-                  i++
-                  handler.postDelayed(this, textSpeed)
-                }
-              }
-            }, textSpeed)\n`, 8, 0, false
-          )
-
-          scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
-        }
+        const tmp = _ProcessWONextScene(i, scene, switchesCode, 'subScene')
+        scene.code = tmp.code
+        switchesCode = tmp.switchesCode
       }
 
       scenesCode += '\n\n' + scene.code
@@ -574,7 +168,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
   helper.writeFunction('Android', switchesCode)
 
   if (visualNovel.achievements.length != 0)
-    helper.writeFunction('Android', achievements._AchievementGive())
+    helper.writeFunction('Android', _AchievementGive())
 
   if (visualNovel.items.length != 0) {
     helper.writeFunction('Android', _ItemsParsingFunction())
@@ -628,7 +222,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
     helper.replace('Android', '__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
   } else {
-    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', helper.sceneEachFinalize(savesSwitchCode))
+    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', _FinalizeScenesSave(savesSwitchCode))
   }
 
   helper.replace('Android', '__PERFORVNM_HEADERS__', '')
@@ -803,7 +397,8 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
     helper.lastMessage(finished)
   })
 
-  let i = 0, j = AndroidVisualNovel.customXML.length - 1
+  let i = 0,
+      xmlLength = AndroidVisualNovel.customXML.length - 1
   while (AndroidVisualNovel.customXML.length > 0) {
     const customXML = AndroidVisualNovel.customXML.shift()
 
@@ -812,7 +407,7 @@ ${finishScene.join('\n')}\n\n`, 6, 0)
 
       helper.logOk(`Android custom XML (${customXML.path}) written.`, 'Android')
 
-      if (i++ == j) {
+      if (i++ == xmlLength) {
         finished[1] = true
 
         helper.lastMessage(finished)

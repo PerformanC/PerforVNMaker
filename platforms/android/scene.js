@@ -2,35 +2,14 @@
 /* TODO (unconfirmed): Set the scenes in order through a queue [ 'scene1', 'scene2', ... ] */
 
 import helper from '../main/helper.js'
+import { _GetResource, _AddResource, _FinalizeResources } from './helpers/optimizations.js'
+import { _GetSceneFParams } from './helpers/params.js'
 
+import { _AchievementWrapperGive } from './achievements.js'
 import { _ItemGive, _ItemRemove } from './items.js'
+import { _AddCustoms } from './custom.js'
 
 function init(options) {
-  const checks = {
-    'name': {
-      type: 'string',
-      notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
-      extraVerification: (param) => {
-        if (AndroidVisualNovel.scenes.find((scene) => scene.name == param))
-          helper.logFatal('A scene already exists with this name.')
-      }
-    },
-    'textColor': {
-      type: 'string'
-    },
-    'backTextColor': {
-      type: 'string'
-    },
-    'buttonsColor': {
-      type: 'string'
-    },
-    'footerTextColor': {
-      type: 'string'
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   return {
     name: options.name,
     type: 'normal',
@@ -59,103 +38,6 @@ function init(options) {
 }
 
 function addCharacter(scene, options) {
-  const checks = {
-    'name': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (scene.characters.find(character => character.name == param))
-          helper.logFatal('A character already exists with this name.')
-      }
-    },
-    'image': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    },
-    'position': {
-      type: 'object',
-      params: {
-        'side': {
-          type: 'string',
-          values: ['center', 'left', 'right']
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          },
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent.position.side != 'center'
-          }
-        }
-      }
-    },
-    'animations': {
-      type: 'array',
-      params: {
-        'type': {
-          type: 'string',
-          values: ['movement', 'jump', 'fadeIn', 'fadeOut', 'rotate', 'scale']
-        },
-        'side': {
-          type: 'string',
-          values: ['center', 'left', 'right'],
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'movement'
-          }
-        },
-        'margins': {
-          type: 'object',
-          params: {
-            'side': {
-              type: 'number'
-            },
-            'top': {
-              type: 'number'
-            }
-          },
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'movement'
-          },
-          required: false
-        },
-        'degrees': {
-          type: 'number',
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'rotate'
-          }
-        },
-        'scale': {
-          type: 'number',
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'scale'
-          }
-        },
-        'duration': {
-          type: 'number',
-          shouldCheck: (param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type != 'jump'
-          }
-        },
-        'delay': {
-          type: 'number',
-          required: false
-        }
-      },
-      extraVerification: (param) => {
-        if (param.delay != 0)
-          AndroidVisualNovel.internalInfo.hasDelayedAnimation = true
-      },
-      required: false
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.characters.push({ name: options.name, image: options.image, position: options.position, animations: options.animations })
 
   return scene
@@ -177,23 +59,6 @@ function addSpeech(scene, options) {
 }
 
 function addSoundEffects(scene, options) {
-  const checks = {
-    'sound': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    },
-    'delay': {
-      type: 'number',
-      extraVerification: (param) => {
-        if (param != 0)
-          AndroidVisualNovel.internalInfo.hasDelayedSoundEffect = true
-      },
-      required: false
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.effect = options
 
   AndroidVisualNovel.internalInfo.hasEffect = true
@@ -202,23 +67,6 @@ function addSoundEffects(scene, options) {
 }
 
 function addMusic(scene, options) {
-  const checks = {
-    'music': {
-      type: 'fileInitial',
-      basePath: `${visualNovel.info.paths.android}/app/src/main/res/raw/`
-    },
-    'delay': {
-      type: 'number',
-      extraVerification: (param) => {
-        if (param != 0)
-          AndroidVisualNovel.internalInfo.hasDelayedMusic = true
-      },
-      required: false
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.music = options
 
   AndroidVisualNovel.internalInfo.hasSceneMusic = true
@@ -239,42 +87,6 @@ function setNextScene(scene, options) {
 }
 
 function addSubScenes(scene, options) {
-  const checks = {
-    'text': {
-      type: 'string'
-    },
-    'item': {
-      type: 'object',
-      required: false,
-      params: {
-        'require': {
-          type: 'string',
-          extraVerification: (param) => {
-            if (!visualNovel.items.find((item) => item.id == param))
-              helper.logFatal(`The item '${param}' doesn't exist.`)
-          }
-        },
-        'remove': {
-          type: 'boolean',
-          required: false,
-          extraVerification: (param, additionalinfo) => {
-            if (param && !additionalinfo.parent?.item?.require)
-              helper.logFatal('You must specify an item to be removed once used.')
-          }
-        }
-      }
-    },
-    'scene': {
-      type: 'string',
-      extraVerification: (param) => {
-        if (AndroidVisualNovel.subScenes.find((subScene) => subScene.name == param))
-          helper.logFatal('A sub-scene already exists with this name.')
-      }
-    }
-  }
-
-  helper.verifyParams(checks, options)
-
   scene.subScenes = options
 
   return scene
@@ -309,7 +121,7 @@ function finalize(scene) {
       sceneCode += helper.codePrepare('imageView_scenario.startAnimation(animationFadeIn)\n\n', 0, 4, false)
   }
 
-  for (let character of scene.characters) {
+  scene.characters.forEach((character) => {
     switch (character.position.side) {
       case 'center': {
         sceneCode += helper.codePrepare(`
@@ -339,41 +151,29 @@ function finalize(scene) {
       case 'left': {
         let definitions = ''
 
+        const characterMargin = character.position.margins
+
         let marginSideSdp = null
-        if (character.position.margins.side != 0) {
-          marginSideSdp = helper.getResource(scene, { type: 'sdp', dp: character.position.margins.side })
-          scene = helper.addResource(scene, { type: 'sdp', dp: character.position.margins.side, spaces: 4 })
+        if (characterMargin.side != 0) {
+          marginSideSdp = _GetResource(scene, { type: 'sdp', dp: characterMargin.side })
+          scene = _AddResource(scene, { type: 'sdp', dp: characterMargin.side, spaces: 4 })
 
           if (marginSideSdp.definition) definitions += marginSideSdp.definition
         }
 
         let marginTopSdp = null
-        if (character.position.margins.top != 0) {
-          marginTopSdp = helper.getResource(scene, { type: 'sdp', dp: character.position.margins.top })
-          scene = helper.addResource(scene, { type: 'sdp', dp: character.position.margins.top, spaces: 4 })
+        if (characterMargin.top != 0) {
+          marginTopSdp = _GetResource(scene, { type: 'sdp', dp: characterMargin.top })
+          scene = _AddResource(scene, { type: 'sdp', dp: characterMargin.top, spaces: 4 })
 
           if (marginTopSdp.definition) definitions += marginTopSdp.definition
         }
 
         let layoutParams = helper.codePrepare(`layoutParams_${character.name}.setMargins(`, 0, 4, false)
-        if (character.position.margins.side != 0 && character.position.side == 'left') {
-          layoutParams += `${marginSideSdp.variable}, `
-        } else {
-          layoutParams += '0, '
-        }
 
-        if (character.position.margins.top != 0) {
-          layoutParams += `${marginTopSdp.variable}, `
-        } else {
-          layoutParams += '0, '
-        }
-
-        if (character.position.margins.side != 0 && character.position.side == 'right') {
-          layoutParams += `${marginSideSdp.variable}, `
-        } else {
-          layoutParams += '0, '
-        }
-
+        layoutParams += characterMargin.side != 0 && character.position.side == 'left' ? `${marginSideSdp.variable}, ` : '0, '
+        layoutParams += characterMargin.top != 0 ? `${marginTopSdp.variable}, ` : '0, '
+        layoutParams += characterMargin.side != 0 && character.position.side == 'right' ? `${marginSideSdp.variable}, ` : '0, '
         layoutParams += '0)'
 
         sceneCode += helper.codePrepare(`
@@ -403,11 +203,11 @@ function finalize(scene) {
       }
     }
 
-    let SPACE = '    '
+    let spaceAmount = 4
     const finalCode = []
 
-    if (scene.animations) {
-      SPACE += '    '
+    if (scene.transition) {
+      spaceAmount += 4
 
       sceneCode += helper.codePrepare(`
         imageView_${character.name}.startAnimation(animationFadeIn)
@@ -415,8 +215,8 @@ function finalize(scene) {
         animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
           override fun onAnimationStart(animation: Animation?) {}
 
-          override fun onAnimationEnd(animation: Animation?) {`, 4, 0, false
-      ) +
+          override fun onAnimationEnd(animation: Animation?) {\n`, 4, 0, false
+      )
 
       finalCode.push(
         helper.codePrepare(`
@@ -428,118 +228,116 @@ function finalize(scene) {
       )
     }
 
-    let i = 0
-
-    if (character.animations) for (let animation of character.animations) {
-      if (animation.delay != 0) {
-        sceneCode += helper.codePrepare(`
-          ${SPACE}handler.postDelayed(object : Runnable {
-          ${SPACE}  override fun run() {\n`, 10
-        )
-
-        finalCode.push(
-          helper.codePrepare(`
-            ${SPACE}  }
-            ${SPACE}}, ${animation.delay})\n`, 12
+    if (character.animations) {
+      character.animations.forEach((animation, i) => {
+        if (animation.delay != 0) {
+          sceneCode += helper.codePrepare(`
+            handler.postDelayed(object : Runnable {
+              override fun run() {\n`, 12, spaceAmount
           )
-        )
 
-        SPACE += '    '
-      }
-
-      if (animation.type == 'jump') {
-        sceneCode += helper.codePrepare(`
-          ${SPACE}imageView_${character.name}.animate()
-          ${SPACE}  .translationY(${animation.margins.top}f)
-          ${SPACE}  .setDuration(${animation.duration / 2})
-          ${SPACE}  .setInterpolator(OvershootInterpolator())
-          ${SPACE}  .setListener(object : Animator.AnimatorListener {
-          ${SPACE}    override fun onAnimationStart(animation: Animator) {}
-
-          ${SPACE}    override fun onAnimationEnd(animation: Animator) {
-          ${SPACE}      imageView_${character.name}.animate()
-          ${SPACE}        .translationY(0f)
-          ${SPACE}        .setDuration(${animation.duration / 2})
-          ${SPACE}        .setInterpolator(OvershootInterpolator())\n`, 10
-        )
-
-        finalCode.push(
-          helper.codePrepare(`
-            ${SPACE}  }
-
-            ${SPACE}  override fun onAnimationCancel(animation: Animator) {}
-
-            ${SPACE}  override fun onAnimationRepeat(animation: Animator) {}
-            ${SPACE}})\n`, 10
+          finalCode.push(
+            helper.codePrepare(`
+                }
+              }, ${animation.delay})\n`, 14, spaceAmount
+            )
           )
-        )
 
-        SPACE += '      '
-      } else {
-        sceneCode += helper.codePrepare(SPACE + `imageView_${character.name}.animate()\n`, 0, 0, false)
+          spaceAmount += 4
+        }
+
+        sceneCode += helper.codePrepare(`imageView_${character.name}.animate()\n`, 0, spaceAmount, false)
 
         switch (animation.type) {
           case 'movement': {
             sceneCode += helper.codePrepare(`
-              ${SPACE}.translationX(${(animation.side == 'center' ? `((frameLayout.width - imageView_${character.name}.width) / 2).toFloat()` : animation.margins.side)}f)
-              ${SPACE}.translationY(${(animation.side == 'center' ? `((frameLayout.height - imageView_${character.name}.height) / 2).toFloat()` : animation.margins.top)}f)\n`, 12
+              .translationX(${(animation.side == 'center' ? `((frameLayout.width - imageView_${character.name}.width) / 2).toFloat()` : animation.margins.side)}f)
+              .translationY(${(animation.side == 'center' ? `((frameLayout.height - imageView_${character.name}.height) / 2).toFloat()` : animation.margins.top)}f)\n`, 12, spaceAmount
             )
 
             break
           }
           case 'fadeIn':
           case 'fadeOut': {
-            sceneCode += helper.codePrepare(`${SPACE}.alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)\n`, 0, 2, false)
+            sceneCode += helper.codePrepare(`.alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)\n`, 0, 2 + spaceAmount, false)
 
             break
           }
           case 'rotate': {
-            sceneCode += helper.codePrepare(`${SPACE}.rotation(${animation.degrees}f)\n`, 0, 2, false)
+            sceneCode += helper.codePrepare(`.rotation(${animation.degrees}f)\n`, 0, 2 + spaceAmount, false)
 
             break
           }
           case 'scale': {
             sceneCode += helper.codePrepare(`
-              ${SPACE}.scaleX(${animation.scale}f)
-              ${SPACE}.scaleY(${animation.scale}f)\n`, 12
+              .scaleX(${animation.scale}f)
+              .scaleY(${animation.scale}f)\n`, 12, spaceAmount
             )
 
             break
           }
+          case 'jump': {
+            sceneCode += helper.codePrepare(`
+              .translationY(${animation.margins.top}f)
+              .setDuration(${animation.duration / 2})
+              .setInterpolator(OvershootInterpolator())
+              .setListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {}
+
+                override fun onAnimationEnd(animation: Animator) {
+                  imageView_${character.name}.animate()
+                    .translationY(0f)
+                    .setDuration(${animation.duration / 2})
+                    .setInterpolator(OvershootInterpolator())\n`, 12, spaceAmount
+            )
+
+            finalCode.push(
+              helper.codePrepare(`
+                  }
+
+                  override fun onAnimationCancel(animation: Animator) {}
+
+                  override fun onAnimationRepeat(animation: Animator) {}
+                })\n`, 14, spaceAmount
+              )
+            )
+
+            spaceAmount += 6
+          }
         }
 
-        sceneCode += helper.codePrepare(`
-          ${SPACE}  .setDuration(${animation.duration})
-          ${SPACE}  .setInterpolator(LinearInterpolator())\n`, 10
-        )
-      }
-
-      if (character.animations.length - 1 == i) {
-        sceneCode += helper.codePrepare(`${SPACE}.start()\n`, 0, 2, false)
-      } else {
-        sceneCode += helper.codePrepare(`
-          ${SPACE}.setListener(object : Animator.AnimatorListener {
-          ${SPACE}  override fun onAnimationStart(animation: Animator) {}
-
-          ${SPACE}  override fun onAnimationEnd(animation: Animator) {\n`, 8
-        )
-
-        finalCode.push(
-          helper.codePrepare(`
-            ${SPACE}  }
-
-            ${SPACE}  override fun onAnimationCancel(animation: Animator) {}
-
-            ${SPACE}  override fun onAnimationRepeat(animation: Animator) {}
-            ${SPACE}})
-            ${SPACE}.start()\n`, 10
+        if (animation.type != 'jump') {
+          sceneCode += helper.codePrepare(`
+            .setDuration(${animation.duration})
+            .setInterpolator(LinearInterpolator())\n`, 10, spaceAmount
           )
-        )
+        }
 
-        SPACE += '      '
-      }
+        if (character.animations.length - 1 == i) {
+          sceneCode += helper.codePrepare(`.start()\n`, 0, 2 + spaceAmount, false)
+        } else {
+          sceneCode += helper.codePrepare(`
+            .setListener(object : Animator.AnimatorListener {
+              override fun onAnimationStart(animation: Animator) {}
 
-      i++
+              override fun onAnimationEnd(animation: Animator) {\n`, 10, spaceAmount
+          )
+
+          finalCode.push(
+            helper.codePrepare(`
+                }
+
+                override fun onAnimationCancel(animation: Animator) {}
+
+                override fun onAnimationRepeat(animation: Animator) {}
+              })
+              .start()\n`, 12, spaceAmount
+            )
+          )
+
+          spaceAmount += 6
+        }
+      })
     }
 
     if (finalCode.length != 0) {
@@ -547,13 +345,13 @@ function finalize(scene) {
 
       sceneCode += finalCode.join('')
     }
-  }
+  })
 
   let sdp53 = null
 
   if (scene.speech) {
-    sdp53 = helper.getResource(scene, { type: 'sdp', dp: '53' })
-    scene = helper.addResource(scene, { type: 'sdp', dp: '53', spaces: 4 })
+    sdp53 = _GetResource(scene, { type: 'sdp', dp: '53' })
+    scene = _AddResource(scene, { type: 'sdp', dp: '53', spaces: 4 })
 
     sceneCode += helper.codePrepare(`
       val rectangleViewSpeech = RectangleView(this)
@@ -570,7 +368,7 @@ function finalize(scene) {
       sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
-    sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n`, 0, 4, false)
+    sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
     if (AndroidVisualNovel.scenes.length == 0 || !oldScene.speech) {
       sceneCode += helper.codePrepare(`
@@ -583,17 +381,15 @@ function finalize(scene) {
           rectangleViewSpeech.startAnimation(animationRectangleSpeech)
         } else {
           rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)
-        }\n\n`, 4, 0, false
+        }\n\n`, 4
       )
-    } else {
-      sceneCode += '\n'
     }
 
-    const speechTextSsp = helper.getResource(scene, { type: 'ssp', dp: scene.speech.text.fontSize })
-    scene = helper.addResource(scene, { type: 'ssp', dp: scene.speech.text.fontSize, spaces: 4 })
+    const speechTextSsp = _GetResource(scene, { type: 'ssp', dp: scene.speech.text.fontSize })
+    scene = _AddResource(scene, { type: 'ssp', dp: scene.speech.text.fontSize, spaces: 4 })
 
-    const sdp270 = helper.getResource(scene, { type: 'sdp', dp: '270' })
-    scene = helper.addResource(scene, { type: 'sdp', dp: '270', spaces: 4 })
+    const sdp270 = _GetResource(scene, { type: 'sdp', dp: '270' })
+    scene = _AddResource(scene, { type: 'sdp', dp: '270', spaces: 4 })
 
     sceneCode += helper.codePrepare(`
       frameLayout.addView(rectangleViewSpeech)
@@ -648,11 +444,11 @@ function finalize(scene) {
     sceneCode += helper.codePrepare('frameLayout.addView(rectangleViewAuthor)', 0, 4, false)
 
     if (scene.speech.author.name) {
-      const authorTextSsp = helper.getResource(scene, { type: 'ssp', dp: '13' })
-      scene = helper.addResource(scene, { type: 'ssp', dp: '13', spaces: 4 })
+      const authorTextSsp = _GetResource(scene, { type: 'ssp', dp: '13' })
+      scene = _AddResource(scene, { type: 'ssp', dp: '13', spaces: 4 })
 
-      const sdp135 = helper.getResource(scene, { type: 'sdp', dp: '155' })
-      scene = helper.addResource(scene, { type: 'sdp', dp: '155', spaces: 4 })
+      const sdp135 = _GetResource(scene, { type: 'sdp', dp: '155' })
+      scene = _AddResource(scene, { type: 'sdp', dp: '155', spaces: 4 })
 
       sceneCode += helper.codePrepare(`
 
@@ -671,8 +467,6 @@ function finalize(scene) {
 
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
-
-      const oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
 
       if (
         AndroidVisualNovel.scenes.length == 0 ||
@@ -710,10 +504,10 @@ function finalize(scene) {
     let finalCode = []
 
     if (scene.music) {
-      let SPACE = '    '
+      let spaceAmount = 4
 
       if (scene.music.delay != 0) {
-        SPACE += '    '
+        spaceAmount += 4
 
         sceneCode += helper.codePrepare(`
           handler.postDelayed(object : Runnable {
@@ -731,21 +525,21 @@ function finalize(scene) {
       }
 
       sceneCode += helper.codePrepare(`
-        ${SPACE}mediaPlayer = MediaPlayer.create(this, R.raw.${scene.music.music})
+        mediaPlayer = MediaPlayer.create(this, R.raw.${scene.music.music})
 
-        ${SPACE}if (mediaPlayer != null) {
-        ${SPACE}  mediaPlayer!!.start()
+        if (mediaPlayer != null) {
+          mediaPlayer!!.start()
 
-        ${SPACE}  mediaPlayer!!.setVolume(musicVolume, musicVolume)
+          mediaPlayer!!.setVolume(musicVolume, musicVolume)
 
-        ${SPACE}  mediaPlayer!!.setOnCompletionListener {
-        ${SPACE}    if (mediaPlayer != null) {
-        ${SPACE}      mediaPlayer!!.stop()
-        ${SPACE}      mediaPlayer!!.release()
-        ${SPACE}      mediaPlayer = null
-        ${SPACE}    }
-        ${SPACE}  }
-        ${SPACE}}\n`, 8
+          mediaPlayer!!.setOnCompletionListener {
+            if (mediaPlayer != null) {
+              mediaPlayer!!.stop()
+              mediaPlayer!!.release()
+              mediaPlayer = null
+            }
+          }
+        }\n`, 8, spaceAmount
       )
 
       if (finalCode.length != 0) {
@@ -758,10 +552,10 @@ function finalize(scene) {
     }
 
     if (scene.effect) for (let effect of scene.effect) {
-      let SPACE = '    '
+      let spaceAmount = 4
 
       if (effect.delay != 0) {
-        SPACE += '    '
+        spaceAmount += 4
 
         sceneCode += helper.codePrepare(`
           handler.postDelayed(object : Runnable {
@@ -782,21 +576,21 @@ function finalize(scene) {
       if (scene.music) mediaPlayerName = 'mediaPlayer2'
 
       sceneCode += helper.codePrepare(`
-        ${SPACE}${mediaPlayerName} = MediaPlayer.create(this@MainActivity, R.raw.${effect.sound})
+        ${mediaPlayerName} = MediaPlayer.create(this@MainActivity, R.raw.${effect.sound})
 
-        ${SPACE}if (${mediaPlayerName} != null) {
-        ${SPACE}  ${mediaPlayerName}!!.start()
+        if (${mediaPlayerName} != null) {
+          ${mediaPlayerName}!!.start()
 
-        ${SPACE}  ${mediaPlayerName}!!.setVolume(sEffectVolume, sEffectVolume)
+          ${mediaPlayerName}!!.setVolume(sEffectVolume, sEffectVolume)
 
-        ${SPACE}  ${mediaPlayerName}!!.setOnCompletionListener {
-        ${SPACE}    if (${mediaPlayerName} != null) {
-        ${SPACE}      ${mediaPlayerName}!!.stop()
-        ${SPACE}      ${mediaPlayerName}!!.release()
-        ${SPACE}      ${mediaPlayerName} = null
-        ${SPACE}    }
-        ${SPACE}  }
-        ${SPACE}}\n`, 8
+          ${mediaPlayerName}!!.setOnCompletionListener {
+            if (${mediaPlayerName} != null) {
+              ${mediaPlayerName}!!.stop()
+              ${mediaPlayerName}!!.release()
+              ${mediaPlayerName} = null
+            }
+          }
+        }\n`, 8, spaceAmount
       )
 
       if (finalCode.length != 0) {
@@ -855,11 +649,11 @@ function finalize(scene) {
     })
   }
 
-  const buttonSizeSsp = helper.getResource(scene, { type: 'ssp', dp: '8' })
-  scene = helper.addResource(scene, { type: 'ssp', dp: '8', spaces: 4 })
+  const buttonSizeSsp = _GetResource(scene, { type: 'ssp', dp: '8' })
+  scene = _AddResource(scene, { type: 'ssp', dp: '8', spaces: 4 })
 
-  const sdp15 = helper.getResource(scene, { type: 'sdp', dp: '15' })
-  scene = helper.addResource(scene, { type: 'sdp', dp: '15', spaces: 4 })
+  const sdp15 = _GetResource(scene, { type: 'sdp', dp: '15' })
+  scene = _AddResource(scene, { type: 'sdp', dp: '15', spaces: 4 })
 
   sceneCode += helper.codePrepare(`
     ${buttonSizeSsp.definition}val buttonSave = Button(this)
@@ -925,8 +719,8 @@ function finalize(scene) {
     })
   }
 
-  const sdp23 = helper.getResource(scene, { type: 'sdp', dp: '23' })
-  scene = helper.addResource(scene, { type: 'sdp', dp: '23', spaces: 4 })
+  const sdp23 = _GetResource(scene, { type: 'sdp', dp: '23' })
+  scene = _AddResource(scene, { type: 'sdp', dp: '23', spaces: 4 })
 
   sceneCode += helper.codePrepare(`
       val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() +__PERFORVNM_ITEMS_SAVER__ "}"
@@ -985,8 +779,8 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
   )
 
   if (AndroidVisualNovel.scenes.length != 0) {
-    const sdp46 = helper.getResource(scene, { type: 'sdp', dp: '46' })
-    scene = helper.addResource(scene, { type: 'sdp', dp: '46', spaces: 4 })
+    const sdp46 = _GetResource(scene, { type: 'sdp', dp: '46' })
+    scene = _AddResource(scene, { type: 'sdp', dp: '46', spaces: 4 })
 
     sceneCode += helper.codePrepare(`
       val buttonBack = Button(this)
@@ -1025,22 +819,19 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
     } else {
       oldScene = AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
 
-      const functionParams = []
+      let functionParams = { function: [], switch: [] }
       const olderOldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == oldScene.name)
 
-      if (olderOldScene) {
-        if (olderOldScene.speech && oldScene.speech) functionParams.push('false')
-        if (olderOldScene.speech?.author?.name && olderOldScene.speech && !olderOldScene.speech?.author?.name) functionParams.push('false')
-      }
+      if (olderOldScene) functionParams = _GetSceneFParams(oldScene, olderOldScene, 'false')
 
       if (AndroidVisualNovel.scenes.length == 1) {
-        sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.join(', ')})\n`, 0, 6, false)
+        sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.switch.join(', ')})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
           scenesLength--
           scenes.set(scenesLength, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
 
-          ${oldScene.name}(${functionParams.join(', ')})\n`, 4
+          ${oldScene.name}(${functionParams.switch.join(', ')})\n`, 4
         )
       }
     }
@@ -1053,11 +844,11 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
   }
 
   if (scene.subScenes.length == 2) {
-    const subScenesTextSsp = helper.getResource(scene, { type: 'ssp', dp: '12' })
-    scene = helper.addResource(scene, { type: 'ssp', dp: '12', spaces: 4 })
+    const subScenesTextSsp = _GetResource(scene, { type: 'ssp', dp: '12' })
+    scene = _AddResource(scene, { type: 'ssp', dp: '12', spaces: 4 })
 
-    const sdp120 = helper.getResource(scene, { type: 'sdp', dp: '120' })
-    scene = helper.addResource(scene, { type: 'sdp', dp: '120', spaces: 4 })
+    const sdp120 = _GetResource(scene, { type: 'sdp', dp: '120' })
+    scene = _AddResource(scene, { type: 'sdp', dp: '120', spaces: 4 })
 
     sceneCode += helper.codePrepare(`
       ${subScenesTextSsp.definition}val buttonSubScenes = Button(this)
@@ -1077,12 +868,8 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
       buttonSubScenes.layoutParams = layoutParamsSubScenes\n\n`, 2
     )
 
-    const functionParams = []
-    if (scene.subScenes[0].speech && !scene.speech) functionParams.push('true')
-    if (scene.subScenes[0].speech?.author?.name && scene.speech && !scene.speech?.author?.name && i + 1 != AndroidVisualNovel.scenes.length - 1) functionParams.push('true')
-
-    const sdp150 = helper.getResource(scene, { type: 'sdp', dp: '150' })
-    scene = helper.addResource(scene, { type: 'sdp', dp: '150', spaces: 4 })
+    const sdp150 = _GetResource(scene, { type: 'sdp', dp: '150' })
+    scene = _AddResource(scene, { type: 'sdp', dp: '150', spaces: 4 })
 
     let requireItems = [ '', '' ]
     let i = 0
@@ -1149,392 +936,9 @@ ${requireItems[1]}${finishScene.join('\n\n')}
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
 
-  /* TODO: Centralized private function that will generate custom code */
-  scene.custom.forEach((custom, index) => {
-    switch (custom.type) {
-      case 'text': {
-        const customTextSsp = helper.getResource(scene, { type: 'ssp', dp: custom.fontSize })
-        scene = helper.addResource(scene, { type: 'ssp', dp: custom.fontSize, spaces: 4 })
-
-        sceneCode += helper.codePrepare(`
-          ${customTextSsp.definition}val textViewCustomText${index} = TextView(this)
-          textViewCustomText${index}.text = "${custom.text}"
-          textViewCustomText${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
-          textViewCustomText${index}.setTextColor(0xFF${custom.color}.toInt())
-
-          val layoutParamsCustomText${index} = LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT
-          )\n\n`, 8
-        )
-
-        switch (custom.position.side) {
-          case 'left':
-          case 'right': {
-            let definitions = ''
-
-            let marginTopSdp = null
-            if (custom.position.margins.top != 0) {
-              marginTopSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.top })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
-
-              if (marginTopSdp.definition) definitions += marginTopSdp.definition
-            }
-
-            let marginSideSdp = null
-            if (custom.position.margins.side != 0) {
-              marginSideSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.side })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
-
-              if (marginSideSdp.definition) definitions += marginSideSdp.definition
-            }
-
-            customCode += helper.codePrepare(`
-              ${definitions}layoutParamsCustomText${index}.gravity = Gravity.TOP or Gravity.START
-              layoutParamsCustomText${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
-
-              textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
-
-              frameLayout.addView(textViewCustomText${index})\n\n`, 10
-            )
-
-            break
-          }
-          case 'center': {
-            sceneCode += helper.codePrepare(`
-              layoutParamsCustomText${index}.gravity = Gravity.CENTER
-
-              textViewCustomText${index}.layoutParams = layoutParamsCustomText${index}
-
-              frameLayout.addView(textViewCustomText${index})\n\n`, 12
-            )
-
-            break
-          }
-        }
-
-        break
-      }
-      case 'button': {
-        const customTextSsp = helper.getResource(scene, { type: 'ssp', dp: custom.fontSize })
-        scene = helper.addResource(scene, { type: 'ssp', dp: custom.fontSize, spaces: 4 })
-
-        sceneCode += helper.codePrepare(`
-          ${customTextSsp.definition}val buttonCustomButton${index} = Button(this)
-          buttonCustomButton${index}.text = "${custom.text}"
-          buttonCustomButton${index}.setTextSize(TypedValue.COMPLEX_UNIT_PX, ${customTextSsp.variable})
-          buttonCustomButton${index}.setTextColor(0xFF${custom.color}.toInt())
-          buttonCustomButton${index}.background = null__PERFORVNM_OPTIMIZED_RESOURCE__
-
-          val layoutParamsCustomButton${index} = LayoutParams(\n`, 6
-        )
-
-        switch (custom.height) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customHeight = helper.getResource(scene, { type: 'sdp', dp: custom.height })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.height, spaces: 4 })
-
-            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
-
-            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
-          }
-        }
-
-        switch (custom.width) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customWidth = helper.getResource(scene, { type: 'sdp', dp: custom.width })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.width, spaces: 4 })
-
-            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
-
-            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
-          }
-        }
-
-        sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
-        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
-
-        switch (custom.position.side) {
-          case 'left':
-          case 'right': {
-            let definitions = ''
-
-            let marginTopSdp = null
-            if (custom.position.margins.top != 0) {
-              marginTopSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.top })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
-
-              if (marginTopSdp.definition) definitions += marginTopSdp.definition
-            }
-
-            let marginSideSdp = null
-            if (custom.position.margins.side != 0) {
-              marginSideSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.side })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
-
-              if (marginSideSdp.definition) definitions += marginSideSdp.definition
-            }
-
-            sceneCode += helper.codePrepare(`
-              ${definitions}layoutParamsCustomButton${index}.gravity = Gravity.TOP or Gravity.START
-              layoutParamsCustomButton${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
-
-              buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
-
-              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
-            )
-
-            break
-          }
-          case 'center': {
-            sceneCode += helper.codePrepare(`
-              layoutParamsCustomButton${index}.gravity = Gravity.CENTER
-
-              buttonCustomButton${index}.layoutParams = layoutParamsCustomButton${index}
-
-              frameLayout.addView(buttonCustomButton${index})\n\n`, 10
-            )
-
-            break
-          }
-        }
-
-        break
-      }
-      case 'rectangle': {
-        sceneCode += helper.codePrepare(`
-          val rectangleViewCustomRectangle${index} = RectangleView(this)__PERFORVNM_OPTIMIZED_RESOURCE__
-
-          val layoutParamsCustomRectangle${index} = LayoutParams(\n`, 6
-        )
-
-        switch (custom.height) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customHeight = helper.getResource(scene, { type: 'sdp', dp: custom.height })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.height, spaces: 4 })
-
-            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__${customHeight.additionalSpace}`)
-
-            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
-          }
-        }
-
-        switch (custom.width) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customWidth = helper.getResource(scene, { type: 'sdp', dp: custom.width })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.width, spaces: 4 })
-
-            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
-
-            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
-          }
-        }
-
-        sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', '')
-        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
-
-        switch (custom.position.side) {
-          case 'left':
-          case 'right': {
-            let definitions = ''
-
-            let marginTopSdp = null
-            if (custom.position.margins.top != 0) {
-              marginTopSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.top })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
-
-              if (marginTopSdp.definition) definitions += marginTopSdp.definition
-            }
-
-            let marginSideSdp = null
-            if (custom.position.margins.side != 0) {
-              marginSideSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.side })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
-
-              if (marginSideSdp.definition) definitions += marginSideSdp.definition
-            }
-
-            sceneCode += helper.codePrepare(`
-              ${definitions}layoutParamsCustomRectangle${index}.gravity = Gravity.TOP or Gravity.START
-              layoutParamsCustomRectangle${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
-
-              rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
-
-              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
-            )
-
-            break
-          }
-          case 'center': {
-            sceneCode += helper.codePrepare(`
-              layoutParamsCustomRectangle${index}.gravity = Gravity.CENTER
-
-              rectangleViewCustomRectangle${index}.layoutParams = layoutParamsCustomRectangle${index}
-
-              frameLayout.addView(rectangleViewCustomRectangle${index})\n\n`, 10
-            )
-
-            break
-          }
-        }
-
-        break
-      }
-      case 'image': {
-        sceneCode += helper.codePrepare(`
-          val imageViewCustomImage${index} = ImageView(this)
-          imageViewCustomImage${index}.setImageResource(R.drawable.${custom.image})
-
-          __PERFORVNM_OPTIMIZED_RESOURCE__
-
-          val layoutParamsCustomImage${index} = LayoutParams(\n`, 6
-        )
-
-        switch (custom.height) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customHeight = helper.getResource(scene, { type: 'sdp', dp: custom.height })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.height, spaces: 4 })
-
-            if (customHeight.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customHeight.definition}__PERFORVNM_OPTIMIZED_RESOURCE__`)
-
-            sceneCode += helper.codePrepare(`${customHeight.variable},\n`, 0, 6, false)
-          }
-        }
-
-        switch (custom.width) {
-          case 'match': {
-            sceneCode += helper.codePrepare('LayoutParams.MATCH_PARENT,\n', 0, 6, false)
-
-            break
-          }
-          case 'wrap': {
-            sceneCode += helper.codePrepare('LayoutParams.WRAP_CONTENT,\n', 0, 6, false)
-
-            break
-          }
-          default: {
-            const customWidth = helper.getResource(scene, { type: 'sdp', dp: custom.width })
-            scene = helper.addResource(scene, { type: 'sdp', dp: custom.width, spaces: 4 })
-
-            if (customWidth.definition) sceneCode = sceneCode.replace('__PERFORVNM_OPTIMIZED_RESOURCE__', `\n\n    ${customWidth.definition}`)
-
-            sceneCode += helper.codePrepare(`${customWidth.variable},\n`, 0, 6, false)
-          }
-        }
-
-        sceneCode += helper.codePrepare(')\n\n', 0, 4, false)
-
-        switch (custom.position.side) {
-          case 'left':
-          case 'right': {
-            let definitions = ''
-
-            let marginTopSdp = null
-            if (custom.position.margins.top != 0) {
-              marginTopSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.top })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.top, spaces: 4 })
-
-              if (marginTopSdp.definition) definitions += marginTopSdp.definition
-            }
-
-            let marginSideSdp = null
-            if (custom.position.margins.side != 0) {
-              marginSideSdp = helper.getResource(scene, { type: 'sdp', dp: custom.position.margins.side })
-              scene = helper.addResource(scene, { type: 'sdp', dp: custom.position.margins.side, spaces: 4 })
-
-              if (marginSideSdp.definition) definitions += marginSideSdp.definition
-            }
-
-            sceneCode += helper.codePrepare(`
-              ${definitions}layoutParamsCustomImage${index}.gravity = Gravity.TOP or Gravity.START
-              layoutParamsCustomImage${index}.setMargins(${custom.position.margins.side != 0 ? marginSideSdp.variable : '0'}, 0, ${custom.position.margins.top != 0 ? marginTopSdp.variable : '0'}, 0)
-
-              imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
-
-              frameLayout.addView(imageViewCustomImage${index})\n\n`, 10
-            )
-
-            break
-          }
-          case 'center': {
-            sceneCode += helper.codePrepare(`
-              layoutParamsCustomImage${index}.gravity = Gravity.CENTER
-
-              imageViewCustomImage${index}.layoutParams = layoutParamsCustomImage${index}
-
-              frameLayout.addView(imageViewCustomImage${index})`, 10
-            )
-
-            break
-          }
-        }
-
-        break
-      }
-    }
-  })
-
-  if (scene.achievements.length != 0) {
-    sceneCode += helper.codePrepare(`
-      ${scene.achievements.map((achievement) => {
-        if (visualNovel.optimizations.hashAchievementIds)
-          return `giveAchievement(${helper.getAchievementId(achievement.id)})`
-        else
-          return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
-      }).join('\n')}\n\n`, 2)
-  } /* TODO: Move this to private function of achievements.js */
-
-  scene.items.give.forEach((item) => sceneCode += _ItemGive(item))
+  if (scene.custom.length != 0 ) sceneCode += _AddCustoms(scene, scene.custom)
+  if (scene.achievements.length != 0) sceneCode += _AchievementWrapperGive(scene.achievements)
+  if (scene.items.give.length != 0) scene.items.give.forEach((item) => sceneCode += _ItemGive(item))
 
   if (scene.next?.scene) {
     let nextCode = helper.codePrepare(`${scene.next.scene}(__PERFORVNM_NEXT_SCENE_PARAMS__)`, 0, 10, false)
@@ -1567,7 +971,7 @@ ${nextCode}
     )
   }
 
-  sceneCode = helper.finalizeResources(scene, sceneCode)
+  sceneCode = _FinalizeResources(scene, sceneCode)
 
   if (scene.type == 'normal') AndroidVisualNovel.scenes.push({ ...scene, code: sceneCode })
   else AndroidVisualNovel.subScenes.push({ ...scene, code: sceneCode })

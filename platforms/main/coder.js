@@ -1,6 +1,6 @@
 import androidCoder from '../android/coder.js'
 
-global.visualNovel = { info: null, achievements: [], items: [], optimizations: {} }
+global.visualNovel = { info: null, scenes: {}, subScenes: {}, achievements: [], items: [], optimizations: {} }
 
 import helper from './helper.js'
 
