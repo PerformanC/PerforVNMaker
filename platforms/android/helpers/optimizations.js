@@ -17,50 +17,18 @@ export function _AddResource(page, resource) {
 export function _GetResource(page, resource) {
   const cResource = page.resources[`${resource.dp}${resource.type}`]
 
-  if (resource.type == 'sdp') {
-    if (!visualNovel.optimizations.reuseResources) return {
-      definition: '',
-      inlined: `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`,
-      variable: `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`,
-      additionalSpace: '\n'
-    }
+  if (!visualNovel.optimizations.reuseResources) return {
+    definition: '',
+    inlined: `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.${resource.type}.R.dimen._${resource.dp}${resource.type})`,
+    variable: `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`,
+    additionalSpace: '\n'
+  }
 
-    if (cResource) return {
-      definition: '',
-      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
-      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
-      additionalSpace: '\n'
-    }
-    else {
-      return {
-        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
-        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
-        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
-        additionalSpace: '\n\n'
-      }
-    }
-  } else if (resource.type == 'ssp') {
-    if (!visualNovel.optimizations.reuseResources) return {
-      definition: '',
-      inlined: `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
-      variable: `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`,
-      additionalSpace: '\n'
-    }
-
-    if (cResource) return {
-      definition: '',
-      inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
-      variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
-      additionalSpace: '\n'
-    }
-    else {
-      return {
-        definition: `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
-        inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
-        variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
-        additionalSpace: '\n\n'
-      }
-    }
+  return {
+    definition: cResource ? `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__` : '',
+    inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
+    variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
+    additionalSpace: cResource ? '\n\n' : ''
   }
 }
 
@@ -86,11 +54,7 @@ export function _FinalizeResources(page, code) {
     if (variableAmount == 1) {
       code = code.replace(defineRegex, '')
 
-      if (resource.type == 'sdp') {
-        code = code.replace(variableRegex, `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`)
-      } else {
-        code = code.replace(variableRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
-      }
+      code = code.replace(variableRegex, `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.resource.type.R.dimen._${resource.dp}${resource.type})`)
     }
 
     let spaces = ''
@@ -98,15 +62,9 @@ export function _FinalizeResources(page, code) {
       spaces += ' '
     }
 
-    if (resource.type == 'sdp') {
-      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})${resource.newLines ? resource.newLines : '\n\n'}${spaces}`)
-      code = code.replace(inlineRegex, `resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${resource.dp}${resource.type})`)
-      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
-    } else {
-      code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})${resource.newLines ? resource.newLines : '\n\n'}${spaces}`)
-      code = code.replace(inlineRegex, `resources.getDimension(com.intuit.ssp.R.dimen._${resource.dp}${resource.type})`)
-      code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
-    }
+    code = code.replace(defineRegex, `val ${resource.type}${resource.dp} = resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.${resource.type}.R.dimen._${resource.dp}${resource.type})${resource.newLines ? resource.newLines : '\n\n'}${spaces}`)
+    code = code.replace(inlineRegex, `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.${resource.type}.R.dimen._${resource.dp}${resource.type})`)
+    code = code.replace(variableRegex, `${resource.type}${resource.dp}`)
   })
 
   return code
