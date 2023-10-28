@@ -8,12 +8,7 @@ import { _ProcessWNextScene, _ProcessWONextScene, _ProcessSceneSave, _FinalizeSc
 import { _SetAchievementsMenu, _AchievementGive } from './achievements.js'
 import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
 
-global.AndroidVisualNovel = { menu: null, internalInfo: {}, code: '', scenes: [], subScenes: [], achievements: [], items: [], customXML: [] }
-global.PerforVNM = {
-  codeGeneratorVersion: '1.23.0',
-  generatedCodeVersion: '1.21.0',
-  repository: 'https://github.com/PerformanC/PerforVNMaker'
-}
+global.AndroidVisualNovel = { menu: null, internalInfo: {}, code: '', scenes: {}, subScenes: {}, achievements: [], items: [], customXML: [] }
 
 function init(options) {
   helper.logOk('Starting VN, coding main code.', 'Android')
@@ -122,39 +117,48 @@ function finalize() {
 
   let savesSwitchCode = ''
 
-  if (AndroidVisualNovel.scenes.length) {
+  const SceneKeys = Object.keys(visualNovel.scenes)
+  const SubSceneKeys = Object.keys(visualNovel.subScenes)
+
+  if (visualNovel.scenesLength) {
     let scenesCode = ''
 
-    AndroidVisualNovel.scenes.forEach((scene, i) => {
+    SceneKeys.forEach((key, i) => {
+      const scene = visualNovel.scenes[key]
+      let code = AndroidVisualNovel.scenes[key]
+
       savesSwitchCode += _ProcessSceneSave(scene)
 
       if (scene.next) {
-        const tmp = _ProcessWNextScene(i, scene, switchesCode, 'scene')
-        scene.code = tmp.code
+        const tmp = _ProcessWNextScene(i, scene, code, switchesCode, 'scene')
+        code = tmp.code
         switchesCode = tmp.switchesCode
       } else {
-        const tmp = _ProcessWONextScene(i, scene, switchesCode, 'scene')
-        scene.code = tmp.code
+        const tmp = _ProcessWONextScene(i, SceneKeys, scene, code, switchesCode, 'scene')
+        code = tmp.code
         switchesCode = tmp.switchesCode
       }
 
-      scenesCode += '\n\n' + scene.code
+      scenesCode += '\n\n' + code
     })
 
-    AndroidVisualNovel.subScenes.forEach((scene, i) => {
+    SubSceneKeys.forEach((key, i) => {
+      const scene = visualNovel.subScenes[key]
+      let code = AndroidVisualNovel.subScenes[key]
+
       savesSwitchCode += _ProcessSceneSave(scene)
 
       if (scene.next.scene) {
-        const tmp = _ProcessWNextScene(i, scene, switchesCode, 'subScene')
-        scene.code = tmp.code
+        const tmp = _ProcessWNextScene(i, scene, code, switchesCode, 'subScene')
+        code = tmp.code
         switchesCode = tmp.switchesCode
       } else {
-        const tmp = _ProcessWONextScene(i, scene, switchesCode, 'subScene')
-        scene.code = tmp.code
+        const tmp = _ProcessWONextScene(i, SceneKeys, scene, code, switchesCode, 'subScene')
+        code = tmp.code
         switchesCode = tmp.switchesCode
       }
 
-      scenesCode += '\n\n' + scene.code
+      scenesCode += '\n\n' + code
     })
 
     helper.replace('Android', '__PERFORVNM_SCENES__', `${scenesCode}__PERFORVNM_SCENES__`)
@@ -183,7 +187,7 @@ function finalize() {
   helper.replace('Android', '__PERFORVNM_SCENES__', '')
   helper.replace('Android', '__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('Android', '__PERFORVNM_CLASSES__', '')
-  helper.replace('Android', '__PERFORVNM_MULTI_PATH__', AndroidVisualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(AndroidVisualNovel.scenes[0].name)})` : '// No scenes created.')
+  helper.replace('Android', '__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[SceneKeys[0]].name)})` : '// No scenes created.')
   if (!visualNovel.optimizations.preCalculateRounding) {
     const defaultSaveSwitchCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
@@ -251,8 +255,13 @@ function finalize() {
       releaseCode = '// No music to release.'
     }
 
+    const scene = visualNovel.scenes[SceneKeys[0]]
+
+    const functionParams = []
+    if (scene.speech || scene.subScenes.length != 0) functionParams.push('true')
+
     menuCode += helper.codePrepare(`
-        ${AndroidVisualNovel.scenes.length != 0 ? `${AndroidVisualNovel.scenes[0].name}(${(AndroidVisualNovel.scenes[0].speech ? 'true' : '')})` : '// No scenes created.'}
+        ${visualNovel.scenes.length != 0 ? `${scene.name}(${functionParams.join(', ')})` : '// No scenes created.'}
       }`, 2
     )
 
@@ -260,10 +269,10 @@ function finalize() {
     helper.replace('Android', /__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
   }
 
-  helper.replace('Android', /__PERFORVNM_SCENES_LENGTH__/g, AndroidVisualNovel.scenes.length + AndroidVisualNovel.subScenes.length)
+  helper.replace('Android', /__PERFORVNM_SCENES_LENGTH__/g, visualNovel.scenes.length + visualNovel.subScenes.length)
 
   let addHeaders = helper.codePrepare(`
-    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${AndroidVisualNovel.scenes.length + AndroidVisualNovel.subScenes.length}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
+    private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenesLength + visualNovel.subScenesLength}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
     private var scenesLength = 1\n`, 2
   )
 

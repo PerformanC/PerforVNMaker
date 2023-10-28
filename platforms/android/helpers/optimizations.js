@@ -25,7 +25,7 @@ export function _GetResource(page, resource) {
   }
 
   return {
-    definition: cResource ? `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__` : '',
+    definition: cResource ? '' : `__PERFORVNM_${resource.dp}_${resource.type}_DEFINE__`,
     inlined: `__PERFORVNM_${resource.dp}_${resource.type}_INLINE__`,
     variable: `__PERFORVNM_${resource.dp}_${resource.type}_VARIABLE__`,
     additionalSpace: cResource ? '\n\n' : ''
@@ -54,7 +54,7 @@ export function _FinalizeResources(page, code) {
     if (variableAmount == 1) {
       code = code.replace(defineRegex, '')
 
-      code = code.replace(variableRegex, `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.resource.type.R.dimen._${resource.dp}${resource.type})`)
+      code = code.replace(variableRegex, `resources.getDimension${resource.type == 'sdp' ? 'PixelSize' : ''}(com.intuit.${resource.type}.R.dimen._${resource.dp}${resource.type})`)
     }
 
     let spaces = ''

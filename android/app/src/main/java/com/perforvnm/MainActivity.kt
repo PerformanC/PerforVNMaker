@@ -175,7 +175,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene1()
+      scene1(true)
     }
 
     frameLayout.addView(buttonStart)
@@ -340,7 +340,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene1()
+      scene1(true)
     }
 
     frameLayout.addView(buttonStart)
@@ -559,7 +559,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene1()
+      scene1(true)
     }
 
     frameLayout.addView(buttonStart)
@@ -1025,7 +1025,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene1()
+      scene1(true)
     }
 
     frameLayout.addView(buttonStart)
@@ -1388,7 +1388,7 @@ class MainActivity : Activity() {
         mediaPlayer = null
       }
 
-      scene1()
+      scene1(true)
     }
 
     frameLayout.addView(buttonStart)
@@ -1563,7 +1563,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene1() {
+  private fun scene1(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -1578,7 +1578,7 @@ class MainActivity : Activity() {
 
     frameLayout.addView(imageView_scenario)
 
-    imageView_scenario.startAnimation(animationFadeIn)
+    if (animate) imageView_scenario.startAnimation(animationFadeIn)
 
     val imageView_Pedro = ImageView(this)
     imageView_Pedro.setImageResource(R.raw.pedro_staring)
@@ -1595,55 +1595,59 @@ class MainActivity : Activity() {
 
     frameLayout.addView(imageView_Pedro)
 
-    imageView_Pedro.startAnimation(animationFadeIn)
+    if (animate) {
+      imageView_Pedro.startAnimation(animationFadeIn)
 
-    animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
-      override fun onAnimationStart(animation: Animation?) {}
+      animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
+        override fun onAnimationStart(animation: Animation?) {}
 
-      override fun onAnimationEnd(animation: Animation?) {
-        imageView_Pedro.animate()
-          .translationY(-10f)
-          .setDuration(500)
-          .setInterpolator(OvershootInterpolator())
-          .setListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {}
+        override fun onAnimationEnd(animation: Animation?) {
+          imageView_Pedro.animate()
+            .translationY(-10f)
+            .setDuration(500)
+            .setInterpolator(OvershootInterpolator())
+            .setListener(object : Animator.AnimatorListener {
+              override fun onAnimationStart(animation: Animator) {}
 
-            override fun onAnimationEnd(animation: Animator) {
-              imageView_Pedro.animate()
-                .translationY(0f)
-                .setDuration(500)
-                .setInterpolator(OvershootInterpolator())
-                .setListener(object : Animator.AnimatorListener {
-                  override fun onAnimationStart(animation: Animator) {}
+              override fun onAnimationEnd(animation: Animator) {
+                imageView_Pedro.animate()
+                  .translationY(0f)
+                  .setDuration(500)
+                  .setInterpolator(OvershootInterpolator())
+                  .setListener(object : Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator) {}
 
-                  override fun onAnimationEnd(animation: Animator) {
-                    handler.postDelayed(object : Runnable {
-                      override fun run() {
-                        imageView_Pedro.animate()
-                          .translationX(-10f)
-                          .translationY(0f)
-                          .setDuration(1000)
-                          .setInterpolator(LinearInterpolator())
-                          .start()
-                      }
-                    }, 1000)
-                  }
+                    override fun onAnimationEnd(animation: Animator) {
+                      handler.postDelayed(object : Runnable {
+                        override fun run() {
+                          imageView_Pedro.animate()
+                            .translationX(-10f)
+                            .translationY(0f)
+                            .setDuration(1000)
+                            .setInterpolator(LinearInterpolator())
+                            .start()
+                        }
+                      }, 1000)
+                    }
 
-                  override fun onAnimationCancel(animation: Animator) {}
+                    override fun onAnimationCancel(animation: Animator) {}
 
-                  override fun onAnimationRepeat(animation: Animator) {}
-                })
-                .start()
-            }
+                    override fun onAnimationRepeat(animation: Animator) {}
+                  })
+                  .start()
+              }
 
-            override fun onAnimationCancel(animation: Animator) {}
+              override fun onAnimationCancel(animation: Animator) {}
 
-            override fun onAnimationRepeat(animation: Animator) {}
-          })
+              override fun onAnimationRepeat(animation: Animator) {}
+            })
         }
 
         override fun onAnimationRepeat(animation: Animation?) {}
       })
+    } else {
+      imageView_Pedro.translationX = -10f
+    }
 
     mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
 
@@ -1789,6 +1793,9 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
+      scenes.set(scenesLength, 1722916383)
+      scenesLength++
+
       scene2(true)
     }
 
@@ -1821,6 +1828,9 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
+      scenes.set(scenesLength, 1722916384)
+      scenesLength++
+
       scene3(true)
     }
 
@@ -1828,8 +1838,10 @@ class MainActivity : Activity() {
 
     giveAchievement(1183596997)
 
-    items.set(itemsLength, 1789536792)
-    itemsLength++
+    if (!items.contains(1789536792)) {
+      items.set(itemsLength, 1789536792)
+      itemsLength++
+    }
 
     setContentView(frameLayout)
   }
@@ -2489,12 +2501,10 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      val scene = scenes.get(scenesLength - 1)
-
       scenesLength--
       scenes.set(scenesLength, 0)
 
-      switchScene(scene)
+      scene4(false)
     }
 
     frameLayout.addView(buttonBack)
@@ -2739,7 +2749,10 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene1()
+      scenesLength--
+      scenes.set(scenesLength, 0)
+
+      scene1(false)
     }
 
     frameLayout.addView(buttonBack)
@@ -2995,7 +3008,10 @@ class MainActivity : Activity() {
 
       findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)
 
-      scene1()
+      scenesLength--
+      scenes.set(scenesLength, 0)
+
+      scene1(false)
     }
 
     frameLayout.addView(buttonBack)
@@ -3016,7 +3032,7 @@ class MainActivity : Activity() {
 
   private fun switchScene(scene: Int) {
     when (scene) {
-      1722916382 -> scene1()
+      1722916382 -> scene1(false)
       1722916385 -> scene4(false)
       1722916386 -> scene5()
       969329308 -> no_items()

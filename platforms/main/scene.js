@@ -8,7 +8,7 @@ function init(options) {
       type: 'string',
       notValues: ['onCreate', 'onDestroy', 'onResume', 'onPause', 'menu', 'about', 'settings', 'saves'],
       extraVerification: (param) => {
-        if (visualNovel.scenes[param])
+        if (visualNovel.scenes[param] || visualNovel.subScenes[param])
           helper.logFatal('A scene already exists with this name.')
       }
     },
@@ -340,16 +340,25 @@ function addSubScenes(scene, options) {
 }
 
 function finalize(scene) {
-  if (scene.type == 'normal') visualNovel.scenes = {
-    ...visualNovel.scenes,
-    [scene.name]: scene
-  }
-  else visualNovel.subScenes = {
-    ...visualNovel.subScenes,
-    [scene.name]: scene
+  const response = androidScene.finalize(scene)
+
+  if (scene.type == 'normal') {
+    visualNovel.scenes = {
+      ...visualNovel.scenes,
+      [scene.name]: scene
+    }
+
+    visualNovel.scenesLength++
+  } else {
+    visualNovel.subScenes = {
+      ...visualNovel.subScenes,
+      [scene.name]: scene
+    }
+
+    visualNovel.subScenesLength++
   }
 
-  return androidScene.finalize(scene)
+  return response
 }
 
 export default {

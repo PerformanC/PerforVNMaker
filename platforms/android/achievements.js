@@ -1,4 +1,3 @@
-/* TODO: Achievements searchs from O(n) to O(1) through objects */
 /* TODO: Option for scenes to require an achievement and if not, fallback to another scene */
 
 import helper from '../main/helper.js'

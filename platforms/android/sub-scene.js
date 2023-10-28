@@ -1,5 +1,3 @@
-/* TODO: Sub-scene searchs from O(n) to O(1) through objects */
-
 function init(options) {
   return {
     name: options.name,

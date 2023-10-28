@@ -1,6 +1,6 @@
 export function _GetSceneFParams(scene, oldScene, switchParam) {
   const params = { function: [], switch: [] }
-  if (oldScene.speech) {
+  if (oldScene.speech || scene.subScenes.length != 0) {
     params.function.push('animate: Boolean')
     params.switch.push(switchParam || 'true')
   }
@@ -15,7 +15,7 @@ export function _GetSceneFParams(scene, oldScene, switchParam) {
 export function _GetSceneParams(scene, oldScene, switchParam) {
   const params = { function: [], switch: [] }
 
-  if (oldScene.speech && !scene.speech) {
+  if (oldScene.speech && !scene.speech || oldScene.subScenes.length != 0 || scene?.subScenes?.length != 0) {
     params.function.push('animate: Boolean')
     params.switch.push(switchParam || 'true')
   }

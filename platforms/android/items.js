@@ -1,4 +1,3 @@
-/* TODO: Items searchs from O(n) to O(1) through objects */
 /* TODO: Cross-saves items */
 /* TODO: Option for scenes to require an item and if not, fallback to another scene */
 
@@ -12,14 +11,18 @@ function give(page, itemId) {
 
 export function _ItemGive(item) {
   return helper.codePrepare(`
-    items.set(itemsLength, ${helper.getItemId(item)})
-    itemsLength++\n\n`)
+    if (!items.contains(${helper.getItemId(item)})) {
+      items.set(itemsLength, ${helper.getItemId(item)})
+      itemsLength++
+    }\n\n`)
 }
 
 export function _ItemRemove(item) {
   return helper.codePrepare(`
-    items.set(itemsLength, ${visualNovel.optimizations.hashItemsId ? '0' : '""'})
-    itemsLength--`, 0, 6)
+    if (items.contains(${helper.getItemId(item)})) {
+      items.remove(${helper.getItemId(item)})
+      itemsLength--
+    }`, 0, 6)
 }
 
 export function _ItemsParsingFunction() {

@@ -1,4 +1,3 @@
-/* TODO: Scenes searchs from O(n) to O(1) through objects */
 /* TODO (unconfirmed): Set the scenes in order through a queue [ 'scene1', 'scene2', ... ] */
 
 import helper from '../main/helper.js'
@@ -117,8 +116,17 @@ function finalize(scene) {
       frameLayout.addView(imageView_scenario)\n\n`, 2
     )
 
-    if (scene.transition)
-      sceneCode += helper.codePrepare('imageView_scenario.startAnimation(animationFadeIn)\n\n', 0, 4, false)
+    if (scene.transition) {
+      let hasIfAnimate = visualNovel.scenes.length == 0 || scene.subScenes.length != 0
+
+      if (hasIfAnimate) {
+        sceneCode += helper.codePrepare(`
+          if (animate)`, 6
+        )
+      }
+
+      sceneCode += helper.codePrepare('imageView_scenario.startAnimation(animationFadeIn)\n\n', 0, hasIfAnimate ? 1 : 4, false)
+    }
   }
 
   scene.characters.forEach((character) => {
@@ -205,9 +213,28 @@ function finalize(scene) {
 
     let spaceAmount = 4
     const finalCode = []
+    let characteristics = {
+      rotation: 0,
+      scale: 1,
+      alpha: 1,
+      x: 0,
+      y: 0
+    }
 
     if (scene.transition) {
       spaceAmount += 4
+
+      if (visualNovel.scenes.length == 0 || scene.subScenes.length != 0) {
+        sceneCode += helper.codePrepare(`
+          if (animate) {`, 6, 0, false
+        )
+
+        finalCode.push(
+          helper.codePrepare(`__PERFORVNM_ANIMATION_SETS__`, 0, 0, false)
+        )
+
+        spaceAmount += 2
+      }
 
       sceneCode += helper.codePrepare(`
         imageView_${character.name}.startAnimation(animationFadeIn)
@@ -215,7 +242,7 @@ function finalize(scene) {
         animationFadeIn.setAnimationListener(object : Animation.AnimationListener {
           override fun onAnimationStart(animation: Animation?) {}
 
-          override fun onAnimationEnd(animation: Animation?) {\n`, 4, 0, false
+          override fun onAnimationEnd(animation: Animation?) {\n`, 12 - spaceAmount, 0, false
       )
 
       finalCode.push(
@@ -255,16 +282,23 @@ function finalize(scene) {
               .translationY(${(animation.side == 'center' ? `((frameLayout.height - imageView_${character.name}.height) / 2).toFloat()` : animation.margins.top)}f)\n`, 12, spaceAmount
             )
 
+            characteristics.x = animation.side == 'center' ? `((frameLayout.width - imageView_${character.name}.width) / 2).toFloat()` : animation.margins.side
+            characteristics.y = animation.side == 'center' ? `((frameLayout.height - imageView_${character.name}.height) / 2).toFloat()` : animation.margins.top
+
             break
           }
           case 'fadeIn':
           case 'fadeOut': {
             sceneCode += helper.codePrepare(`.alpha(${(animation.type == 'fadeIn' ? 1 : 0)}f)\n`, 0, 2 + spaceAmount, false)
 
+            characteristics.alpha = animation.type == 'fadeIn' ? 1 : 0
+
             break
           }
           case 'rotate': {
             sceneCode += helper.codePrepare(`.rotation(${animation.degrees}f)\n`, 0, 2 + spaceAmount, false)
+
+            characteristics.rotation = animation.degrees
 
             break
           }
@@ -273,6 +307,8 @@ function finalize(scene) {
               .scaleX(${animation.scale}f)
               .scaleY(${animation.scale}f)\n`, 12, spaceAmount
             )
+
+            characteristics.scale = animation.scale
 
             break
           }
@@ -338,6 +374,47 @@ function finalize(scene) {
           spaceAmount += 6
         }
       })
+
+      if (visualNovel.scenes.length == 0 || scene.subScenes.length != 0) {
+        const position = []
+
+        if (characteristics.rotation != 0) {
+          position.push(
+            helper.codePrepare(`imageView_${character.name}.rotation = ${characteristics.rotation}f`, 0, 12, false)
+          )
+        }
+        if (characteristics.scale != 1) {
+          position.push(
+            helper.codePrepare(`
+              imageView_${character.name}.scaleX = ${characteristics.scale}f
+              imageView_${character.name}.scaleY = ${characteristics.scale}f`, 0, 12, false
+            )
+          )
+        }
+        if (characteristics.alpha != 1) {
+          position.push(
+            helper.codePrepare(`imageView_${character.name}.alpha = ${characteristics.alpha}f`, 0, 12, false)
+          )
+        }
+        if (characteristics.x != 0) {
+          position.push(
+            helper.codePrepare(`imageView_${character.name}.translationX = ${characteristics.x}f`, 0, 12, false)
+          )
+        }
+        if (characteristics.y != 0) {
+          position.push(
+            helper.codePrepare(`imageView_${character.name}.translationY = ${characteristics.y}f`, 0, 12, false)
+          )
+        }
+
+        const animationsSet = helper.codePrepare(`
+          } else {
+${position.join('\n')}
+          }\n`, 6
+        )
+
+        finalCode[0] = finalCode[0].replace('__PERFORVNM_ANIMATION_SETS__', animationsSet)
+      }
     }
 
     if (finalCode.length != 0) {
@@ -347,8 +424,55 @@ function finalize(scene) {
     }
   })
 
-  let sdp53 = null
+  const SceneKeys = Object.keys(visualNovel.scenes)
+  const SubSceneKeys = Object.keys(visualNovel.subScenes)
 
+  let redirectAmount = 0, oldScene, olderOldScene
+  SceneKeys.forEach((key) => {
+    const sceneK = visualNovel.scenes[key]
+
+    if (sceneK?.next?.scene == scene.name) {
+      oldScene = sceneK
+      redirectAmount++
+    }
+    if (sceneK.next?.item?.require?.fallback == scene.name) {
+      oldScene = sceneK
+      redirectAmount++
+    }
+    if (sceneK?.next?.scene == SceneKeys[visualNovel.scenesLength - 1]) {
+      olderOldScene = sceneK
+    }
+    sceneK.subScenes.forEach((subScene) => {
+      if (subScene.scene == scene.name) {
+        oldScene = sceneK
+        redirectAmount++
+      }
+    })
+  })
+
+  SubSceneKeys.forEach((key) => {
+    const subSceneK = visualNovel.subScenes[key]
+
+    if (subSceneK.next.scene == scene.name) {
+      oldScene = subSceneK
+      redirectAmount++
+    }
+    if (subSceneK.next?.item?.require?.fallback == scene.name) {
+      oldScene = subSceneK
+      redirectAmount++
+    }
+    if (subSceneK.next.scene == SceneKeys[visualNovel.scenesLength - 1]) {
+      olderOldScene = subSceneK
+    }
+    subSceneK.subScenes.forEach((subScene) => {
+      if (subScene.scene == scene.name) {
+        oldScene = subSceneK
+        redirectAmount++
+      }
+    })
+  })
+
+  let sdp53 = null
   if (scene.speech) {
     sdp53 = _GetResource(scene, { type: 'sdp', dp: '53' })
     scene = _AddResource(scene, { type: 'sdp', dp: '53', spaces: 4 })
@@ -362,15 +486,13 @@ function finalize(scene) {
       rectangleViewSpeech.layoutParams = layoutParamsRectangleSpeech\n`, 2, 0, false
     )
 
-    const oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) || AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
-
-    if (AndroidVisualNovel.scenes.length != 0 && oldScene.speech) {
+    if (visualNovel.scenes.length != 0 && oldScene?.speech) {
       sceneCode += helper.codePrepare(`rectangleViewSpeech.setAlpha(${scene.speech.text.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (AndroidVisualNovel.scenes.length == 0 || !oldScene.speech) {
+    if (visualNovel.scenes.length == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleSpeech = AlphaAnimation(0f, ${scene.speech.text.rectangle.opacity}f)
@@ -420,13 +542,13 @@ function finalize(scene) {
       rectangleViewAuthor.layoutParams = layoutParamsRectangleAuthor\n`, 2
     )
 
-    if (AndroidVisualNovel.scenes.length != 0 && oldScene.speech) {
+    if (visualNovel.scenes.length != 0 && oldScene?.speech) {
       sceneCode += helper.codePrepare(`rectangleViewAuthor.setAlpha(${scene.speech.author.rectangle.opacity}f)\n`, 0, 4, false)
     }
 
     sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (AndroidVisualNovel.scenes.length == 0 || !oldScene.speech) {
+    if (visualNovel.scenes.length == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)
@@ -469,14 +591,15 @@ function finalize(scene) {
       )
 
       if (
-        AndroidVisualNovel.scenes.length == 0 ||
-        !oldScene.speech ||
-        (AndroidVisualNovel.scenes.length != 0 &&
+        visualNovel.scenes.length == 0 ||
+        !oldScene?.speech ||
+        scene.subScenes.length != 0 ||
+        (visualNovel.scenes.length != 0 &&
           scene.speech?.author?.name &&
-          oldScene.speech &&
-          !oldScene.speech?.author?.name)
+          oldScene?.speech &&
+          !oldScene?.speech?.author?.name)
         ) {
-          if (AndroidVisualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene.speech && !oldScene.speech?.author?.name) {
+          if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene?.speech && !oldScene?.speech?.author?.name) {
             sceneCode += helper.codePrepare('if (animateAuthor) {', 0, 4, false)
           } else {
             sceneCode += helper.codePrepare('if (animate) {', 0, 4, false)
@@ -778,7 +901,7 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
     frameLayout.addView(buttonMenu)\n\n`
   )
 
-  if (AndroidVisualNovel.scenes.length != 0) {
+  if (visualNovel.scenesLength != 0) {
     const sdp46 = _GetResource(scene, { type: 'sdp', dp: '46' })
     scene = _AddResource(scene, { type: 'sdp', dp: '46', spaces: 4 })
 
@@ -805,9 +928,7 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
 ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
     )
 
-    let oldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == scene.name) 
-
-    if (oldScene || AndroidVisualNovel.scenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback) || AndroidVisualNovel.subScenes.find((cScene) => scene.name == cScene.next?.item?.require?.fallback)) {
+    if (redirectAmount > 1) {
       sceneCode += helper.codePrepare(`
         val scene = scenes.get(scenesLength - 1)
 
@@ -816,15 +937,14 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
 
         switchScene(scene)\n`, 2
       )
-    } else {
-      oldScene = AndroidVisualNovel.scenes[AndroidVisualNovel.scenes.length - 1]
-
+    } else if (oldScene) {
       let functionParams = { function: [], switch: [] }
-      const olderOldScene = AndroidVisualNovel.subScenes.find((subScene) => subScene.next.scene == oldScene.name)
-
       if (olderOldScene) functionParams = _GetSceneFParams(oldScene, olderOldScene, 'false')
+      else {
+        if (oldScene.subScenes.length != 0) functionParams.switch.push('false')
+      }
 
-      if (AndroidVisualNovel.scenes.length == 1) {
+      if (visualNovel.scenes.length == 1) {
         sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.switch.join(', ')})\n`, 0, 6, false)
       } else {
         sceneCode += helper.codePrepare(`
@@ -902,6 +1022,9 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
         buttonSubScenes.setOnClickListener {
 ${requireItems[0]}${finishScene.join('\n\n')}
 
+          scenes.set(scenesLength, ${helper.getSceneId(scene.subScenes[0].scene)})
+          scenesLength++
+
           __PERFORVNM_SUBSCENE_1__
         }
 
@@ -925,6 +1048,9 @@ ${requireItems[0]}${finishScene.join('\n\n')}
 
         buttonSubScenes2.setOnClickListener {
 ${requireItems[1]}${finishScene.join('\n\n')}
+
+          scenes.set(scenesLength, ${helper.getSceneId(scene.subScenes[1].scene)})
+          scenesLength++
 
           __PERFORVNM_SUBSCENE_2__
         }
@@ -973,8 +1099,8 @@ ${nextCode}
 
   sceneCode = _FinalizeResources(scene, sceneCode)
 
-  if (scene.type == 'normal') AndroidVisualNovel.scenes.push({ ...scene, code: sceneCode })
-  else AndroidVisualNovel.subScenes.push({ ...scene, code: sceneCode })
+  if (scene.type == 'normal') AndroidVisualNovel.scenes[scene.name] = sceneCode
+  else AndroidVisualNovel.subScenes[scene.name] = sceneCode
 
   helper.logOk(`Scene "${scene.name}" coded.`, 'Android')
 }

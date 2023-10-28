@@ -1,6 +1,11 @@
 import androidCoder from '../android/coder.js'
 
-global.visualNovel = { info: null, scenes: {}, subScenes: {}, achievements: [], items: [], optimizations: {} }
+global.visualNovel = { info: null, scenes: {}, scenesLength: 0, subScenes: {}, subScenesLength: 0, achievements: [], items: [], optimizations: {} }
+global.PerforVNM = {
+  codeGeneratorVersion: '1.23.0',
+  generatedCodeVersion: '1.21.0',
+  repository: 'https://github.com/PerformanC/PerforVNMaker'
+}
 
 import helper from './helper.js'
 

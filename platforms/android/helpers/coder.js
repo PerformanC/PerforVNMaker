@@ -1,8 +1,8 @@
 import helper from '../../main/helper.js'
 import { _GetSceneFParams, _GetSceneParams } from './params.js'
 
-export function _ProcessWNextScene(i, scene, switchesCode, type) {
-  const nextScene = AndroidVisualNovel.scenes.find((nScene) => nScene.name == scene.next.scene)
+export function _ProcessWNextScene(i, scene, SceneCode, switchesCode, type) {
+  const nextScene = visualNovel.scenes[scene.next.scene]
 
   if (!nextScene)
     helper.logFatal('Next scene does not exist.')
@@ -10,10 +10,10 @@ export function _ProcessWNextScene(i, scene, switchesCode, type) {
   const finishScene = []
 
   if (scene.next.item?.require?.fallback) {
-    const fallbackScene = AndroidVisualNovel.scenes.find((fScene) => fScene.name == scene.next.item.require.fallback)
+    const fallbackScene = visualNovel.scenes[scene.next.item.require.fallback]
     const functionParams = _GetSceneParams(scene, fallbackScene)
 
-    scene.code = scene.code.replace('__PERFORVNM_FALLBACK_SCENE_PARAMS__', functionParams.switch.join(', '))
+    SceneCode = SceneCode.replace('__PERFORVNM_FALLBACK_SCENE_PARAMS__', functionParams.switch.join(', '))
   }
 
   if (scene.subScenes.length == 0 || type == 'subScene') {
@@ -44,7 +44,7 @@ export function _ProcessWNextScene(i, scene, switchesCode, type) {
     if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
       finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 14, false))
 
-    if (i == AndroidVisualNovel.scenes.length - 2)
+    if (i == visualNovel.scenes.length - 2)
       finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 14, false))
 
     finishScene.push(helper.codePrepare('it.setOnClickListener(null)', 0, 14, false))
@@ -54,7 +54,7 @@ export function _ProcessWNextScene(i, scene, switchesCode, type) {
 ${finishScene.join('\n')}\n\n`, 8, 0)
 
     let functionParams = { function: [], switch: [] }
-    if (i != AndroidVisualNovel.scenes.length - 2) functionParams = _GetSceneFParams(scene, nextScene)
+    if (i != visualNovel.scenes.length - 2) functionParams = _GetSceneFParams(scene, nextScene)
 
     if (scene.speech && !nextScene.speech) {
       code += helper.codePrepare(`
@@ -110,14 +110,14 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
 
     code += helper.codePrepare('}', 0, 4, false)
 
-    scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
+    SceneCode = SceneCode.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, code)
 
     if (type == 'subScene') {
       // /* TODO: Switch oldScene with scene to match original function */
       const functionParams2 = _GetSceneFParams(scene, nextScene)
 
-      scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
-      scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
+      SceneCode = SceneCode.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams2.switch.join(', '))
+      SceneCode = SceneCode.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
 
       if (scene.speech) {
         const speechHandler = helper.codePrepare(`
@@ -138,12 +138,12 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
           }\n`, 6, 0, false
         )
 
-        scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+        SceneCode = SceneCode.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
       }
     }
   } else {
-    const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-    const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
+    const subScene1 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
+    const subScene2 = visualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
 
     if (!subScene1 || !subScene2)
       helper.logFatal('A subscene does not exist.')
@@ -156,10 +156,10 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
     const subFunctionParams = _GetSceneParams(subScene1, scene)
     const subFunctionParams2 = _GetSceneParams(subScene2, scene)
 
-    scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.join(', ')})`)
-    scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.join(', ')})`)
+    SceneCode = SceneCode.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.join(', ')})`)
+    SceneCode = SceneCode.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.join(', ')})`)
 
-    scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
+    SceneCode = SceneCode.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
   }
 
   /* TODO: Switch oldScene with scene to match original function */
@@ -168,8 +168,8 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
 
   switchesCode += helper.codePrepare(`\n${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams2.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
-  scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
-  scene.code = scene.code.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams.switch.join(', '))
+  SceneCode = SceneCode.replace('__PERFORVNM_SCENE_PARAMS__', functionParams2.function.join(', '))
+  SceneCode = SceneCode.replace('__PERFORVNM_NEXT_SCENE_PARAMS__', functionParams.switch.join(', '))
 
   if (scene.speech) {
     const speechHandler = helper.codePrepare(`
@@ -190,21 +190,21 @@ ${finishScene.join('\n')}\n\n`, 8, 0)
       }\n`, 2, 0, false
     )
 
-    scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+    SceneCode = SceneCode.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
   }
 
   return {
-    code: scene.code,
+    code: SceneCode,
     switchesCode: switchesCode
   }
 }
 
-export function _ProcessWONextScene(i, scene, switchesCode, type) {
-  const oldScene = AndroidVisualNovel.scenes[i - 1]
+export function _ProcessWONextScene(i, SceneKeys, scene, SceneCode, switchesCode, type) {
+  const oldScene = visualNovel.scenes[SceneKeys[i - 1]]
 
   if (scene.subScenes.length != 0 && type == 'scene') {
-    const subScene1 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[0].scene)
-    const subScene2 = AndroidVisualNovel.subScenes.find(subScene => subScene.name == scene.subScenes[1].scene)
+    const subScene1 = visualNovel.subScenes[scene.subScenes[0].scene]
+    const subScene2 = visualNovel.subScenes[scene.subScenes[1].scene]
 
     if (!subScene1 || !subScene2)
       helper.logFatal('A subscene does not exist.')
@@ -216,8 +216,8 @@ export function _ProcessWONextScene(i, scene, switchesCode, type) {
     const subFunctionParams = _GetSceneParams(scene, subScene1)
     const subFunctionParams2 = _GetSceneParams(scene, subScene2)
 
-    scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.switch.join(', ')})`)
-    scene.code = scene.code.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
+    SceneCode = SceneCode.replace('__PERFORVNM_SUBSCENE_1__', `${subScene1.name}(${subFunctionParams.switch.join(', ')})`)
+    SceneCode = SceneCode.replace('__PERFORVNM_SUBSCENE_2__', `${subScene2.name}(${subFunctionParams2.switch.join(', ')})`)
   }
 
   /* TODO: Switch oldScene with scene to match original function */
@@ -225,8 +225,8 @@ export function _ProcessWONextScene(i, scene, switchesCode, type) {
 
   switchesCode += helper.codePrepare(`\n${helper.getSceneId(scene.name)} -> ${scene.name}(${functionParams.switch.join(', ').replace(/true/g, 'false')})`, 0, 6, false)
 
-  scene.code = scene.code.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
-  scene.code = scene.code.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
+  SceneCode = SceneCode.replace(`__PERFORVNM_SCENE_${scene.name.toUpperCase()}__`, '')
+  SceneCode = SceneCode.replace('__PERFORVNM_SCENE_PARAMS__', functionParams.function.join(', '))
 
   if (scene.speech) {
     const speechHandler = helper.codePrepare(`
@@ -243,11 +243,11 @@ export function _ProcessWONextScene(i, scene, switchesCode, type) {
       }, textSpeed)\n`, 2, 0, false
     )
 
-    scene.code = scene.code.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
+    SceneCode = SceneCode.replace('__PERFORVNM_SPEECH_HANDLER__', speechHandler)
   }
 
   return {
-    code: scene.code,
+    code: SceneCode,
     switchesCode: switchesCode
   }
 }
