@@ -180,7 +180,7 @@ function verifyParams(check, params, additionalinfo = {}) {
 }
 
 function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirstLine = true) {
-  const lines = code.split('\n')
+  let lines = code.split('\n')
 
   if (removeFirstLine) lines.shift()
 
@@ -188,6 +188,8 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
   for (let i = 0; i < addSpaceAmount; i++) {
     addedSpaces += ' '
   }
+
+  let ignoreIndentation = false
 
   lines.forEach((line, index) => {
     if (line == '') return;
@@ -197,6 +199,16 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
 
       return;
     }
+
+    if (line.includes('__IGNORE_INDENTATION__')) {
+      ignoreIndentation = !ignoreIndentation
+
+      lines.splice(index, 1)
+
+      return;
+    }
+
+    if (ignoreIndentation) return;
 
     lines[index] = addedSpaces + line.substring(removeSpaceAmount)
   })

@@ -35,6 +35,20 @@ function addCustomText(page, options) {
   
   helper.verifyParams(checks, options)
 
+  switch (page?.type) {
+    case 'menu': {
+      if (!visualNovel.menu)
+        helper.logFatal('Menu must be initialized before adding customs to it')
+
+      page = visualNovel.menu
+
+      break
+    }
+    default: {
+      helper.logFatal('Page type is not recognized/supported by customs.')
+    }
+  }
+
   page.custom.push({
     type: 'text',
     ...options
@@ -92,6 +106,17 @@ function addCustomButton(page, options) {
 
   helper.verifyParams(checks, options)
 
+  switch (page.type) {
+    case 'menu': {
+      if (!visualNovel.menu)
+        helper.logFatal('Menu must be initialized before adding customs to it')
+
+      page = visualNovel.menu
+
+      break
+    }
+  }
+
   page.custom.push({
     type: 'button',
     ...options
@@ -148,6 +173,17 @@ function addCustomRectangle(page, options) {
 
   helper.verifyParams(checks, options)
 
+  switch (page.type) {
+    case 'menu': {
+      if (!visualNovel.menu)
+        helper.logFatal('Menu must be initialized before adding customs to it')
+
+      page = visualNovel.menu
+
+      break
+    }
+  }
+
   page.custom.push({
     type: 'rectangle',
     ...options
@@ -199,6 +235,17 @@ function addCustomImage(page, options) {
   }
 
   helper.verifyParams(checks, options)
+
+  switch (page.type) {
+    case 'menu': {
+      if (!visualNovel.menu)
+        helper.logFatal('Menu must be initialized before adding customs to it')
+
+      page = visualNovel.menu
+
+      break
+    }
+  }
 
   page.custom.push({
     type: 'image',

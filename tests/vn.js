@@ -19,7 +19,7 @@ perfor.coder.init({
   }
 })
 
-let menu = perfor.menu.init({
+const menu = perfor.menu.init({
   textSpeed: 50,
   textColor: 'FFFFFF',
   backTextColor: 'FFFFFF',
@@ -42,7 +42,7 @@ let menu = perfor.menu.init({
 })
 
 /*
-menu = perfor.custom.addCustomText(menu, {
+perfor.custom.addCustomText(menu, {
   text: 'This is a custom text',
   color: 'FFFFFF',
   fontSize: 9,
@@ -55,7 +55,7 @@ menu = perfor.custom.addCustomText(menu, {
   }
 })
 
-menu = perfor.custom.addCustomButton(menu, {
+perfor.custom.addCustomButton(menu, {
   text: 'Customizations!',
   color: 'FFFFFF',
   fontSize: 9,
@@ -70,7 +70,7 @@ menu = perfor.custom.addCustomButton(menu, {
   width: 10,
 })
 
-menu = perfor.custom.addCustomRectangle(menu, {
+perfor.custom.addCustomRectangle(menu, {
   color: 'FFFFFF',
   opacity: 0.8,
   height: 'match',
@@ -84,8 +84,6 @@ menu = perfor.custom.addCustomRectangle(menu, {
   }
 })
 */
-
-perfor.menu.finalize(menu) /* Generates the menu */
 
 perfor.achievements.init([{
   id: 'first_achievement',

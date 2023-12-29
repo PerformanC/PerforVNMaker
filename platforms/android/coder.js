@@ -5,10 +5,20 @@ import fs from 'fs'
 import helper from '../main/helper.js'
 import { _ProcessWNextScene, _ProcessWONextScene, _ProcessSceneSave, _FinalizeScenesSave } from './helpers/coder.js'
 
-import { _SetAchievementsMenu, _AchievementGive } from './achievements.js'
+import { _AchievementGive } from './achievements.js'
 import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
+import { _AddMenu } from './menu.js'
 
-global.AndroidVisualNovel = { menu: null, internalInfo: {}, code: '', scenes: {}, subScenes: {}, achievements: [], items: [], customXML: [] }
+global.AndroidVisualNovel = {
+  menu: null,
+  internalInfo: {},
+  code: '',
+  scenes: {},
+  subScenes: {},
+  achievements: [],
+  items: [],
+  customXML: []
+}
 
 function init(options) {
   helper.logOk('Starting VN, coding main code.', 'Android')
@@ -108,7 +118,10 @@ function init(options) {
 function finalize() {
   helper.replace('Android', '__PERFORVNM_CODE__', '')
 
-  if (visualNovel.menu.showAchievements) _SetAchievementsMenu()
+  if (visualNovel.menu)
+    _AddMenu()
+  else
+    helper.replace('Android', '__PERFORVNM_MENU__', '// No menu created.')
 
   let switchesCode = helper.codePrepare(`
     private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
@@ -184,10 +197,11 @@ function finalize() {
     helper.replace('Android', /__PERFORVNM_ITEMS_SAVER__/g, '')
   }
 
-  helper.replace('Android', '__PERFORVNM_SCENES__', '')
-  helper.replace('Android', '__PERFORVNM_MENU__', '// No menu created.')
   helper.replace('Android', '__PERFORVNM_CLASSES__', '')
   helper.replace('Android', '__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[SceneKeys[0]].name)})` : '// No scenes created.')
+
+  helper.replace('Android', '__PERFORVNM_SCENES__', '')
+
   if (!visualNovel.optimizations.preCalculateRounding) {
     const defaultSaveSwitchCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
@@ -232,18 +246,9 @@ function finalize() {
   helper.replace('Android', '__PERFORVNM_HEADERS__', '')
 
   if (visualNovel.menu) {
-    let menuCode = 'buttonStart.setOnClickListener {\n'
     let releaseCode = ''
 
     if (visualNovel.menu.background.music) {
-      menuCode += helper.codePrepare(`
-        if (mediaPlayer != null) {
-          mediaPlayer!!.stop()
-          mediaPlayer!!.release()
-          mediaPlayer = null
-        }\n\n`, 2
-      )
-
       releaseCode = helper.codePrepare(`
         if (mediaPlayer != null) {
           mediaPlayer!!.stop()
@@ -255,17 +260,6 @@ function finalize() {
       releaseCode = '// No music to release.'
     }
 
-    const scene = visualNovel.scenes[SceneKeys[0]]
-
-    const functionParams = []
-    if (scene.speech || scene.subScenes.length != 0) functionParams.push('true')
-
-    menuCode += helper.codePrepare(`
-        ${visualNovel.scenes.length != 0 ? `${scene.name}(${functionParams.join(', ')})` : '// No scenes created.'}
-      }`, 2
-    )
-
-    helper.replace('Android', /__PERFORVNM_MENU_START__/g, menuCode)
     helper.replace('Android', /__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
   }
 

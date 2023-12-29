@@ -65,16 +65,19 @@ function init(options) {
 
   helper.verifyParams(checks, options)
 
-  return androdMenu.init(options)
-}
+  visualNovel.menu = {
+    type: 'menu',
+    ...options,
+    custom: []
+  }
 
-function finalize(menu) {
-  visualNovel.menu = menu
+  androdMenu.init()
 
-  return androdMenu.finalize(menu)
+  return {
+    type: 'menu'
+  }
 }
 
 export default {
-  init,
-  finalize
+  init
 }

@@ -380,5 +380,8 @@ export function _AddCustoms(page, customs) {
 
   pageCode = _FinalizeResources(page, pageCode)
 
-  return pageCode
+  return {
+    page,
+    code: pageCode
+  }
 }

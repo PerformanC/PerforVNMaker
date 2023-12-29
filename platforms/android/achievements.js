@@ -131,11 +131,12 @@ ${achievementsSwitch}
 
     scrollView.addView(frameLayoutScenes)
 
-    frameLayout.addView(scrollView)`)
+    frameLayout.addView(scrollView)`
+  )
 
   achievementsCode = _FinalizeMultiResources(menu, menu.pages.achievements, achievementsCode)
 
-  helper.replace('Android', '__PERFORVNM_ACHIEVEMENTS_MENU__', achievementsCode)
+  return achievementsCode
 }
 
 export function _AchievementWrapperGive(achievements) {

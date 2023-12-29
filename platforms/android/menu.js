@@ -6,10 +6,10 @@ import helper from '../main/helper.js'
 import { _AddCustoms } from './custom.js'
 import { _GetMultiResources, _AddResource, _FinalizeResources, _FinalizeMultiResources } from './helpers/optimizations.js'
 
-function init(options) {
-  return {
-    ...options,
-    custom: [],
+import { _SetAchievementsMenu } from './achievements.js'
+
+function init() {
+  AndroidVisualNovel.menu = {
     pages: {
       main: {
         resources: {}
@@ -37,8 +37,14 @@ function init(options) {
   }
 }
 
-function finalize(menu) {
-  const customCode = _AddCustoms(menu, menu.custom)
+export function _AddMenu() {
+  const menu = visualNovel.menu
+  const androidMenu = AndroidVisualNovel.menu
+  const firstScene = Object.values(visualNovel.scenes)[0]
+
+  const tmp = _AddCustoms(androidMenu, menu.custom)
+  AndroidVisualNovel.menu = tmp.page
+  const customCode = tmp.code
 
   let mainCode = 'val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)\n'
 
@@ -84,34 +90,54 @@ function finalize(menu) {
     menu()`
   )
 
-  helper.replace('Android', /__PERFORVNM_MENU__/g, mainCode)
+  helper.replace('Android', '__PERFORVNM_MENU__', mainCode)
 
-  const sdp30Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '30' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '30', spaces: 4 })
+  let menuStartCode = 'buttonStart.setOnClickListener {\n'
 
-  const ssp13Main = _GetMultiResources(menu, menu.pages.main, { type: 'ssp', dp: '13' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'ssp', dp: '13', spaces: 4 })
+  if (visualNovel.menu.background.music) {
+    menuStartCode += helper.codePrepare(`
+      if (mediaPlayer != null) {
+        mediaPlayer!!.stop()
+        mediaPlayer!!.release()
+        mediaPlayer = null
+      }\n\n`
+    )
+  }
 
-  const sdpMinus3Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: 'minus3' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: 'minus3', spaces: 4 })
+  const functionParams = []
+  if (firstScene.speech || firstScene.subScenes.length != 0) functionParams.push('true')
 
-  const sdp88Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '88' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Main.definition ? '\n' : '\n\n' })
+  menuStartCode += helper.codePrepare(`
+      ${visualNovel.scenes.length != 0 ? `${firstScene.name}(${functionParams.join(', ')})` : '// No scenes created.'}
+    }`
+  )
 
-  const sdp161Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '161' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '161', spaces: 4 })
+  const sdp30Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '30' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '30', spaces: 4 })
 
-  const sdp233Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '233' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '233', spaces: 4 })
+  const ssp13Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'ssp', dp: '13' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const sdp320Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '320' })
-  menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '320', spaces: 4 })
+  const sdpMinus3Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: 'minus3' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: 'minus3', spaces: 4 })
+
+  const sdp88Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '88' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Main.definition ? '\n' : '\n\n' })
+
+  const sdp161Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '161' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '161', spaces: 4 })
+
+  const sdp233Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '233' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '233', spaces: 4 })
+
+  const sdp320Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '320' })
+  androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '320', spaces: 4 })
 
   let sdp390Main = null
   let achievementsButtonMain = ''
   if (menu.showAchievements) {
-    sdp390Main = _GetMultiResources(menu, menu.pages.main, { type: 'sdp', dp: '390' })
-    menu.pages.main = _AddResource(menu.pages.main, { type: 'sdp', dp: '390', spaces: 4 })
+    sdp390Main = _GetMultiResources(androidMenu, androidMenu.pages.main, { type: 'sdp', dp: '390' })
+    androidMenu.pages.main = _AddResource(androidMenu.pages.main, { type: 'sdp', dp: '390', spaces: 4 })
 
     achievementsButtonMain = `\n
       val buttonAchievements = Button(this)
@@ -174,7 +200,9 @@ function finalize(menu) {
 
       buttonStart.layoutParams = layoutParamsStart
 
-      __PERFORVNM_MENU_START__
+      __IGNORE_INDENTATION__
+    ${menuStartCode}
+      __IGNORE_INDENTATION__
 
       frameLayout.addView(buttonStart)
 
@@ -245,7 +273,7 @@ function finalize(menu) {
       frameLayout.addView(buttonSaves)${achievementsButtonMain}\n\n`, 2
   )
 
-  menuCode = _FinalizeMultiResources(menu, menu.pages.main, menuCode)
+  menuCode = _FinalizeMultiResources(androidMenu, androidMenu.pages.main, menuCode)
 
   if (menu.custom.length != 0) {
     menuCode += customCode
@@ -255,8 +283,6 @@ function finalize(menu) {
       setContentView(frameLayout)
     }`, 2
   )
-
-  helper.writeFunction('Android', menuCode)
 
   const rectangleViewCode = helper.codePrepare(`
     class RectangleView(context: Context) : View(context) {
@@ -279,35 +305,35 @@ function finalize(menu) {
 
   helper.replace('Android', '__PERFORVNM_CLASSES__', rectangleViewCode)
 
-  const sdp30About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '30' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '30', spaces: 4 })
+  const sdp30About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '30' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '30', spaces: 4 })
 
-  const ssp13About = _GetMultiResources(menu, menu.pages.about, { type: 'ssp', dp: '13' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'ssp', dp: '13', spaces: 4 })
+  const ssp13About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'ssp', dp: '13' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const sdpMinus3About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: 'minus3' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: 'minus3', spaces: 4 })
+  const sdpMinus3About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: 'minus3' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
-  const sdp88About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '88' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3About.definition ? '\n' : '\n\n' })
+  const sdp88About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '88' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3About.definition ? '\n' : '\n\n' })
 
-  const sdp53About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '53' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '53', spaces: 4 })
+  const sdp53About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '53' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '53', spaces: 4 })
 
-  const sdp161About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '161' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '161', spaces: 4 })
+  const sdp161About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '161' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '161', spaces: 4 })
 
-  const sdp233About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '233' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '233', spaces: 4 })
+  const sdp233About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '233' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '233', spaces: 4 })
 
-  const sdp320About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '320' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '320', spaces: 4 })
+  const sdp320About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '320' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '320', spaces: 4 })
 
   let sdp390About = null
   let achievementsButtonAbout = ''
   if (menu.showAchievements) {
-    sdp390About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '390' })
-    menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '390', spaces: 4 })
+    sdp390About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '390' })
+    androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '390', spaces: 4 })
 
     achievementsButtonAbout = `\n
       val buttonAchievements = Button(this)
@@ -333,14 +359,14 @@ function finalize(menu) {
       frameLayout.addView(buttonAchievements)`
   }
 
-  const ssp15About = _GetMultiResources(menu, menu.pages.about, { type: 'ssp', dp: '15' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'ssp', dp: '15', spaces: 4 })
+  const ssp15About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'ssp', dp: '15' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'ssp', dp: '15', spaces: 4 })
 
-  const sdp73About = _GetMultiResources(menu, menu.pages.about, { type: 'sdp', dp: '73' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'sdp', dp: '73', spaces: 4 })
+  const sdp73About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'sdp', dp: '73' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'sdp', dp: '73', spaces: 4 })
 
-  const ssp11About = _GetMultiResources(menu, menu.pages.about, { type: 'ssp', dp: '11' })
-  menu.pages.about = _AddResource(menu.pages.about, { type: 'ssp', dp: '11', spaces: 4 })
+  const ssp11About = _GetMultiResources(androidMenu, androidMenu.pages.about, { type: 'ssp', dp: '11' })
+  androidMenu.pages.about = _AddResource(androidMenu.pages.about, { type: 'ssp', dp: '11', spaces: 4 })
 
   let aboutCode = helper.codePrepare(`
     private fun about(animate: Boolean) {
@@ -400,7 +426,9 @@ function finalize(menu) {
 
       buttonStart.layoutParams = layoutParamsStart
 
-      __PERFORVNM_MENU_START__
+      __IGNORE_INDENTATION__
+    ${menuStartCode}
+      __IGNORE_INDENTATION__
 
       frameLayout.addView(buttonStart)
 
@@ -535,7 +563,7 @@ function finalize(menu) {
     frameLayout.addView(textView)\n\n`
   )
 
-  aboutCode = _FinalizeMultiResources(menu, menu.pages.about, aboutCode)
+  aboutCode = _FinalizeMultiResources(androidMenu, androidMenu.pages.about, aboutCode)
 
   if (menu.custom.length != 0) {
     aboutCode += customCode
@@ -546,34 +574,32 @@ function finalize(menu) {
     }`, 2
   )
 
-  helper.writeFunction('Android', aboutCode)
+  const sdp30Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '30' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '30', spaces: 4 })
 
-  const sdp30Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '30' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '30', spaces: 4 })
+  const ssp13Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'ssp', dp: '13' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const ssp13Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'ssp', dp: '13' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'ssp', dp: '13', spaces: 4 })
+  const sdpMinus3Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: 'minus3' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
-  const sdpMinus3Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: 'minus3' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: 'minus3', spaces: 4 })
+  const sdp88Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '88' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Settings.definition ? '\n' : '\n\n' })
 
-  const sdp88Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '88' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Settings.definition ? '\n' : '\n\n' })
+  const sdp161Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '161' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '161', spaces: 4 })
 
-  const sdp161Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '161' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '161', spaces: 4 })
+  const sdp233Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '233' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '233', spaces: 4 })
 
-  const sdp233Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '233' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '233', spaces: 4 })
-
-  const sdp320Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '320' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '320', spaces: 4 })
+  const sdp320Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '320' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '320', spaces: 4 })
 
   let sdp390Settings = null
   let achievementsButtonSettings = ''
   if (menu.showAchievements) {
-    sdp390Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '390' })
-    menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '390', spaces: 4 })
+    sdp390Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '390' })
+    androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '390', spaces: 4 })
 
     achievementsButtonSettings = `\n
       val buttonAchievements = Button(this)
@@ -599,44 +625,44 @@ function finalize(menu) {
       frameLayout.addView(buttonAchievements)`
   }
 
-  const ssp15Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'ssp', dp: '15' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'ssp', dp: '15', spaces: 4 })
+  const ssp15Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'ssp', dp: '15' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'ssp', dp: '15', spaces: 4 })
 
-  const sdp73Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '73' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '73', spaces: 4 })
+  const sdp73Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '73' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '73', spaces: 4 })
 
-  const ssp16Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'ssp', dp: '16' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'ssp', dp: '16', spaces: 4 })
+  const ssp16Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'ssp', dp: '16' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'ssp', dp: '16', spaces: 4 })
 
-  const sdp53Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '53' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '53', spaces: 4 })
+  const sdp53Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '53' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '53', spaces: 4 })
 
-  const sdp149Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '149' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '149', spaces: 4, newLines: sdp53Settings.definition ? '\n' : '\n\n' })
+  const sdp149Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '149' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '149', spaces: 4, newLines: sdp53Settings.definition ? '\n' : '\n\n' })
 
-  const sdp150Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '150' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '150', spaces: 4 })
+  const sdp150Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '150' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '150', spaces: 4 })
 
-  const sdp77Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '77' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '77', spaces: 4 })
+  const sdp77Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '77' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '77', spaces: 4 })
 
-  const sdp135Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '135' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '135', spaces: 4, newLines: sdp77Settings.definition ? '\n' : '\n\n' })
+  const sdp135Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '135' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '135', spaces: 4, newLines: sdp77Settings.definition ? '\n' : '\n\n' })
 
-  const sdp443Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '443' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '443', spaces: 4 })
+  const sdp443Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '443' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '443', spaces: 4 })
 
-  const sdp432Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '432' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '432', spaces: 4 })
+  const sdp432Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '432' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '432', spaces: 4 })
 
-  const sdp111Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '111' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '111', spaces: 4 })
+  const sdp111Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '111' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '111', spaces: 4 })
 
-  const sdp166Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '166' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '166', spaces: 4 })
+  const sdp166Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '166' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '166', spaces: 4 })
 
-  const sdp190Settings = _GetMultiResources(menu, menu.pages.settings, { type: 'sdp', dp: '190' })
-  menu.pages.settings = _AddResource(menu.pages.settings, { type: 'sdp', dp: '190', spaces: 4 })
+  const sdp190Settings = _GetMultiResources(androidMenu, androidMenu.pages.settings, { type: 'sdp', dp: '190' })
+  androidMenu.pages.settings = _AddResource(androidMenu.pages.settings, { type: 'sdp', dp: '190', spaces: 4 })
 
   let settingsCode = helper.codePrepare(`
     private fun settings(animate: Boolean) {
@@ -696,7 +722,9 @@ function finalize(menu) {
 
       buttonStart.layoutParams = layoutParamsStart
 
-      __PERFORVNM_MENU_START__
+      __IGNORE_INDENTATION__
+    ${menuStartCode}
+      __IGNORE_INDENTATION__
 
       frameLayout.addView(buttonStart)
 
@@ -1056,7 +1084,7 @@ function finalize(menu) {
       })\n\n`, 2
   )
 
-  settingsCode = _FinalizeMultiResources(menu, menu.pages.settings, settingsCode)
+  settingsCode = _FinalizeMultiResources(androidMenu, androidMenu.pages.settings, settingsCode)
 
   if (menu.custom.length != 0) {
     settingsCode += customCode
@@ -1066,8 +1094,6 @@ function finalize(menu) {
       setContentView(frameLayout)
     }`, 2
   )
-
-  helper.writeFunction('Android', settingsCode)
 
   AndroidVisualNovel.customXML.push({
     path: 'drawable/custom_seekbar_progress.xml',
@@ -1101,32 +1127,32 @@ function finalize(menu) {
     )
   })
 
-  const sdp30Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '30' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '30', spaces: 4 })
+  const sdp30Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '30' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '30', spaces: 4 })
 
-  const ssp13Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'ssp', dp: '13' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'ssp', dp: '13', spaces: 4 })
+  const ssp13Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'ssp', dp: '13' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'ssp', dp: '13', spaces: 4 })
 
-  const sdpMinus3Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: 'minus3' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: 'minus3', spaces: 4 })
+  const sdpMinus3Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: 'minus3' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
-  const sdp88Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '88' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Saves.definition ? '\n' : '\n\n' })
+  const sdp88Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '88' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Saves.definition ? '\n' : '\n\n' })
 
-  const sdp161Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '161' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '161', spaces: 4 })
+  const sdp161Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '161' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '161', spaces: 4 })
 
-  const sdp233Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '233' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '233', spaces: 4 })
+  const sdp233Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '233' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '233', spaces: 4 })
 
-  const sdp320Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '320' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '320', spaces: 4 })
+  const sdp320Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '320' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '320', spaces: 4 })
 
   let sdp390Saves = null
   let achievementsButtonSaves = ''
   if (menu.showAchievements) {
-    sdp390Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '390' })
-    menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '390', spaces: 4 })
+    sdp390Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '390' })
+    androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '390', spaces: 4 })
 
     achievementsButtonSaves = `\n
       val buttonAchievements = Button(this)
@@ -1152,20 +1178,20 @@ function finalize(menu) {
       frameLayout.addView(buttonAchievements)`
   }
 
-  const ssp15Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'ssp', dp: '15' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'ssp', dp: '15', spaces: 4 })
+  const ssp15Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'ssp', dp: '15' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'ssp', dp: '15', spaces: 4 })
 
-  const sdp73Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '73' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '73', spaces: 4 })
+  const sdp73Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '73' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '73', spaces: 4 })
 
-  const sdp300Saves = _GetMultiResources(menu, menu.pages.saves, { type: 'sdp', dp: '287' })
-  menu.pages.saves = _AddResource(menu.pages.saves, { type: 'sdp', dp: '287', spaces: 4 })
+  const sdp300Saves = _GetMultiResources(androidMenu, androidMenu.pages.saves, { type: 'sdp', dp: '287' })
+  androidMenu.pages.saves = _AddResource(androidMenu.pages.saves, { type: 'sdp', dp: '287', spaces: 4 })
 
-  const sdp70Saves = _GetMultiResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '70' })
-  menu.pages.savesFor = _AddResource(menu.pages.savesFor, { type: 'sdp', dp: '70', spaces: 6 })
+  const sdp70Saves = _GetMultiResources(androidMenu, androidMenu.pages.savesFor, { type: 'sdp', dp: '70' })
+  androidMenu.pages.savesFor = _AddResource(androidMenu.pages.savesFor, { type: 'sdp', dp: '70', spaces: 6 })
 
-  const sdp100Saves = _GetMultiResources(menu, menu.pages.savesFor, { type: 'sdp', dp: '100' })
-  menu.pages.savesFor = _AddResource(menu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6, newLines: sdp70Saves.definition ? '\n' : '\n\n' })
+  const sdp100Saves = _GetMultiResources(androidMenu, androidMenu.pages.savesFor, { type: 'sdp', dp: '100' })
+  androidMenu.pages.savesFor = _AddResource(androidMenu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6, newLines: sdp70Saves.definition ? '\n' : '\n\n' })
 
   let scenesInfoCalculations = ''
   if (visualNovel.optimizations.preCalculateScenesInfo) {
@@ -1263,7 +1289,9 @@ __PERFORVNM_SAVES_SWITCH__
 
       buttonStart.layoutParams = layoutParamsStart
 
-      __PERFORVNM_MENU_START__
+      __IGNORE_INDENTATION__
+    ${menuStartCode}
+      __IGNORE_INDENTATION__
 
       frameLayout.addView(buttonStart)
 
@@ -1440,8 +1468,8 @@ __PERFORVNM_SAVES_SWITCH__
       frameLayout.addView(scrollView)\n\n`, 2
   )
 
-  saverCode = _FinalizeMultiResources(menu, menu.pages.saves, saverCode)
-  saverCode = _FinalizeResources(menu.pages.savesFor, saverCode)
+  saverCode = _FinalizeMultiResources(androidMenu, androidMenu.pages.saves, saverCode)
+  saverCode = _FinalizeResources(androidMenu.pages.savesFor, saverCode)
 
   if (menu.custom.length != 0) {
     saverCode += customCode
@@ -1452,40 +1480,41 @@ __PERFORVNM_SAVES_SWITCH__
     }`, 2
   )
 
-  helper.writeFunction('Android', saverCode)
-
+  let achievementsCode = ''
   if (menu.showAchievements) {
-    const sdp30Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '30' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '30', spaces: 4 })
+    const menuAchievementsCode = _SetAchievementsMenu()
 
-    const ssp13Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'ssp', dp: '13' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'ssp', dp: '13', spaces: 4 })
+    const sdp30Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '30' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '30', spaces: 4 })
 
-    const sdpMinus3Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: 'minus3' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: 'minus3', spaces: 4 })
+    const ssp13Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'ssp', dp: '13' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'ssp', dp: '13', spaces: 4 })
 
-    const sdp88Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '88' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Achievements.definition ? '\n' : '\n\n' })
+    const sdpMinus3Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: 'minus3' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: 'minus3', spaces: 4 })
 
-    const sdp161Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '161' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '161', spaces: 4 })
+    const sdp88Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '88' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '88', spaces: 4, newLines: sdpMinus3Achievements.definition ? '\n' : '\n\n' })
 
-    const sdp233Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '233' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '233', spaces: 4 })
+    const sdp161Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '161' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '161', spaces: 4 })
 
-    const sdp320Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '320' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '320', spaces: 4 })
+    const sdp233Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '233' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '233', spaces: 4 })
 
-    const ssp15Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'ssp', dp: '15' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'ssp', dp: '15', spaces: 4 })
+    const sdp320Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '320' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '320', spaces: 4 })
 
-    const sdp73Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '73' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '73', spaces: 4 })
+    const ssp15Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'ssp', dp: '15' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'ssp', dp: '15', spaces: 4 })
 
-    const sdp390Achievements = _GetMultiResources(menu, menu.pages.achievements, { type: 'sdp', dp: '390' })
-    menu.pages.achievements = _AddResource(menu.pages.achievements, { type: 'sdp', dp: '390', spaces: 4 })
+    const sdp73Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '73' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '73', spaces: 4 })
 
-    let achievementsCode = helper.codePrepare(`
+    const sdp390Achievements = _GetMultiResources(androidMenu, androidMenu.pages.achievements, { type: 'sdp', dp: '390' })
+    androidMenu.pages.achievements = _AddResource(androidMenu.pages.achievements, { type: 'sdp', dp: '390', spaces: 4 })
+
+    achievementsCode = helper.codePrepare(`
       private fun achievements(animate: Boolean) {
         val frameLayout = FrameLayout(this)
         frameLayout.setBackgroundColor(0xFF000000.toInt())
@@ -1543,7 +1572,9 @@ __PERFORVNM_SAVES_SWITCH__
 
         buttonStart.layoutParams = layoutParamsStart
 
-        __PERFORVNM_MENU_START__
+        __IGNORE_INDENTATION__
+    ${menuStartCode}
+        __IGNORE_INDENTATION__
 
         frameLayout.addView(buttonStart)
 
@@ -1660,10 +1691,12 @@ __PERFORVNM_SAVES_SWITCH__
 
         frameLayout.addView(buttonBack)
 
-    __PERFORVNM_ACHIEVEMENTS_MENU__\n\n`, 4
+        __IGNORE_INDENTATION__
+${menuAchievementsCode}
+        __IGNORE_INDENTATION__\n\n`, 4
     )
 
-    achievementsCode = _FinalizeMultiResources(menu, menu.pages.achievements, achievementsCode)
+    achievementsCode = _FinalizeMultiResources(androidMenu, androidMenu.pages.achievements, achievementsCode)
 
     if (menu.custom.length != 0) {
       achievementsCode += customCode
@@ -1673,16 +1706,17 @@ __PERFORVNM_SAVES_SWITCH__
         setContentView(frameLayout)
       }`, 4
     )
-
-    helper.writeFunction('Android', achievementsCode)
   }
 
-  AndroidVisualNovel.menu = menu
+  helper.writeFunction('Android', menuCode)
+  helper.writeFunction('Android', aboutCode)
+  helper.writeFunction('Android', settingsCode)
+  helper.writeFunction('Android', saverCode)
+  helper.writeFunction('Android', achievementsCode)
 
   helper.logOk('Main, about, settings and saves menu coded.', 'Android')
 }
 
 export default {
-  init,
-  finalize
+  init
 }
