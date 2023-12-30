@@ -340,25 +340,15 @@ function addSubScenes(scene, options) {
 }
 
 function finalize(scene) {
-  const response = androidScene.finalize(scene)
-
   if (scene.type == 'normal') {
-    visualNovel.scenes = {
-      ...visualNovel.scenes,
-      [scene.name]: scene
-    }
+    visualNovel.scenes[scene.name] = scene
 
     visualNovel.scenesLength++
   } else {
-    visualNovel.subScenes = {
-      ...visualNovel.subScenes,
-      [scene.name]: scene
-    }
+    visualNovel.subScenes[scene.name] = scene
 
     visualNovel.subScenesLength++
   }
-
-  return response
 }
 
 export default {

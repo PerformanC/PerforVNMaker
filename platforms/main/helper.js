@@ -191,13 +191,22 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
 
   let ignoreIndentation = false
 
-  lines.forEach((line, index) => {
-    if (line == '') return;
+  let index = 0
+  while (index < lines.length) {
+    const line = lines[index]
+
+    if (line == '') {
+      index++
+
+      continue
+    }
 
     if (visualNovel.optimizations.minify) {
       lines[index] = line.trim()
 
-      return;
+      index++
+
+      continue
     }
 
     if (line.includes('__IGNORE_INDENTATION__')) {
@@ -205,13 +214,19 @@ function codePrepare(code, removeSpaceAmount = 0, addSpaceAmount = 0, removeFirs
 
       lines.splice(index, 1)
 
-      return;
+      continue
     }
 
-    if (ignoreIndentation) return;
+    if (ignoreIndentation) {
+      index++
+
+      continue
+    }
 
     lines[index] = addedSpaces + line.substring(removeSpaceAmount)
-  })
+
+    index++
+  }
 
   return lines.join('\n')
 }

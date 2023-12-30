@@ -3,11 +3,11 @@
 import fs from 'fs'
 
 import helper from '../main/helper.js'
-import { _ProcessWNextScene, _ProcessWONextScene, _ProcessSceneSave, _FinalizeScenesSave } from './helpers/coder.js'
 
 import { _AchievementGive } from './achievements.js'
 import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
 import { _AddMenu } from './menu.js'
+import { _ProcessScenes } from './scene.js'
 
 global.AndroidVisualNovel = {
   menu: null,
@@ -17,7 +17,9 @@ global.AndroidVisualNovel = {
   subScenes: {},
   achievements: [],
   items: [],
-  customXML: []
+  customXML: [],
+  switchScene: [],
+  savesWhen: []
 }
 
 function init(options) {
@@ -123,66 +125,12 @@ function finalize() {
   else
     helper.replace('Android', '__PERFORVNM_MENU__', '// No menu created.')
 
-  let switchesCode = helper.codePrepare(`
-    private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
-      when (scene) {`, 2
-  )
-
-  let savesSwitchCode = ''
+  if (visualNovel.scenesLength)
+    _ProcessScenes()
 
   const SceneKeys = Object.keys(visualNovel.scenes)
   const SubSceneKeys = Object.keys(visualNovel.subScenes)
 
-  if (visualNovel.scenesLength) {
-    let scenesCode = ''
-
-    SceneKeys.forEach((key, i) => {
-      const scene = visualNovel.scenes[key]
-      let code = AndroidVisualNovel.scenes[key]
-
-      savesSwitchCode += _ProcessSceneSave(scene)
-
-      if (scene.next) {
-        const tmp = _ProcessWNextScene(i, scene, code, switchesCode, 'scene')
-        code = tmp.code
-        switchesCode = tmp.switchesCode
-      } else {
-        const tmp = _ProcessWONextScene(i, SceneKeys, scene, code, switchesCode, 'scene')
-        code = tmp.code
-        switchesCode = tmp.switchesCode
-      }
-
-      scenesCode += '\n\n' + code
-    })
-
-    SubSceneKeys.forEach((key, i) => {
-      const scene = visualNovel.subScenes[key]
-      let code = AndroidVisualNovel.subScenes[key]
-
-      savesSwitchCode += _ProcessSceneSave(scene)
-
-      if (scene.next.scene) {
-        const tmp = _ProcessWNextScene(i, scene, code, switchesCode, 'subScene')
-        code = tmp.code
-        switchesCode = tmp.switchesCode
-      } else {
-        const tmp = _ProcessWONextScene(i, SceneKeys, scene, code, switchesCode, 'subScene')
-        code = tmp.code
-        switchesCode = tmp.switchesCode
-      }
-
-      scenesCode += '\n\n' + code
-    })
-
-    helper.replace('Android', '__PERFORVNM_SCENES__', `${scenesCode}__PERFORVNM_SCENES__`)
-  }
-
-  switchesCode += helper.codePrepare(`
-      }
-    }`, 2, 0, false
-  )
-
-  helper.writeFunction('Android', switchesCode)
 
   if (visualNovel.achievements.length != 0)
     helper.writeFunction('Android', _AchievementGive())
@@ -191,10 +139,8 @@ function finalize() {
     helper.writeFunction('Android', _ItemsParsingFunction())
 
     helper.replace('Android', '__PERFORVNM_ITEMS_RESTORE__', _ItemsRestore())
-    helper.replace('Android', /__PERFORVNM_ITEMS_SAVER__/g, _ItemsSaver())
   } else {
     helper.replace('Android', '__PERFORVNM_ITEMS_RESTORE__', '')
-    helper.replace('Android', /__PERFORVNM_ITEMS_SAVER__/g, '')
   }
 
   helper.replace('Android', '__PERFORVNM_CLASSES__', '')
@@ -203,7 +149,7 @@ function finalize() {
   helper.replace('Android', '__PERFORVNM_SCENES__', '')
 
   if (!visualNovel.optimizations.preCalculateRounding) {
-    const defaultSaveSwitchCode = helper.codePrepare(`
+    const defaultSavesWhenCode = helper.codePrepare(`
       when (characterData.getJSONObject("position").getString("sideType")) {
         "left" -> {
           val leftDpCharacter = resources.getDimensionPixelSize(resources.getIdentifier("_\${(characterData.getJSONObject("position").getInt("side") * 0.25).roundToInt()}sdp", "dimen", getPackageName()))
@@ -237,10 +183,18 @@ function finalize() {
         }
       }`, 0, 2)
 
-    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', defaultSaveSwitchCode)
+    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', defaultSavesWhenCode)
     helper.replace('Android', '__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
   } else {
-    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', _FinalizeScenesSave(savesSwitchCode))
+    const savesWhenCode = helper.codePrepare(`
+      when (buttonData.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}("scene")) {
+        __IGNORE_INDENTATION__
+${AndroidVisualNovel.savesWhen.join('\n')}
+        __IGNORE_INDENTATION__
+      }`, 0, 2
+    )
+
+    helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', savesWhenCode)
   }
 
   helper.replace('Android', '__PERFORVNM_HEADERS__', '')
@@ -367,24 +321,8 @@ function finalize() {
 
   helper.replace('Android', '__PERFORVNM_HEADER__', addHeaders ? '\n' + addHeaders : '')
 
-  const startMusicCode = helper.codePrepare(`\n
-    mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.background.music})
-
-    if (mediaPlayer != null) {
-      mediaPlayer!!.start()
-
-      val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
-      mediaPlayer!!.setVolume(volume, volume)
-
-      mediaPlayer!!.setOnCompletionListener {
-        mediaPlayer!!.start()
-      }
-    }`, 0, 2, false
-  )
-
-  helper.replace('Android', /__PERFORVNM_START_MUSIC__/g, startMusicCode)
-
-  if (visualNovel.optimizations.minify) AndroidVisualNovel.code = helper.removeAllDoubleLines(AndroidVisualNovel.code)
+  if (visualNovel.optimizations.minify)
+    AndroidVisualNovel.code = helper.removeAllDoubleLines(AndroidVisualNovel.code)
 
   helper.logOk('Code finished up.', 'Android')
 

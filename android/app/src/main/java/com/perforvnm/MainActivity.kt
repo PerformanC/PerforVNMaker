@@ -1578,7 +1578,8 @@ class MainActivity : Activity() {
 
     frameLayout.addView(imageView_scenario)
 
-    if (animate) imageView_scenario.startAnimation(animationFadeIn)
+    if (animate)
+      imageView_scenario.startAnimation(animationFadeIn)
 
     val imageView_Pedro = ImageView(this)
     imageView_Pedro.setImageResource(R.raw.pedro_staring)
@@ -2073,16 +2074,16 @@ class MainActivity : Activity() {
       scenesLength++
 
       if (!items.contains(1789536792)) {
-        no_items()
+        no_items(true)
       } else {
-        scene5()
+        scene5(true)
       }
     }
 
     setContentView(frameLayout)
   }
 
-  private fun scene5() {
+  private fun scene5(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2136,17 +2137,21 @@ class MainActivity : Activity() {
     textViewSpeech.layoutParams = layoutParamsSpeech
 
     var speechText = "\"And our multi path feature.. amazing.\""
-    var i = 0
+    if (animate) {
+      var i = 0
 
-    handler.postDelayed(object : Runnable {
-      override fun run() {
-        if (i < speechText.length) {
-          textViewSpeech.text = speechText.substring(0, i + 1)
-          i++
-          handler.postDelayed(this, textSpeed)
+      handler.postDelayed(object : Runnable {
+        override fun run() {
+          if (i < speechText.length) {
+            textViewSpeech.text = speechText.substring(0, i + 1)
+            i++
+            handler.postDelayed(this, textSpeed)
+          }
         }
-      }
-    }, textSpeed)
+      }, textSpeed)
+    } else {
+      textViewSpeech.text = speechText
+    }
 
     frameLayout.addView(textViewSpeech)
 
@@ -2297,7 +2302,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun no_items() {
+  private fun no_items(animate: Boolean) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2351,17 +2356,21 @@ class MainActivity : Activity() {
     textViewSpeech.layoutParams = layoutParamsSpeech
 
     var speechText = "\"You don't have the item, sorry.\""
-    var i = 0
+    if (animate) {
+      var i = 0
 
-    handler.postDelayed(object : Runnable {
-      override fun run() {
-        if (i < speechText.length) {
-          textViewSpeech.text = speechText.substring(0, i + 1)
-          i++
-          handler.postDelayed(this, textSpeed)
+      handler.postDelayed(object : Runnable {
+        override fun run() {
+          if (i < speechText.length) {
+            textViewSpeech.text = speechText.substring(0, i + 1)
+            i++
+            handler.postDelayed(this, textSpeed)
+          }
         }
-      }
-    }, textSpeed)
+      }, textSpeed)
+    } else {
+      textViewSpeech.text = speechText
+    }
 
     frameLayout.addView(textViewSpeech)
 
@@ -3034,8 +3043,8 @@ class MainActivity : Activity() {
     when (scene) {
       1722916382 -> scene1(false)
       1722916385 -> scene4(false)
-      1722916386 -> scene5()
-      969329308 -> no_items()
+      1722916386 -> scene5(false)
+      969329308 -> no_items(false)
       1722916383 -> scene2(false)
       1722916384 -> scene3(false)
     }

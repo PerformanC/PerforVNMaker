@@ -2,10 +2,10 @@
 
 import helper from '../main/helper.js'
 import { _GetResource, _AddResource, _FinalizeResources } from './helpers/optimizations.js'
-import { _GetSceneFParams } from './helpers/params.js'
+import { _GetSceneFParams, _GetSceneParams } from './helpers/params.js'
 
 import { _AchievementWrapperGive } from './achievements.js'
-import { _ItemGive, _ItemRemove } from './items.js'
+import { _ItemGive, _ItemRemove, _ItemsSaver } from './items.js'
 import { _AddCustoms } from './custom.js'
 
 function init(options) {
@@ -91,9 +91,62 @@ function addSubScenes(scene, options) {
   return scene
 }
 
-function finalize(scene) {
+export function _ProcessScenes() {
+  const sceneKeys = Object.values(visualNovel.scenes)
+  const subSceneKeys = Object.values(visualNovel.subScenes)
+
+  sceneKeys.forEach((scene, i) => _ProcessScene(scene, sceneKeys[i + 1], sceneKeys[i - 1], i))
+
+  subSceneKeys.forEach((scene, i) => _ProcessScene(scene, subSceneKeys[i + 1], subSceneKeys[i - 1], i))
+
+  const switchSceneCode = helper.codePrepare(`
+    private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
+      when (scene) {
+        __IGNORE_INDENTATION__   
+${AndroidVisualNovel.switchScene.join('\n')}
+        __IGNORE_INDENTATION__
+      }
+    }`,
+    2
+  )
+
+  helper.writeFunction('Android', switchSceneCode)
+}
+
+export function _ProcessScene(scene, next, past, sceneIndex) {
+  let sceneParams = null
+  let parentScene = null
+  if (scene.type == 'normal') {
+    sceneParams = _GetSceneParams(scene, past, 'false', sceneIndex)
+  } else {
+    Object.values(visualNovel.scenes).forEach((sceneV) => {
+      if (sceneV.subScenes.length != 0) {
+        sceneV.subScenes.forEach((subScene) => {
+          if (subScene.scene == scene.name) {
+            parentScene = sceneV
+          }
+        })
+      }
+    })
+
+    if (!parentScene)
+      helper.logFatalError(`Scene ${scene.name} has no parent scene`)
+
+    sceneParams = _GetSceneParams(parentScene, scene)
+  }
+
+  _ProcessSceneSave(scene)
+
+  AndroidVisualNovel.switchScene.push(
+    helper.codePrepare(
+      `\n${helper.getSceneId(scene.name)} -> ${scene.name}(${sceneParams.switch.join(', ').replace(/true/g, 'false')})`,
+      0,
+      6
+    )
+  )
+
   let sceneCode = helper.codePrepare(`
-    private fun ${scene.name}(__PERFORVNM_SCENE_PARAMS__) {
+    private fun ${scene.name}(${sceneParams.function}) {
       val frameLayout = FrameLayout(this)
       frameLayout.setBackgroundColor(0xFF000000.toInt())\n\n`, 2
   )
@@ -117,18 +170,16 @@ function finalize(scene) {
     )
 
     if (scene.transition) {
-      let hasIfAnimate = visualNovel.scenes.length == 0 || scene.subScenes.length != 0
+      //REWORK
 
-      if (hasIfAnimate) {
-        sceneCode += helper.codePrepare(`
-          if (animate)`, 6
-        )
-      }
-
-      sceneCode += helper.codePrepare('imageView_scenario.startAnimation(animationFadeIn)\n\n', 0, hasIfAnimate ? 1 : 4, false)
+      sceneCode += helper.codePrepare(`
+        if (animate)
+          imageView_scenario.startAnimation(animationFadeIn)\n\n`, 4
+      )
     }
   }
 
+  //REWORK
   scene.characters.forEach((character) => {
     switch (character.position.side) {
       case 'center': {
@@ -224,13 +275,13 @@ function finalize(scene) {
     if (scene.transition) {
       spaceAmount += 4
 
-      if (visualNovel.scenes.length == 0 || scene.subScenes.length != 0) {
+      if (sceneIndex == 0 || scene.subScenes.length != 0) {
         sceneCode += helper.codePrepare(`
           if (animate) {`, 6, 0, false
         )
 
         finalCode.push(
-          helper.codePrepare(`__PERFORVNM_ANIMATION_SETS__`, 0, 0, false)
+          helper.codePrepare('__PERFORVNM_ANIMATION_SETS__', 0, 0, false)
         )
 
         spaceAmount += 2
@@ -492,7 +543,7 @@ ${position.join('\n')}
 
     sceneCode += helper.codePrepare(`rectangleViewSpeech.setColor(0xFF${scene.speech.text.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
+    if (sceneIndex == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleSpeech = AlphaAnimation(0f, ${scene.speech.text.rectangle.opacity}f)
@@ -513,6 +564,24 @@ ${position.join('\n')}
     const sdp270 = _GetResource(scene, { type: 'sdp', dp: '270' })
     scene = _AddResource(scene, { type: 'sdp', dp: '270', spaces: 4 })
 
+    const speechHandlerCode = scene.speech ? helper.codePrepare(`
+      if (animate) {
+        var i = 0
+
+        handler.postDelayed(object : Runnable {
+          override fun run() {
+            if (i < speechText.length) {
+              textViewSpeech.text = speechText.substring(0, i + 1)
+              i++
+              handler.postDelayed(this, textSpeed)
+            }
+          }
+        }, textSpeed)
+      } else {
+        textViewSpeech.text = speechText
+      }\n`, 0, 0, false
+    ) : ''
+
     sceneCode += helper.codePrepare(`
       frameLayout.addView(rectangleViewSpeech)
 
@@ -530,7 +599,7 @@ ${position.join('\n')}
 
       textViewSpeech.layoutParams = layoutParamsSpeech
 
-      var speechText = "${scene.speech.text.content}"__PERFORVNM_SPEECH_HANDLER__
+      var speechText = "${scene.speech.text.content}"${speechHandlerCode}
       frameLayout.addView(textViewSpeech)
 
       val rectangleViewAuthor = RectangleView(this)
@@ -548,7 +617,7 @@ ${position.join('\n')}
 
     sceneCode += helper.codePrepare(`rectangleViewAuthor.setColor(0xFF${scene.speech.author.rectangle.color}.toInt())\n\n`, 0, 4, false)
 
-    if (visualNovel.scenes.length == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
+    if (sceneIndex == 0 || !oldScene?.speech || scene.subScenes.length != 0) {
       sceneCode += helper.codePrepare(`
         if (animate) {
           val animationRectangleAuthor = AlphaAnimation(0f, ${scene.speech.author.rectangle.opacity}f)
@@ -733,7 +802,7 @@ ${position.join('\n')}
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 0, 2
+        }`, 2
       )
     )
   }
@@ -745,7 +814,7 @@ ${position.join('\n')}
           mediaPlayer!!.stop()
           mediaPlayer!!.release()
           mediaPlayer = null
-        }`, 0, 2
+        }`, 2
       )
     )
 
@@ -755,15 +824,15 @@ ${position.join('\n')}
           mediaPlayer2!!.stop()
           mediaPlayer2!!.release()
           mediaPlayer2 = null
-        }`, 0, 2
+        }`
       )
     )
   }
 
   if (scene.speech || (scene.effect && scene.effect.delay != 0) || (scene.music && scene.music.delay != 0))
-    finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 10, false))
+    finishScene.push(helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 6, false))
 
-  finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 10, false))
+  finishScene.push(helper.codePrepare('findViewById<FrameLayout>(android.R.id.content).setOnClickListener(null)', 0, 6, false))
 
   const itemRemover = []
   if (scene.items.give.length != 0) {
@@ -845,8 +914,10 @@ ${position.join('\n')}
   const sdp23 = _GetResource(scene, { type: 'sdp', dp: '23' })
   scene = _AddResource(scene, { type: 'sdp', dp: '23', spaces: 4 })
 
+  const itemSaverJSON = visualNovel.items.length != 0 ? _ItemsSaver() : ''
+
   sceneCode += helper.codePrepare(`
-      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() +__PERFORVNM_ITEMS_SAVER__ "}"
+      val newSave = "${JSON.stringify(JSON.stringify(sceneJson)).slice(1, -2)},\\"history\\":" + scenesToJson() +${itemSaverJSON} "}"
 
       if (saves == "[]") saves = "[" + newSave + "]"
       else saves = saves.dropLast(1) + "," + newSave + "]"
@@ -884,6 +955,22 @@ ${position.join('\n')}
       itemsLength = 0`, 0, 4, false
     )
   }
+
+  const startMusicCode = helper.codePrepare(`\n
+    mediaPlayer = MediaPlayer.create(this, R.raw.${visualNovel.menu?.background.music})
+
+    if (mediaPlayer != null) {
+      mediaPlayer!!.start()
+
+      val volume = getSharedPreferences("VNConfig", Context.MODE_PRIVATE).getFloat("musicVolume", 1f)
+      mediaPlayer!!.setVolume(volume, volume)
+
+      mediaPlayer!!.setOnCompletionListener {
+        mediaPlayer!!.start()
+      }
+    }`, 0, 2, false
+  )
+
   sceneCode += helper.codePrepare(`
         buttonMenu.setOnClickListener {
           for (j in 0 until scenesLength) {
@@ -891,17 +978,17 @@ ${position.join('\n')}
           }
           scenesLength = 0${itemsRemove}
 
-${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
+          __IGNORE_INDENTATION__
+${finishScene.join('\n\n')}${startMusicCode}
+          __IGNORE_INDENTATION__
+
+          ${(visualNovel.menu ? 'menu()' : '// No menu initialized.')}
+        }
+
+        frameLayout.addView(buttonMenu)\n\n`, 4
   )
 
-  sceneCode += helper.codePrepare(`
-      ${(visualNovel.menu ? 'menu()' : '__PERFORVNM_MENU__')}
-    }
-
-    frameLayout.addView(buttonMenu)\n\n`
-  )
-
-  if (visualNovel.scenesLength != 0) {
+  if (sceneIndex != 0 || parentScene) {
     const sdp46 = _GetResource(scene, { type: 'sdp', dp: '46' })
     scene = _AddResource(scene, { type: 'sdp', dp: '46', spaces: 4 })
 
@@ -920,12 +1007,12 @@ ${finishScene.join('\n\n')}__PERFORVNM_START_MUSIC__\n\n`, 4
       ${sdp46.definition}layoutParamsBack.gravity = Gravity.TOP or Gravity.START
       layoutParamsBack.setMargins(${sdp15.variable}, ${sdp46.variable}, 0, 0)
 
-      buttonBack.layoutParams = layoutParamsBack\n\n`, 2
-    )
+      buttonBack.layoutParams = layoutParamsBack
 
-    sceneCode += helper.codePrepare(`
-        buttonBack.setOnClickListener {
-${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
+      buttonBack.setOnClickListener {
+        __IGNORE_INDENTATION__
+${finishScene.join('\n\n')}${itemRemover.length != 0 ? itemRemover.join('\n\n') : '\n'}\n
+        __IGNORE_INDENTATION__`, 2
     )
 
     if (redirectAmount > 1) {
@@ -938,11 +1025,7 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
         switchScene(scene)\n`, 2
       )
     } else if (oldScene) {
-      let functionParams = { function: [], switch: [] }
-      if (olderOldScene) functionParams = _GetSceneFParams(oldScene, olderOldScene, 'false')
-      else {
-        if (oldScene.subScenes.length != 0) functionParams.switch.push('false')
-      }
+      const functionParams = _GetSceneParams(oldScene, olderOldScene, 'false')
 
       if (visualNovel.scenes.length == 1) {
         sceneCode += helper.codePrepare(`${oldScene.name}(${functionParams.switch.join(', ')})\n`, 0, 6, false)
@@ -998,18 +1081,18 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
       if (scene.subScenes[i].item?.require) {
         requireItems[i] = helper.codePrepare(`
           if (!items.contains(${helper.getItemId(scene.subScenes[0].item.require)})) {
-            Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()`)
+            Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()`, 4)
 
         if (scene.subScenes[i].item.remove) {
           requireItems[i] += helper.codePrepare(`
               items.remove(${helper.getItemId(scene.subScenes[0].item.require)})
 
               return@setOnClickListener
-            }\n\n`, 2, 0, false)
+            }\n\n`, 6, 0, false)
         } else {
           requireItems[i] += helper.codePrepare(`\n
               return@setOnClickListener
-            }\n\n`, 2, 0, false)
+            }\n\n`, 6, 0, false)
         }
       }
 
@@ -1018,14 +1101,19 @@ ${finishScene.join('\n\n')}${itemRemover.join('\n\n')}\n\n`, 4
       i++
     }
 
+    const subFunctionParams = _GetSceneParams(visualNovel.subScenes[scene.subScenes[0].scene], scene)
+    const subFunctionParams2 = _GetSceneParams(visualNovel.subScenes[scene.subScenes[1].scene], scene)
+
     sceneCode += helper.codePrepare(`
         buttonSubScenes.setOnClickListener {
+          __IGNORE_INDENTATION__
 ${requireItems[0]}${finishScene.join('\n\n')}
+          __IGNORE_INDENTATION__
 
           scenes.set(scenesLength, ${helper.getSceneId(scene.subScenes[0].scene)})
           scenesLength++
 
-          __PERFORVNM_SUBSCENE_1__
+          ${scene.subScenes[0].scene}(${subFunctionParams.switch.join(', ')})
         }
 
         frameLayout.addView(buttonSubScenes)
@@ -1047,12 +1135,14 @@ ${requireItems[0]}${finishScene.join('\n\n')}
         buttonSubScenes2.layoutParams = layoutParamsSubScenes2
 
         buttonSubScenes2.setOnClickListener {
+          __IGNORE_INDENTATION__
 ${requireItems[1]}${finishScene.join('\n\n')}
+          __IGNORE_INDENTATION__
 
           scenes.set(scenesLength, ${helper.getSceneId(scene.subScenes[1].scene)})
           scenesLength++
 
-          __PERFORVNM_SUBSCENE_2__
+          ${scene.subScenes[1].scene}(${subFunctionParams2.switch.join(', ')})
         }
 
         frameLayout.addView(buttonSubScenes2)\n\n`, 4
@@ -1062,24 +1152,34 @@ ${requireItems[1]}${finishScene.join('\n\n')}
     helper.logWarning('Unecessary sub-scenes, only 2 are allowed.', 'Android')
   }
 
-  if (scene.custom.length != 0 ) sceneCode += _AddCustoms(scene, scene.custom)
+  if (scene.custom.length != 0 ) {
+    const tmp = _AddCustoms(scene, scene.custom)
+    scene = tmp.scene
+    sceneCode += tmp.code    
+  }
   if (scene.achievements.length != 0) sceneCode += _AchievementWrapperGive(scene.achievements)
   if (scene.items.give.length != 0) scene.items.give.forEach((item) => sceneCode += _ItemGive(item))
 
   if (scene.next?.scene) {
-    let nextCode = helper.codePrepare(`${scene.next.scene}(__PERFORVNM_NEXT_SCENE_PARAMS__)`, 0, 10, false)
+    const nextSceneParams = _GetSceneFParams(scene, visualNovel.scenes[scene.next.scene])
+
+    let nextCode = helper.codePrepare(`${scene.next.scene}(${nextSceneParams.switch.join(', ')})`, 0, 10, false)
 
     if (scene.next.item?.require) {
+      const fallbackSceneParams = _GetSceneParams(scene, visualNovel.scenes[scene.next.item.require.fallback])
+
       nextCode = helper.codePrepare(`
         if (!items.contains(${helper.getItemId(scene.next.item.require.id)})) {
-          ${scene.next.item.require.fallback}(__PERFORVNM_FALLBACK_SCENE_PARAMS__)
+          ${scene.next.item.require.fallback}(${fallbackSceneParams.switch.join(', ')})
         } else {
-          ${scene.next.scene}(__PERFORVNM_NEXT_SCENE_PARAMS__)
+          ${scene.next.scene}(${nextSceneParams.switch.join(', ')})
         }`, 0, 2)
     }
     sceneCode += helper.codePrepare(`
         findViewById<FrameLayout>(android.R.id.content).setOnClickListener {
+          __IGNORE_INDENTATION__
 ${finishScene.join('\n\n')}
+          __IGNORE_INDENTATION__
 
           scenes.set(scenesLength, ${helper.getSceneId(scene.name)})
           scenesLength++
@@ -1099,8 +1199,98 @@ ${nextCode}
 
   sceneCode = _FinalizeResources(scene, sceneCode)
 
-  if (scene.type == 'normal') AndroidVisualNovel.scenes[scene.name] = sceneCode
-  else AndroidVisualNovel.subScenes[scene.name] = sceneCode
+  helper.writeFunction('Android', sceneCode)
+}
+
+export function _ProcessSceneSave(scene) {
+  let savesSwitchLocal = helper.codePrepare(`
+    ${helper.getSceneId(scene.name)} -> {
+      when (characterData.getString("name")) {`, 0, 6
+  )
+
+  scene.characters.forEach((character) => {
+    let optimizedSetImage = ''
+    if (visualNovel.optimizations.preCalculateScenesInfo) {
+      optimizedSetImage = helper.codePrepare(`
+        imageViewCharacter.setImageResource(R.raw.${character.image})\n\n                    `, 8
+      )
+    }
+    switch (character.position.side) {
+      case 'left': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'leftTop': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val leftDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad + leftDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'right': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'rightTop': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val rightDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+            val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.top * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad - rightDpCharacter, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'top': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}val topDpCharacter = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._${Math.round(character.position.margins.side * 0.25)}sdp)
+
+            layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad + topDpCharacter, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+      case 'center': {
+        savesSwitchLocal += helper.codePrepare(`
+          "${character.name}" -> {
+            ${optimizedSetImage}layoutParamsImageViewCharacter.setMargins(leftDpLoad, topDpLoad, 0, 0)
+          }`, 0, 4, false
+        )
+
+        break
+      }
+    }
+  })
+
+  AndroidVisualNovel.savesWhen.push(
+    savesSwitchLocal +
+    '\n' +
+    helper.codePrepare('}\n', 0, 12, false) +
+    helper.codePrepare('}', 0, 10, false)
+  )
 
   helper.logOk(`Scene "${scene.name}" coded.`, 'Android')
 }
@@ -1114,6 +1304,5 @@ export default {
   addMusic,
   addTransition,
   setNextScene,
-  addSubScenes,
-  finalize
+  addSubScenes
 }

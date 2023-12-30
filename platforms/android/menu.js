@@ -1223,7 +1223,7 @@ __PERFORVNM_SAVES_SWITCH__
 
         layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-__PERFORVNM_SAVES_SWITCH__
+        __PERFORVNM_SAVES_SWITCH__
 
         imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
 

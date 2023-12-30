@@ -26,7 +26,7 @@ function init(options) {
 }
 
 function give(page, itemId) {
-    const checks = {
+  const checks = {
     'id': {
       type: 'string',
       extraVerification: (param) => {
@@ -38,6 +38,8 @@ function give(page, itemId) {
       }
     }
   }
+
+  helper.verifyParams(checks, { id: itemId })
 
   return androidItems.give(page, itemId)
 }

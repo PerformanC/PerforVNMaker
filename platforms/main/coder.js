@@ -13,7 +13,7 @@ global.visualNovel = {
 }
 global.PerforVNM = {
   codeGeneratorVersion: '2.0.0',
-  generatedCodeVersion: '1.21.0',
+  generatedCodeVersion: '1.21.1',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
