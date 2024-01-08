@@ -50,6 +50,7 @@ function init(options) {
     import android.widget.SeekBar
     import android.view.View
     import android.view.Gravity
+    import android.view.WindowInsets
     import android.view.animation.Animation
     import android.view.animation.LinearInterpolator
     import android.view.animation.OvershootInterpolator
@@ -70,8 +71,13 @@ function init(options) {
       override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        __PERFORVNM_MULTI_PATH__
+
+        __PERFORVNM_MENU__
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           window.setDecorFitsSystemWindows(false)
+          window.getInsetsController()?.hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.systemBars())
         } else {
           @Suppress("DEPRECATION")
           window.decorView.systemUiVisibility = (
@@ -84,10 +90,6 @@ function init(options) {
             or View.SYSTEM_UI_FLAG_LOW_PROFILE
           )
         }
-
-        __PERFORVNM_MULTI_PATH__
-
-        __PERFORVNM_MENU__
       }__PERFORVNM_SCENES__
 
       private fun scenesToJson(): String {

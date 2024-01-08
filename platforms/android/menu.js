@@ -295,10 +295,9 @@ export function _AddMenu() {
         paint.color = color
       }
 
-      override fun onDraw(canvas: Canvas?) {
+      override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val rect = canvas?.clipBounds ?: return
-        canvas.drawRect(rect, paint)
+        canvas.drawRect(canvas.clipBounds, paint)
       }
     }\n`, 4, 0, false
   )

@@ -21,6 +21,7 @@ import android.widget.Button
 import android.widget.SeekBar
 import android.view.View
 import android.view.Gravity
+import android.view.WindowInsets
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -78,21 +79,6 @@ class MainActivity : Activity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      window.setDecorFitsSystemWindows(false)
-    } else {
-      @Suppress("DEPRECATION")
-      window.decorView.systemUiVisibility = (
-        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        or View.SYSTEM_UI_FLAG_FULLSCREEN
-        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        or View.SYSTEM_UI_FLAG_LOW_PROFILE
-      )
-    }
-
     scenes.set(0, 1722916382)
 
     val sharedPreferences = getSharedPreferences("VNConfig", Context.MODE_PRIVATE)
@@ -126,6 +112,22 @@ class MainActivity : Activity() {
     }
 
     menu()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      window.setDecorFitsSystemWindows(false)
+      window.getInsetsController()?.hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.systemBars())
+    } else {
+      @Suppress("DEPRECATION")
+      window.decorView.systemUiVisibility = (
+        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        or View.SYSTEM_UI_FLAG_FULLSCREEN
+        or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        or View.SYSTEM_UI_FLAG_LOW_PROFILE
+      )
+    }
   }
 
   private fun menu() {
@@ -467,7 +469,7 @@ class MainActivity : Activity() {
           startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/PerformanC/PerforVNMaker")))
         }
       }, length - "PerforVNM".length, length, 0)
-      append(" 2.0.0 (code generator), 1.21.0 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
+      append(" 2.0.0 (code generator), 1.21.1 (generated code).\n\nThis is our example visual novel, made by @ThePedroo")
     }
     textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(com.intuit.ssp.R.dimen._11ssp))
     textView.setTextColor(0xFFFFFFFF.toInt())
@@ -3102,9 +3104,8 @@ class RectangleView(context: Context) : View(context) {
     paint.color = color
   }
 
-  override fun onDraw(canvas: Canvas?) {
+  override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
-    val rect = canvas?.clipBounds ?: return
-    canvas.drawRect(rect, paint)
+    canvas.drawRect(canvas.clipBounds, paint)
   }
 }
