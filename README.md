@@ -69,8 +69,4 @@ Feel free to join [our Discord server](https://discord.gg/uPveNfTuCJ) to talk wi
 
 ## License
 
-PerforVNM is licensed under PerformanC's License, which is a modified version of the MIT License, focusing on the protection of the source code and the rights of the PerformanC team over the source code.
-
-If you wish to use some part of the source code, you must contact us first, and if we agree, you can use the source code, but you must give us credit for the source code you use.
-
-OBS: The generated code is not affected by the license above unless taken to be used for another code generator, transpiler or engine.
+PerforVNM is licensed under [BSD 2-Clause License](LICENSE). You can read more about it on [Open Source Initiative](https://opensource.org/licenses/BSD-2-Clause).
