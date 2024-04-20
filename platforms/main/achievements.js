@@ -31,7 +31,7 @@ function init(options) {
 
 function give(page, achievementId) {
   if (!visualNovel.achievements.find((achievement) => achievement.id == achievementId))
-  helper.logFatal(`The achievement '${achievementId}' doesn't exist.`)
+    helper.logFatal(`The achievement '${achievementId}' doesn't exist.`)
 
   if (page.achievements.find((achievement) => achievement.id == achievementId))
     helper.logFatal(`The achievement '${achievementId}' was already given.`)

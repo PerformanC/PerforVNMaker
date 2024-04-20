@@ -140,13 +140,15 @@ ${achievementsSwitch}
 }
 
 export function _AchievementWrapperGive(achievements) {
+  const achievementCode = achievements.map((achievement) => {
+    if (visualNovel.optimizations.hashAchievementIds)
+      return `giveAchievement(${helper.getAchievementId(achievement.id)})`
+    else
+      return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
+  })
+
   return helper.codePrepare(`
-    ${achievements.map((achievement) => {
-      if (visualNovel.optimizations.hashAchievementIds)
-        return `giveAchievement(${helper.getAchievementId(achievement.id)})`
-      else
-        return `giveAchievement(${helper.getAchievementId(achievement.id)}, "${helper.getAchievementId(achievement.id, true)}")`
-    }).join('\n')}\n\n`
+    ${achievementCode.join('\n')}\n\n`
   )
 }
 

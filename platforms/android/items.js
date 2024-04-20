@@ -48,7 +48,7 @@ export function _ItemsRestore() {
 }
 
 export function _ItemsSaver() {
-  return helper.codePrepare(` ",\\"items\\":" + itemsToJson() + `, 0, 0, false)
+  return helper.codePrepare(' ",\\"items\\":" + itemsToJson() + ', 0, 0, false)
 }
 
 export default {

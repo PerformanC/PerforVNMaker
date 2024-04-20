@@ -5,7 +5,7 @@ import fs from 'fs'
 import helper from '../main/helper.js'
 
 import { _AchievementGive } from './achievements.js'
-import { _ItemsParsingFunction, _ItemsRestore, _ItemsSaver } from './items.js'
+import { _ItemsParsingFunction, _ItemsRestore } from './items.js'
 import { _AddMenu } from './menu.js'
 import { _ProcessScenes } from './scene.js'
 
@@ -131,8 +131,6 @@ function finalize() {
     _ProcessScenes()
 
   const SceneKeys = Object.keys(visualNovel.scenes)
-  const SubSceneKeys = Object.keys(visualNovel.subScenes)
-
 
   if (visualNovel.achievements.length != 0)
     helper.writeFunction('Android', _AchievementGive())
@@ -340,8 +338,8 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
     helper.lastMessage(finished)
   })
 
-  let i = 0,
-      xmlLength = AndroidVisualNovel.customXML.length - 1
+  let i = 0, xmlLength = AndroidVisualNovel.customXML.length - 1
+
   while (AndroidVisualNovel.customXML.length > 0) {
     const customXML = AndroidVisualNovel.customXML.shift()
 

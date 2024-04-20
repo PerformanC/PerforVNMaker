@@ -401,7 +401,7 @@ export function _ProcessScene(scene, next, past, sceneIndex) {
         }
 
         if (character.animations.length - 1 == i) {
-          sceneCode += helper.codePrepare(`.start()\n`, 0, 2 + spaceAmount, false)
+          sceneCode += helper.codePrepare('.start()\n', 0, 2 + spaceAmount, false)
         } else {
           sceneCode += helper.codePrepare(`
             .setListener(object : Animator.AnimatorListener {
@@ -658,6 +658,17 @@ ${position.join('\n')}
 
         textViewAuthor.layoutParams = layoutParamsAuthor\n\n`, 4, 0, false
       )
+
+      /*
+        Will execute if:
+
+        - There are no scenes OR
+        - The old scene has no speech OR
+        - The current scene has subScenes OR
+        - The current scene has a speech author OR
+
+        - The VN has scenes AND the current scene has a speech author AND the old scene has no speech author
+      */
 
       if (
         visualNovel.scenes.length == 0 ||
@@ -1075,9 +1086,8 @@ ${finishScene.join('\n\n')}${itemRemover.length != 0 ? itemRemover.join('\n\n') 
     scene = _AddResource(scene, { type: 'sdp', dp: '150', spaces: 4 })
 
     let requireItems = [ '', '' ]
-    let i = 0
 
-    while (true) {
+    for (let i = 0; i < 2; i++) {
       if (scene.subScenes[i].item?.require) {
         requireItems[i] = helper.codePrepare(`
           if (!items.contains(${helper.getItemId(scene.subScenes[0].item.require)})) {
@@ -1095,10 +1105,6 @@ ${finishScene.join('\n\n')}${itemRemover.length != 0 ? itemRemover.join('\n\n') 
             }\n\n`, 6, 0, false)
         }
       }
-
-      if (i == 1) break
-
-      i++
     }
 
     const subFunctionParams = _GetSceneParams(visualNovel.subScenes[scene.subScenes[0].scene], scene)
