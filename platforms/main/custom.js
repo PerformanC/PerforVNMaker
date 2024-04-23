@@ -1,6 +1,9 @@
 import helper from './helper.js'
 
 function addCustomText(page, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'text': {
       type: 'string'
@@ -58,6 +61,9 @@ function addCustomText(page, options) {
 }
 
 function addCustomButton(page, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'text': {
       type: 'string'
@@ -126,6 +132,9 @@ function addCustomButton(page, options) {
 }
 
 function addCustomRectangle(page, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'color': {
       type: 'string'
@@ -193,6 +202,9 @@ function addCustomRectangle(page, options) {
 }
 
 function addCustomImage(page, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'image': {
       type: 'fileInitial',

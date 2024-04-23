@@ -1,5 +1,3 @@
-/* TODO (unconfirmed): Set the scenes in order through a queue [ 'scene1', 'scene2', ... ] */
-
 import helper from '../main/helper.js'
 import { _GetResource, _AddResource, _FinalizeResources } from './helpers/optimizations.js'
 import { _GetSceneFParams, _GetSceneParams } from './helpers/params.js'
@@ -95,9 +93,8 @@ export function _ProcessScenes() {
   const sceneKeys = Object.values(visualNovel.scenes)
   const subSceneKeys = Object.values(visualNovel.subScenes)
 
-  sceneKeys.forEach((scene, i) => _ProcessScene(scene, sceneKeys[i + 1], sceneKeys[i - 1], i))
-
-  subSceneKeys.forEach((scene, i) => _ProcessScene(scene, subSceneKeys[i + 1], subSceneKeys[i - 1], i))
+  sceneKeys.forEach((scene, i) => _ProcessScene(scene, sceneKeys[i - 1], i))
+  subSceneKeys.forEach((scene, i) => _ProcessScene(scene, subSceneKeys[i - 1], i))
 
   const switchSceneCode = helper.codePrepare(`
     private fun switchScene(${visualNovel.optimizations.hashScenesNames ? 'scene: Int' : 'scene: String'}) {
@@ -113,7 +110,7 @@ ${AndroidVisualNovel.switchScene.join('\n')}
   helper.writeFunction('Android', switchSceneCode)
 }
 
-export function _ProcessScene(scene, next, past, sceneIndex) {
+export function _ProcessScene(scene, past, sceneIndex) {
   let sceneParams = null
   let parentScene = null
   if (scene.type == 'normal') {
@@ -660,25 +657,45 @@ ${position.join('\n')}
       )
 
       /*
-        Will execute if:
+        This code executes if the following criterias are met:
 
-        - There are no scenes OR
-        - The old scene has no speech OR
-        - The current scene has subScenes OR
-        - The current scene has a speech author OR
+        - This is the first scene of the VN OR if
+        - The last scene doesn't have a speech
 
-        - The VN has scenes AND the current scene has a speech author AND the old scene has no speech author
+        Explanation: This checks if this is the first scene of the VN and if the
+                      last scene doesn't have a speech. This means that we have to
+                      animate the appearance of the entire speech.
+
+        - (
+          - This is not the first scene of the VN AND if
+          - The last scene doesn't have an author
+
+          Explanation: This checks if the last scene has a speech but doesn't
+                         have an author. This means that we have to animate
+                         the appearance of the author's name.
+        )
       */
 
       if (
         visualNovel.scenes.length == 0 ||
         !oldScene?.speech ||
-        scene.subScenes.length != 0 ||
         (visualNovel.scenes.length != 0 &&
-          scene.speech?.author?.name &&
           oldScene?.speech &&
           !oldScene?.speech?.author?.name)
         ) {
+          /*
+            The first if will be executed if the following criterias are met:
+            
+            - This is not the first scene of the VN AND if
+            - This scene has a speech author AND if
+            - The last scene has a speech author
+            - The last scene doesn't have an author
+
+            Explanation: This makes PerforVNMaker animate the appearance
+                           of the author's name, as though the last scene
+                           has a speech, it didn't have its author.
+                        
+          */
           if (visualNovel.scenes.length != 0 && scene.speech?.author?.name && oldScene?.speech && !oldScene?.speech?.author?.name) {
             sceneCode += helper.codePrepare('if (animateAuthor) {', 0, 4, false)
           } else {

@@ -1,5 +1,4 @@
 /* TODO: Create helper folder and move functions to there */
-/* CRITICAL TODO: Avoid collisions in hash functions */
 
 import fs from 'fs'
 

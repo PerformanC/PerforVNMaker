@@ -9,7 +9,13 @@ global.visualNovel = {
   subScenesLength: 0,
   achievements: [],
   items: [],
-  optimizations: {}
+  optimizations: {},
+  hashes: {
+    scenes: {},
+    achievements: {},
+    items: {}
+  },
+  finalized: false
 }
 global.PerforVNM = {
   codeGeneratorVersion: '2.0.0',
@@ -20,6 +26,12 @@ global.PerforVNM = {
 import helper from './helper.js'
 
 function init(options) {
+  if (visualNovel.info)
+    helper.logFatal('The visual novel is already initialized.')
+
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'name': {
       type: 'string'
@@ -86,6 +98,11 @@ function init(options) {
 }
 
 function finalize() {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
+  visualNovel.finalized = true
+
   androidCoder.finalize()
 }
 

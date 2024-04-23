@@ -3,6 +3,9 @@ import androidScene from '../android/scene.js'
 import helper from './helper.js'
 
 function init(options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'name': {
       type: 'string',
@@ -10,6 +13,9 @@ function init(options) {
       extraVerification: (param) => {
         if (visualNovel.scenes[param] || visualNovel.subScenes[param])
           helper.logFatal('A scene already exists with this name.')
+
+        if (visualNovel.optimizations.hashAchievementIds && visualNovel.hashes.scenes[helper.hash(param)])
+          helper.logFatal('Collision found with another scene name. Change the name of the scene.')
       }
     },
     'textColor': {
@@ -32,6 +38,9 @@ function init(options) {
 }
 
 function addCharacter(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'name': {
       type: 'string',
@@ -133,6 +142,9 @@ function addCharacter(scene, options) {
 }
 
 function addScenario(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'image': {
       type: 'fileInitial',
@@ -146,6 +158,9 @@ function addScenario(scene, options) {
 }
 
 function addSpeech(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'author': {
       type: 'object',
@@ -202,6 +217,9 @@ function addSpeech(scene, options) {
 }
 
 function addSoundEffects(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   if (!Array.isArray(options))
     helper.logFatal('Sound effects must be an array.')
 
@@ -226,6 +244,9 @@ function addSoundEffects(scene, options) {
 }
 
 function addMusic(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'music': {
       type: 'fileInitial',
@@ -247,6 +268,9 @@ function addMusic(scene, options) {
 }
 
 function addTransition(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'duration': {
       type: 'number'
@@ -259,6 +283,9 @@ function addTransition(scene, options) {
 }
 
 function setNextScene(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'scene': {
       type: 'string'
@@ -300,6 +327,9 @@ function setNextScene(scene, options) {
 }
 
 function addSubScenes(scene, options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'text': {
       type: 'string'
@@ -340,6 +370,9 @@ function addSubScenes(scene, options) {
 }
 
 function finalize(scene) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   if (scene.type == 'normal') {
     visualNovel.scenes[scene.name] = scene
 

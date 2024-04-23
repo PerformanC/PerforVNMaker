@@ -3,6 +3,9 @@ import androidAchievements from '../android/achievements.js'
 import helper from './helper.js'
 
 function init(options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'id': {
       type: 'string',
@@ -16,6 +19,9 @@ function init(options) {
       extraVerification: (param) => {
         if (visualNovel.achievements.find((achievement) => achievement.name == param))
           helper.logFatal('An achievement already exists with this name.')
+
+        if (visualNovel.optimizations.hashAchievementIds && visualNovel.hashes.achievements[helper.hash(param)])
+          helper.logFatal('Collision found with another achievement name. Change the name of the achievement.')
       }
     },
     'image': {
@@ -30,6 +36,9 @@ function init(options) {
 }
 
 function give(page, achievementId) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   if (!visualNovel.achievements.find((achievement) => achievement.id == achievementId))
     helper.logFatal(`The achievement '${achievementId}' doesn't exist.`)
 

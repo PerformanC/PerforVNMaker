@@ -3,6 +3,9 @@ import androdMenu from '../android/menu.js'
 import helper from './helper.js'
 
 function init(options) {
+  if (visualNovel.finalized)
+    helper.logFatal('The visual novel has already been finalized.')
+
   const checks = {
     'textColor': {
       type: 'string'
