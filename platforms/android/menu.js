@@ -1,5 +1,4 @@
 /* TODO: Allow to remove footer and add buttons manually */
-/* TODO (Critical): Fix saves, if saves topDp > 620 then it will crash the app */
 
 import helper from '../main/helper.js'
 
@@ -1192,6 +1191,9 @@ export function _AddMenu() {
   const sdp100Saves = _GetMultiResources(androidMenu, androidMenu.pages.savesFor, { type: 'sdp', dp: '100' })
   androidMenu.pages.savesFor = _AddResource(androidMenu.pages.savesFor, { type: 'sdp', dp: '100', spaces: 6, newLines: sdp70Saves.definition ? '\n' : '\n\n' })
 
+  const sdp50Saves = _GetMultiResources(androidMenu, androidMenu.pages.savesFor, { type: 'sdp', dp: '50' })
+  androidMenu.pages.savesFor = _AddResource(androidMenu.pages.savesFor, { type: 'sdp', dp: '50', spaces: 6 })
+
   let scenesInfoCalculations = ''
   if (visualNovel.optimizations.preCalculateScenesInfo) {
     scenesInfoCalculations = helper.codePrepare(`\n
@@ -1405,7 +1407,7 @@ __PERFORVNM_SAVES_SWITCH__
       val saves = JSONArray(text)
 
       var leftDp = 100
-      var topDp = 50
+      var topDpIndex = 0
 
       for (i in 0 until saves.length()) {
         val buttonData = saves.getJSONObject(i)
@@ -1427,7 +1429,9 @@ __PERFORVNM_SAVES_SWITCH__
         )
 
         val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_\${leftDp}sdp", "dimen", getPackageName()))
-        val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_\${topDp}sdp", "dimen", getPackageName()))
+
+        ${sdp50Saves.definition}var topDpLoad = ${sdp50Saves.variable}
+        if (topDpIndex != 0) topDpLoad += ${sdp100Saves.variable} * topDpIndex
 
         layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START
         layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)
@@ -1456,7 +1460,7 @@ __PERFORVNM_SAVES_SWITCH__
 
         if (i != 0 && (i + 1).mod(4) == 0) {
           leftDp = 100
-          topDp += 100
+          topDpIndex++
         } else {
           leftDp += 133
         }

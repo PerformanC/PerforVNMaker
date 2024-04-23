@@ -1165,7 +1165,7 @@ class MainActivity : Activity() {
     val saves = JSONArray(text)
 
     var leftDp = 100
-    var topDp = 50
+    var topDpIndex = 0
 
     for (i in 0 until saves.length()) {
       val buttonData = saves.getJSONObject(i)
@@ -1190,7 +1190,9 @@ class MainActivity : Activity() {
       )
 
       val leftDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${leftDp}sdp", "dimen", getPackageName()))
-      val topDpLoad = resources.getDimensionPixelSize(resources.getIdentifier("_${topDp}sdp", "dimen", getPackageName()))
+
+      var topDpLoad = resources.getDimensionPixelSize(com.intuit.sdp.R.dimen._50sdp)
+      if (topDpIndex != 0) topDpLoad += sdp100 * topDpIndex
 
       layoutParamsSavesBackground.gravity = Gravity.TOP or Gravity.START
       layoutParamsSavesBackground.setMargins(leftDpLoad, topDpLoad, 0, 0)
@@ -1309,7 +1311,7 @@ class MainActivity : Activity() {
 
       if (i != 0 && (i + 1).mod(4) == 0) {
         leftDp = 100
-        topDp += 100
+        topDpIndex++
       } else {
         leftDp += 133
       }
