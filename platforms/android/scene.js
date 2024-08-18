@@ -1238,6 +1238,7 @@ export function _ProcessSceneSave(scene) {
         imageViewCharacter.setImageResource(R.raw.${character.image})\n\n                    `, 8
       )
     }
+
     switch (character.position.side) {
       case 'left': {
         savesSwitchLocal += helper.codePrepare(`

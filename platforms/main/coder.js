@@ -1,5 +1,5 @@
 import androidCoder from '../android/coder.js'
-
+import flutterCoder from '../flutter/coder.js'
 global.visualNovel = {
   info: null,
   menu: null,
@@ -39,16 +39,25 @@ function init(options) {
     'fullName': {
       type: 'string'
     },
-    'version': {
+    'id': {
       type: 'string'
     },
     'applicationId': {
+      type: 'string'
+    },
+    'version': {
+      type: 'string'
+    },
+    'developer': {
       type: 'string'
     },
     'paths': {
       type: 'object',
       params: {
         'android': {
+          type: 'string'
+        },
+        'flutter': {
           type: 'string'
         }
       }
@@ -95,6 +104,7 @@ function init(options) {
   if (options.optimizations) visualNovel.optimizations = options.optimizations
 
   androidCoder.init(options)
+  flutterCoder.init(options)
 }
 
 function finalize() {
@@ -104,6 +114,7 @@ function finalize() {
   visualNovel.finalized = true
 
   androidCoder.finalize()
+  flutterCoder.finalize()
 }
 
 export default {

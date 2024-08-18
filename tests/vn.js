@@ -3,10 +3,13 @@ import perfor from '../index.js'
 perfor.coder.init({
   name: 'PerforVNM',
   fullName: 'The PerforVNM',
+  id: 'perforvnm',
   applicationId: 'com.perforvnm',
   version: '1.0.0',
+  developer: 'The PerformanC Organization',
   paths: {
-    android: './android'
+    android: './android',
+    flutter: './flutter'
   },
   optimizations: {
     preCalculateScenesInfo: true,

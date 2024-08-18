@@ -7,6 +7,7 @@ function writeFunction(platform, sceneCode) {
 
   switch (platform) {
     case 'Android': AndroidVisualNovel.code = AndroidVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+    case 'Flutter': FlutterVisualNovel.code = AndroidVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'iOS': iOSVisualNovel.code = iOSVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'Web': WebVisualNovel.code = WebVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'Desktop': DesktopVisualNovel.code = DesktopVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
@@ -16,6 +17,7 @@ function writeFunction(platform, sceneCode) {
 function replace(platform, header, content) {
   switch (platform) {
     case 'Android': AndroidVisualNovel.code = AndroidVisualNovel.code.replace(header, content); break;
+    case 'Flutter': FlutterVisualNovel.code = FlutterVisualNovel.code.replace(header, content); break;
     // case 'iOS': iOSVisualNovel.code = iOSVisualNovel.code.replace(header, content); break;
     // case 'Web': WebVisualNovel.code = WebVisualNovel.code.replace(header, content); break;
     // case 'Desktop': DesktopVisualNovel.code = DesktopVisualNovel.code.replace(header, content); break;
@@ -36,10 +38,16 @@ function logOk(message, platform) {
   let platformColor = '\u001b[0m'
 
   switch (platform) {
-    case 'Android':
+    case 'Android': {
       platformColor = '\u001b[32m'
 
       break
+    }
+    case 'Flutter': {
+      platformColor = '\u001b[36m'
+
+      break
+    }
   }
 
   console.log(`\u001b[34mOK ${platformColor}${platform}\u001b[0m: ${message}`)
