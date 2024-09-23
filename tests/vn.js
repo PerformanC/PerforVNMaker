@@ -8,6 +8,8 @@ perfor.coder.init({
   version: '1.0.0',
   developer: 'The PerformanC Organization',
   paths: {
+    assets: './tests/assets',
+  
     android: './android',
     flutter: './flutter'
   },

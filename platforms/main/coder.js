@@ -19,7 +19,6 @@ global.visualNovel = {
 }
 global.PerforVNM = {
   codeGeneratorVersion: '2.0.0',
-  generatedCodeVersion: '1.21.1',
   repository: 'https://github.com/PerformanC/PerforVNMaker'
 }
 
@@ -54,6 +53,9 @@ function init(options) {
     'paths': {
       type: 'object',
       params: {
+        'assets': {
+          type: 'string'
+        },
         'android': {
           type: 'string'
         },

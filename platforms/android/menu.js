@@ -530,7 +530,7 @@ export function _AddMenu() {
             startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("${PerforVNM.repository}")))
           }
         }, length - "PerforVNM".length, length, 0)
-        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${PerforVNM.generatedCodeVersion} (generated code).`, 2
+        append(" ${PerforVNM.codeGeneratorVersion} (code generator), ${AndroidVisualNovel.generatedCodeVersion} (generated code).`, 2
   )
 
   if (menu.aboutText) {

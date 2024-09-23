@@ -68,9 +68,13 @@ The scenarios are the image in the background of the scene, and they can be chan
 
 ##### Version support
 
-\>= `v1.0.2-alpha`: Supported but with bugs
+\>= `v1.0.2-alpha`: Supported but with bugs, also with the scenario image saved on the `drawable` folder
 
-\>= `v1.15.0-b.0 & v1.12.2-b.0`: Supported
+\>= `v1.5.3`: Supported but scenario image saved on the `raw` folder
+
+\>= `v1.15.0-b.0 & v1.12.2-b.0`: Supported but not moved from PerforVNMaker `assets` folder
+
+\>= `v2.0.0 & v1.21.1`: Supported
 
 OBS: Versions below `v1.5.3` must have the scenario image saved on the `drawable` folder, and versions above `v1.5.3` must have the scenario image saved on the `raw` folder.
 
@@ -226,19 +230,583 @@ Custom elements are elements that can be added to the VN, like a button, a text 
 
 ## [iOS](https://www.apple.com/br/ios/ios-16/)
 
+iOS is an operating system developed by Apple Inc. for their devices, like the iPhone, iPad (derived), and iPod Touch. Based on UNIX, iOS is the second most used OS in the mobile world.
+
+### Native
+
 We're sorry, but we don't have support for iOS yet, and neither have plans to support it in the near future due to the difficulty to build in non-Apple devices. (The PerformanC team doesn't have any Apple devices, but if you're willing to voluntarily help us, please contact us on our [Discord](https://discord.gg/uPveNfTuCJ))
 
+### Coder options
+
+The coder options are the options that the coder can use to customize the VN code.
+
+#### Optimizations
+
+The optimizations are the options that the coder can use to optimize the VN code, for speed, size and etc.
+
+##### Version support
+
+Not supported
+
+### Scenes
+
+The scenes are the place where the story happens.
+
+#### Save button
+
+The save button allows the player to save their progress in the visual novel.
+
+##### Version support
+
+Not supported
+
+#### Menu button
+
+The menu button is the button that goes to the menu.
+
+##### Version support
+
+Not supported
+
+#### Characters
+
+The characters are overlaid on the scenario, and they can be moved around the screen expressing emotions.
+
+##### Version support
+
+Not supported
+
+##### Animations
+
+The character animations are the animations that the characters can do, like `moving`, `jumping`, etc.
+
+###### Version support
+
+Not supported
+
+#### Scenarios
+
+The scenarios are the image in the background of the scene, and they can be changed to represent different places.
+
+##### Version support
+
+Not supported
+
+#### Speech
+
+The speech is the text that the characters say, and it adds more expression to the character and more context to the scene.
+
+##### Version support
+
+Not supported
+
+#### Sound effect
+
+The sound effect is the sound that can represent the sound of a door opening, a car passing by, etc. They are important for the immersion of the player into the game's story.
+
+##### Warning
+
+Ensure that two sound effect doesn't play at the same time, or it *may* generate audio bugs.
+
+##### Version support
+
+Not supported
+
+#### Music
+
+The music, differently from the sound effect, is the sound that can represent the mood of the scene, and it's also important for immersion.
+
+##### Version support
+
+Not supported
+
+##### Custom paths
+
+Custom paths allow multiple ends to the visual novel, allowing the player to choose their own path through buttons.
+
+###### Version support
+
+Not supported
+
+##### Custom elements
+
+Custom elements are elements that can be added to the scene, like a button, a text box, etc.
+
+###### Version support
+
+Not supported
+
+##### Achievements
+
+Achievements are a way to reward the player for doing something in the game, like finishing the game, or finding a secret.
+
+###### Version support
+
+Not supported
+
+##### Items
+
+Items are a way to reward the player for doing something in the game, like finishing the game, or finding a secret. Allows also to unlock custom paths.
+
+###### Version support
+
+Not supported
+
+### Menu
+
+The menu is the place where the player can access the settings, the About menu, and start the VN.
+
+#### Start button
+
+The start button is the button that starts the VN.
+
+##### Version support
+
+Not supported
+
+#### About
+
+The About menu is the place where the player can see the information about the VN, like the name, the version, etc.
+
+##### Version support
+
+\>= `v2.0.0 & v1.0.0` by Flutter: Supported
+
+#### Settings
+
+The settings menu is the place where the player can change the text speed, menu music volume, etc.
+
+##### Version support
+
+Not supported
+
+#### Saves
+
+The saves menu is the place where the player can save and load their progress.
+
+##### Version support
+
+Not supported
+
+#### Achievements
+
+The achievements menu is the place where the player can see the achievements that they got.
+
+##### Version support
+
+Not supported
+
+#### Background music
+
+The background music is the music that plays on the menu.
+
+##### Version support
+
+Not supported
+
+#### Custom elements
+
+Custom elements are elements that can be added to the menu, like a button, a text box, etc.
+
+##### Version support
+
+Not supported
+
+### Custom elements
+
+Custom elements are elements that can be added to the VN, like a button, a text box, etc.
+
+#### Version support
+
+Not supported
+
 ## [Windows](https://www.microsoft.com/windows/), [Linux distros](https://www.linux.org/pages/download/) & [MacOS](https://www.apple.com/macos)
+
+The three most used OSes in the world, they power almost every desktop, laptop and server in the world. Windows by Microsoft, Linux by the Linux Foundation (or Linus), and MacOS by Apple Inc.
+
+### Native
 
 We don't have support for them yet, but it's planned to be supported in the future after the completion of the Android code generation.
 
 Spoiler (Not confirmed): We're planning to use C89 with the Vulkan API (or OpenGL/GTK) to make the VN maker. Important to note that they *WILL* share the same codebase.
 
+### Coder options
+
+The coder options are the options that the coder can use to customize the VN code.
+
+#### Optimizations
+
+The optimizations are the options that the coder can use to optimize the VN code, for speed, size and etc.
+
+##### Version support
+
+Not supported
+
+### Scenes
+
+The scenes are the place where the story happens.
+
+#### Save button
+
+The save button allows the player to save their progress in the visual novel.
+
+##### Version support
+
+Not supported
+
+#### Menu button
+
+The menu button is the button that goes to the menu.
+
+##### Version support
+
+Not supported
+
+#### Characters
+
+The characters are overlaid on the scenario, and they can be moved around the screen expressing emotions.
+
+##### Version support
+
+Not supported
+
+##### Animations
+
+The character animations are the animations that the characters can do, like `moving`, `jumping`, etc.
+
+###### Version support
+
+Not supported
+
+#### Scenarios
+
+The scenarios are the image in the background of the scene, and they can be changed to represent different places.
+
+##### Version support
+
+Not supported
+
+#### Speech
+
+The speech is the text that the characters say, and it adds more expression to the character and more context to the scene.
+
+##### Version support
+
+Not supported
+
+#### Sound effect
+
+The sound effect is the sound that can represent the sound of a door opening, a car passing by, etc. They are important for the immersion of the player into the game's story.
+
+##### Warning
+
+Ensure that two sound effect doesn't play at the same time, or it *may* generate audio bugs.
+
+##### Version support
+
+Not supported
+
+#### Music
+
+The music, differently from the sound effect, is the sound that can represent the mood of the scene, and it's also important for immersion.
+
+##### Version support
+
+Not supported
+
+##### Custom paths
+
+Custom paths allow multiple ends to the visual novel, allowing the player to choose their own path through buttons.
+
+###### Version support
+
+Not supported
+
+##### Custom elements
+
+Custom elements are elements that can be added to the scene, like a button, a text box, etc.
+
+###### Version support
+
+Not supported
+
+##### Achievements
+
+Achievements are a way to reward the player for doing something in the game, like finishing the game, or finding a secret.
+
+###### Version support
+
+Not supported
+
+##### Items
+
+Items are a way to reward the player for doing something in the game, like finishing the game, or finding a secret. Allows also to unlock custom paths.
+
+###### Version support
+
+Not supported
+
+### Menu
+
+The menu is the place where the player can access the settings, the About menu, and start the VN.
+
+#### Start button
+
+The start button is the button that starts the VN.
+
+##### Version support
+
+Not supported
+
+#### About
+
+The About menu is the place where the player can see the information about the VN, like the name, the version, etc.
+
+##### Version support
+
+\>= `v2.0.0 & v1.0.0` by Flutter: Supported
+
+#### Settings
+
+The settings menu is the place where the player can change the text speed, menu music volume, etc.
+
+##### Version support
+
+Not supported
+
+#### Saves
+
+The saves menu is the place where the player can save and load their progress.
+
+##### Version support
+
+Not supported
+
+#### Achievements
+
+The achievements menu is the place where the player can see the achievements that they got.
+
+##### Version support
+
+Not supported
+
+#### Background music
+
+The background music is the music that plays on the menu.
+
+##### Version support
+
+Not supported
+
+#### Custom elements
+
+Custom elements are elements that can be added to the menu, like a button, a text box, etc.
+
+##### Version support
+
+Not supported
+
+### Custom elements
+
+Custom elements are elements that can be added to the VN, like a button, a text box, etc.
+
+#### Version support
+
+Not supported
+
 ## [Web](https://wikipedia.org/wiki/Web)
+
+The web is the most used platform in the world, which while it is not an OS, it's a platform that can be accessed by any OS with a browser, allowing the VN to be played on any device, capable or not of running native apps.
+
+### Native
 
 Sadly, we don't have support for the web yet, but it's planned to be supported in the future after the completion of the PC code generation.
 
 Spoiler (Not confirmed): We're planning to use JS, HTML and CSS to make the VN maker.
+
+### Coder options
+
+The coder options are the options that the coder can use to customize the VN code.
+
+#### Optimizations
+
+The optimizations are the options that the coder can use to optimize the VN code, for speed, size and etc.
+
+##### Version support
+
+Not supported
+
+### Scenes
+
+The scenes are the place where the story happens.
+
+#### Save button
+
+The save button allows the player to save their progress in the visual novel.
+
+##### Version support
+
+Not supported
+
+#### Menu button
+
+The menu button is the button that goes to the menu.
+
+##### Version support
+
+Not supported
+
+#### Characters
+
+The characters are overlaid on the scenario, and they can be moved around the screen expressing emotions.
+
+##### Version support
+
+Not supported
+
+##### Animations
+
+The character animations are the animations that the characters can do, like `moving`, `jumping`, etc.
+
+###### Version support
+
+Not supported
+
+#### Scenarios
+
+The scenarios are the image in the background of the scene, and they can be changed to represent different places.
+
+##### Version support
+
+Not supported
+
+#### Speech
+
+The speech is the text that the characters say, and it adds more expression to the character and more context to the scene.
+
+##### Version support
+
+Not supported
+
+#### Sound effect
+
+The sound effect is the sound that can represent the sound of a door opening, a car passing by, etc. They are important for the immersion of the player into the game's story.
+
+##### Warning
+
+Ensure that two sound effect doesn't play at the same time, or it *may* generate audio bugs.
+
+##### Version support
+
+Not supported
+
+#### Music
+
+The music, differently from the sound effect, is the sound that can represent the mood of the scene, and it's also important for immersion.
+
+##### Version support
+
+Not supported
+
+##### Custom paths
+
+Custom paths allow multiple ends to the visual novel, allowing the player to choose their own path through buttons.
+
+###### Version support
+
+Not supported
+
+##### Custom elements
+
+Custom elements are elements that can be added to the scene, like a button, a text box, etc.
+
+###### Version support
+
+Not supported
+
+##### Achievements
+
+Achievements are a way to reward the player for doing something in the game, like finishing the game, or finding a secret.
+
+###### Version support
+
+Not supported
+
+##### Items
+
+Items are a way to reward the player for doing something in the game, like finishing the game, or finding a secret. Allows also to unlock custom paths.
+
+###### Version support
+
+Not supported
+
+### Menu
+
+The menu is the place where the player can access the settings, the About menu, and start the VN.
+
+#### Start button
+
+The start button is the button that starts the VN.
+
+##### Version support
+
+Not supported
+
+#### About
+
+The About menu is the place where the player can see the information about the VN, like the name, the version, etc.
+
+##### Version support
+
+\>= `v2.0.0 & v1.0.0` by Flutter: Supported
+
+#### Settings
+
+The settings menu is the place where the player can change the text speed, menu music volume, etc.
+
+##### Version support
+
+Not supported
+
+#### Saves
+
+The saves menu is the place where the player can save and load their progress.
+
+##### Version support
+
+Not supported
+
+#### Achievements
+
+The achievements menu is the place where the player can see the achievements that they got.
+
+##### Version support
+
+Not supported
+
+#### Background music
+
+The background music is the music that plays on the menu.
+
+##### Version support
+
+Not supported
+
+#### Custom elements
+
+Custom elements are elements that can be added to the menu, like a button, a text box, etc.
+
+##### Version support
+
+Not supported
+
+### Custom elements
+
+Custom elements are elements that can be added to the VN, like a button, a text box, etc.
+
+#### Version support
+
+Not supported
 
 ## Features
 
@@ -266,6 +834,7 @@ This is the list of features that we're planning to add (or modify) to PerforVNM
 - [ ] Swift (iOS)
 - [ ] C (Windows, Linux and MacOS)
 - [ ] JS, HTML and CSS (Web)
+- [ ] Flutter (Android, iOS, Windows, Linux, MacOS and Web) - Being developed
 
 <br/>
 

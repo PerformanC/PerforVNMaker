@@ -10,6 +10,8 @@ import { _AddMenu } from './menu.js'
 import { _ProcessScenes } from './scene.js'
 
 global.AndroidVisualNovel = {
+  generatedCodeVersion: '1.21.1',
+
   menu: null,
   internalInfo: {},
   code: '',
@@ -325,6 +327,13 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
     AndroidVisualNovel.code = helper.removeAllDoubleLines(AndroidVisualNovel.code)
 
   helper.logOk('Code finished up.', 'Android')
+
+  /* INFO: Move assets from PerforVNM assets folder to Android raw folder */
+  fs.readdirSync(visualNovel.info.paths.assets).forEach((file) => {
+    fs.copyFileSync(`${visualNovel.info.paths.assets}/${file}`, `${visualNovel.info.paths.android}/app/src/main/res/raw/${file}`)
+  })
+
+  helper.logOk('Assets copied.', 'Android')
 
   let finished = [ false, false ]
 
