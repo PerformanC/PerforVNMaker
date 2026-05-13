@@ -21,15 +21,15 @@ VN (Visual Novel) maker by highly optimized code generation technology.
 
 ### 1. Install PerforVNM via npm
 
-\`\`\`shell
+```shell
 $ npm install @performanc/perforvnmaker
-\`\`\`
+```
 
 ### 2. Install PerforVNM via GitHub
 
-\`\`\`shell
+```shell
 $ npm install GitHub:PerformanC/PerforVNM
-\`\`\`
+```
 
 ## Usage
 
