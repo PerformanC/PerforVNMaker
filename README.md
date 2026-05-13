@@ -53,6 +53,6 @@ Not any project (known) uses PerforVNM, but if you're using it, feel free to ope
 
 ## License
 
-PerforVNM is licensed under [BSD 2-Clause License](LICENSE). You can read more about it on [Open Source Initiative](https://opensource.org/licenses/BSD-2-Clause).
+PerforVNM is licensed under [BSD 3-Clause License](LICENSE). You can read more about it on [Open Source Initiative](https://opensource.org/licenses/BSD-3-Clause).
 
 * This project is considered as: [semi-standard compliant](https://github.com/PerformanC/contributing?tab=readme-ov-file#project-information).
