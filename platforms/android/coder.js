@@ -146,7 +146,7 @@ function finalize() {
   }
 
   helper.replace('Android', '__PERFORVNM_CLASSES__', '')
-  helper.replace('Android', '__PERFORVNM_MULTI_PATH__', visualNovel.scenes.length != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[SceneKeys[0]].name)})` : '// No scenes created.')
+  helper.replace('Android', '__PERFORVNM_MULTI_PATH__', visualNovel.scenesLength != 0 ? `scenes.set(0, ${helper.getSceneId(visualNovel.scenes[SceneKeys[0]].name)})` : '// No scenes created.')
 
   helper.replace('Android', '__PERFORVNM_SCENES__', '')
 
@@ -188,13 +188,13 @@ function finalize() {
     helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', defaultSavesWhenCode)
     helper.replace('Android', '__PERFORVNM_HEADERS__', '\nimport kotlin.math.roundToInt')
   } else {
-    const savesWhenCode = helper.codePrepare(`
+    const savesWhenCode = visualNovel.scenesLength != 0 ? helper.codePrepare(`
       when (buttonData.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}("scene")) {
         __IGNORE_INDENTATION__
 ${AndroidVisualNovel.savesWhen.join('\n')}
         __IGNORE_INDENTATION__
       }`, 0, 2
-    )
+    ) : helper.codePrepare('// No scenes created.', 0, 6, false)
 
     helper.replace('Android', '__PERFORVNM_SAVES_SWITCH__', savesWhenCode)
   }
@@ -219,7 +219,7 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
     helper.replace('Android', /__PERFORVNM_RELEASE_MEDIA_PLAYER__/g, releaseCode)
   }
 
-  helper.replace('Android', /__PERFORVNM_SCENES_LENGTH__/g, visualNovel.scenes.length + visualNovel.subScenes.length)
+  helper.replace('Android', /__PERFORVNM_SCENES_LENGTH__/g, visualNovel.scenesLength + visualNovel.subScenesLength)
 
   let addHeaders = helper.codePrepare(`
     private var scenes = MutableList<${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}>(${visualNovel.scenesLength + visualNovel.subScenesLength}) { ${visualNovel.optimizations.hashScenesNames ? '0' : '""'} }
@@ -246,8 +246,8 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
   if (AndroidVisualNovel.internalInfo.needs2Players)
     addHeaders += helper.codePrepare('private var mediaPlayer2: MediaPlayer? = null\n', 0, 2, false)
 
-  if (AndroidVisualNovel.internalInfo.menuMusic || AndroidVisualNovel.internalInfo.hasEffect || AndroidVisualNovel.internalInfo.hasSpeech || AndroidVisualNovel.internalInfo.hasSceneMusic) {
-    if (visualNovel.menu?.backgroundMusic || AndroidVisualNovel.internalInfo.hasEffect) {
+  if (visualNovel.menu.background.music || AndroidVisualNovel.internalInfo.hasEffect || AndroidVisualNovel.internalInfo.hasSpeech || AndroidVisualNovel.internalInfo.hasSceneMusic) {
+    if (visualNovel.menu.background.music || AndroidVisualNovel.internalInfo.hasEffect) {
       addHeaders += helper.codePrepare(`
         private var mediaPlayer: MediaPlayer? = null
 
@@ -296,7 +296,7 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
       addHeaders += '\n\n' + helper.codePrepare('handler.removeCallbacksAndMessages(null)', 0, 4, false)
     }
 
-    if (visualNovel.menu?.backgroundMusic || AndroidVisualNovel.internalInfo.hasEffect) {
+    if (visualNovel.menu?.background?.music || AndroidVisualNovel.internalInfo.hasEffect) {
       addHeaders += helper.codePrepare(`
 
         if (mediaPlayer != null) {
@@ -337,7 +337,7 @@ ${AndroidVisualNovel.savesWhen.join('\n')}
 
   let finished = [ false, false ]
 
-  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/com/${visualNovel.info.name.toLowerCase()}/MainActivity.kt`, AndroidVisualNovel.code, (err) => {
+  fs.writeFile(`${visualNovel.info.paths.android}/app/src/main/java/${visualNovel.info.applicationId.toLowerCase().replaceAll('.', '/')}/MainActivity.kt`, AndroidVisualNovel.code, (err) => {
     if (err) return helper.logFatal(err)
 
     helper.logOk('Visual Novel output code written.', 'Android')

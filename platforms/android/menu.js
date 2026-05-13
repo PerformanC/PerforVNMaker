@@ -104,10 +104,10 @@ export function _AddMenu() {
   }
 
   const functionParams = []
-  if (firstScene.speech || firstScene.subScenes.length != 0) functionParams.push('true')
+  if (firstScene?.speech || firstScene?.subScenes?.length != 0) functionParams.push('true')
 
   menuStartCode += helper.codePrepare(`
-      ${visualNovel.scenes.length != 0 ? `${firstScene.name}(${functionParams.join(', ')})` : '// No scenes created.'}
+      ${visualNovel.scenesLength != 0 ? `${firstScene.name}(${functionParams.join(', ')})` : '// No scenes created.'}
     }`
   )
 
@@ -1194,43 +1194,28 @@ export function _AddMenu() {
   const sdp50Saves = _GetMultiResources(androidMenu, androidMenu.pages.savesFor, { type: 'sdp', dp: '50' })
   androidMenu.pages.savesFor = _AddResource(androidMenu.pages.savesFor, { type: 'sdp', dp: '50', spaces: 6 })
 
-  let scenesInfoCalculations = ''
-  if (visualNovel.optimizations.preCalculateScenesInfo) {
-    scenesInfoCalculations = helper.codePrepare(`\n
-        val imageViewCharacter = ImageView(this)
+  let characterImageResourceCode = ''
+  if (!visualNovel.optimizations.preCalculateScenesInfo)
+    characterImageResourceCode = helper.codePrepare(`
+      imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))`, 0, 2, false
+    )
 
-        val layoutParamsImageViewCharacter = LayoutParams(
-          ${sdp100Saves.variable},
-          ${sdp70Saves.variable}
-        )
+  const scenesInfoCalculations = visualNovel.scenesLength != 0 ? helper.codePrepare(`\n
+      val imageViewCharacter = ImageView(this)${characterImageResourceCode}
 
-        layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
+      val layoutParamsImageViewCharacter = LayoutParams(
+        ${sdp100Saves.variable},
+        ${sdp70Saves.variable}
+      )
+
+      layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
 __PERFORVNM_SAVES_SWITCH__
 
-        imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
+      imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
 
-        frameLayoutScenes.addView(imageViewCharacter)`, 0, 2, false
-    )
-  } else {
-    scenesInfoCalculations = helper.codePrepare(`\n
-        val imageViewCharacter = ImageView(this)
-        imageViewCharacter.setImageResource(resources.getIdentifier(characterData.getString("image"), "raw", getPackageName()))
-
-        val layoutParamsImageViewCharacter = LayoutParams(
-          ${sdp100Saves.variable},
-          ${sdp70Saves.variable}
-        )
-
-        layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
-
-        __PERFORVNM_SAVES_SWITCH__
-
-        imageViewCharacter.layoutParams = layoutParamsImageViewCharacter
-
-        frameLayoutScenes.addView(imageViewCharacter)`, 0, 2, false
-    )
-  }
+      frameLayoutScenes.addView(imageViewCharacter)`, 0, 4, false
+  ) : ''
 
   let saverCode = helper.codePrepare(`
     private fun saves(animate: Boolean) {
@@ -1446,8 +1431,8 @@ __PERFORVNM_SAVES_SWITCH__
             scenes.set(j, historyScenes.get${visualNovel.optimizations.hashScenesNames ? 'Int' : 'String'}(j))
           }
           scenesLength = historyScenes.length()__PERFORVNM_ITEMS_RESTORE__
-          
-          switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))
+
+          ${visualNovel.scenesLength != 0 ? `switchScene(buttonData.${visualNovel.optimizations.hashScenesNames ? 'getInt' : 'getString'}("scene"))` : '// No scenes to switch to, just restore items'}
         }
 
         frameLayoutScenes.addView(savesBackground)

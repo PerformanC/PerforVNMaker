@@ -1217,7 +1217,7 @@ class MainActivity : Activity() {
           items.set(j, sceneItems.getInt(j))
         }
         itemsLength = sceneItems.length()
-        
+
         switchScene(buttonData.getInt("scene"))
       }
 
@@ -1237,7 +1237,7 @@ class MainActivity : Activity() {
 
         layoutParamsImageViewCharacter.gravity = Gravity.TOP or Gravity.START
 
-        when (buttonData.getInt("scene")) {
+          when (buttonData.getInt("scene")) {
           1722916382 -> {
             when (characterData.getString("name")) {
               "Pedro" -> {
@@ -1567,7 +1567,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene1(animate: Boolean) {
+  private fun scene1(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -1650,9 +1650,9 @@ class MainActivity : Activity() {
 
         override fun onAnimationRepeat(animation: Animation?) {}
       })
-    } else {
+  } else {
       imageView_Pedro.translationX = -10f
-    }
+  }
 
     mediaPlayer = MediaPlayer.create(this@MainActivity, R.raw.menu_music)
 
@@ -1724,13 +1724,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -1783,9 +1783,15 @@ class MainActivity : Activity() {
     buttonSubScenes.setOnClickListener {
       if (!items.contains(1789536792)) {
         Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()
-        items.remove(1789536792)
 
         return@setOnClickListener
+      }
+
+      val itemIndex = items.indexOf(1789536792)
+      if (itemIndex >= 0) {
+        items[itemIndex] = items[itemsLength - 1]
+        items[itemsLength - 1] = 0
+        itemsLength--
       }
 
       if (mediaPlayer != null) {
@@ -1851,7 +1857,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene4(animate: Boolean) {
+  private fun scene4(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2006,13 +2012,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -2087,7 +2093,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene5(animate: Boolean) {
+  private fun scene5(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2242,13 +2248,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -2306,7 +2312,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun no_items(animate: Boolean) {
+  private fun no_items(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2461,13 +2467,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -2525,7 +2531,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene2(animate: Boolean) {
+  private fun scene2(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2709,13 +2715,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -2784,7 +2790,7 @@ class MainActivity : Activity() {
     setContentView(frameLayout)
   }
 
-  private fun scene3(animate: Boolean) {
+  private fun scene3(animate: Boolean = true) {
     val frameLayout = FrameLayout(this)
     frameLayout.setBackgroundColor(0xFF000000.toInt())
 
@@ -2968,13 +2974,13 @@ class MainActivity : Activity() {
     buttonMenu.layoutParams = layoutParamsMenu
 
     buttonMenu.setOnClickListener {
-      for (j in 0 until scenesLength) {
-        scenes.set(j, 0)
+      for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+        scenes[j] = 0
       }
       scenesLength = 0
 
-      for (j in 0 until itemsLength) {
-        items.set(j, 0)
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = 0
       }
       itemsLength = 0
 
@@ -3076,13 +3082,18 @@ class MainActivity : Activity() {
   }
 
   private fun itemsToJson(): String {
+    android.util.Log.d("PerforVNM", "itemsLength: $itemsLength, items: ${items.joinToString(",")}")
+    if (itemsLength == 0) return "[]"
+
     var json = "["
 
-    for (i in 0 until itemsLength) {
+    for (i in 0 until kotlin.math.min(itemsLength, items.size)) {
       json += items.get(i).toString() + ","
     }
 
-    return json.dropLast(1) + "]"
+    val res = json.dropLast(1) + "]"
+    android.util.Log.d("PerforVNM", "itemsJson: $res")
+    return res
   }
 
   private fun scenesToJson(): String {

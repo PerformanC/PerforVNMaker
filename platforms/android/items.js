@@ -28,9 +28,11 @@ export function _ItemRemove(item) {
 export function _ItemsParsingFunction() {
   return helper.codePrepare(`
     private fun itemsToJson(): String {
+      if (itemsLength == 0) return "[]"
+
       var json = "["
 
-      for (i in 0 until itemsLength) {
+      for (i in 0 until kotlin.math.min(itemsLength, items.size)) {
         json += ${visualNovel.optimizations.hashItemsId ? 'items.get(i).toString() + "' : '"\\"" + items.get(i) + "\\"'},"
       }
 

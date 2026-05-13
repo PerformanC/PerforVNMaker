@@ -48,7 +48,7 @@ function addScenario(scene, options) {
 
 function addSpeech(scene, options) {
   scene.speech = options
-  scene.speech.text.content = JSON.stringify(options.text.content).slice(1, -1)
+  scene.speech.text.content = options.text.content
 
   AndroidVisualNovel.internalInfo.hasSpeech = true
 
@@ -272,7 +272,7 @@ export function _ProcessScene(scene, past, sceneIndex) {
     if (scene.transition) {
       spaceAmount += 4
 
-      if (sceneIndex == 0 || scene.subScenes.length != 0) {
+      if (scene.transition && (sceneIndex == 0 || scene.subScenes.length != 0)) {
         sceneCode += helper.codePrepare(`
           if (animate) {`, 6, 0, false
         )
@@ -423,46 +423,47 @@ export function _ProcessScene(scene, past, sceneIndex) {
         }
       })
 
-      if (visualNovel.scenes.length == 0 || scene.subScenes.length != 0) {
-        const position = []
+    }
 
-        if (characteristics.rotation != 0) {
-          position.push(
-            helper.codePrepare(`imageView_${character.name}.rotation = ${characteristics.rotation}f`, 0, 12, false)
-          )
-        }
-        if (characteristics.scale != 1) {
-          position.push(
-            helper.codePrepare(`
-              imageView_${character.name}.scaleX = ${characteristics.scale}f
-              imageView_${character.name}.scaleY = ${characteristics.scale}f`, 0, 12, false
-            )
-          )
-        }
-        if (characteristics.alpha != 1) {
-          position.push(
-            helper.codePrepare(`imageView_${character.name}.alpha = ${characteristics.alpha}f`, 0, 12, false)
-          )
-        }
-        if (characteristics.x != 0) {
-          position.push(
-            helper.codePrepare(`imageView_${character.name}.translationX = ${characteristics.x}f`, 0, 12, false)
-          )
-        }
-        if (characteristics.y != 0) {
-          position.push(
-            helper.codePrepare(`imageView_${character.name}.translationY = ${characteristics.y}f`, 0, 12, false)
-          )
-        }
+    if (scene.transition && (sceneIndex == 0 || scene.subScenes.length != 0) && finalCode.length > 0 && finalCode[0].includes('__PERFORVNM_ANIMATION_SETS__')) {
+      const position = []
 
-        const animationsSet = helper.codePrepare(`
-          } else {
-${position.join('\n')}
-          }\n`, 6
+      if (characteristics.rotation != 0) {
+        position.push(
+          helper.codePrepare(`imageView_${character.name}.rotation = ${characteristics.rotation}f`, 0, 12, false)
         )
-
-        finalCode[0] = finalCode[0].replace('__PERFORVNM_ANIMATION_SETS__', animationsSet)
       }
+      if (characteristics.scale != 1) {
+        position.push(
+          helper.codePrepare(`
+            imageView_${character.name}.scaleX = ${characteristics.scale}f
+            imageView_${character.name}.scaleY = ${characteristics.scale}f`, 0, 12, false
+          )
+        )
+      }
+      if (characteristics.alpha != 1) {
+        position.push(
+          helper.codePrepare(`imageView_${character.name}.alpha = ${characteristics.alpha}f`, 0, 12, false)
+        )
+      }
+      if (characteristics.x != 0) {
+        position.push(
+          helper.codePrepare(`imageView_${character.name}.translationX = ${characteristics.x}f`, 0, 12, false)
+        )
+      }
+      if (characteristics.y != 0) {
+        position.push(
+          helper.codePrepare(`imageView_${character.name}.translationY = ${characteristics.y}f`, 0, 12, false)
+        )
+      }
+
+      const animationsSet = helper.codePrepare(`
+        } else {
+${position.join('\n')}
+        }\n`, 6
+      )
+
+      finalCode[0] = finalCode[0].replace('__PERFORVNM_ANIMATION_SETS__', animationsSet)
     }
 
     if (finalCode.length != 0) {
@@ -501,7 +502,7 @@ ${position.join('\n')}
   SubSceneKeys.forEach((key) => {
     const subSceneK = visualNovel.subScenes[key]
 
-    if (subSceneK.next.scene == scene.name) {
+    if (subSceneK?.next?.scene == scene.name) {
       oldScene = subSceneK
       redirectAmount++
     }
@@ -509,7 +510,7 @@ ${position.join('\n')}
       oldScene = subSceneK
       redirectAmount++
     }
-    if (subSceneK.next.scene == SceneKeys[visualNovel.scenesLength - 1]) {
+    if (subSceneK?.next?.scene == SceneKeys[visualNovel.scenesLength - 1]) {
       olderOldScene = subSceneK
     }
     subSceneK.subScenes.forEach((subScene) => {
@@ -977,8 +978,8 @@ ${position.join('\n')}
   let itemsRemove = ''
   if (visualNovel.items.length != 0) {
     itemsRemove = helper.codePrepare(`\n
-      for (j in 0 until itemsLength) {
-        items.set(j, ${visualNovel.optimizations.hashItemsId ? '0' : '""'})
+      for (j in 0 until kotlin.math.min(itemsLength, items.size)) {
+        items[j] = ${visualNovel.optimizations.hashItemsId ? '0' : '""'}
       }
       itemsLength = 0`, 0, 4, false
     )
@@ -1001,8 +1002,8 @@ ${position.join('\n')}
 
   sceneCode += helper.codePrepare(`
         buttonMenu.setOnClickListener {
-          for (j in 0 until scenesLength) {
-            scenes.set(j, ${visualNovel.optimizations.hashScenesNames ? '0' : '""'})
+          for (j in 0 until kotlin.math.min(scenesLength, scenes.size)) {
+            scenes[j] = ${visualNovel.optimizations.hashScenesNames ? '0' : '""'}
           }
           scenesLength = 0${itemsRemove}
 
@@ -1106,20 +1107,21 @@ ${finishScene.join('\n\n')}${itemRemover.length != 0 ? itemRemover.join('\n\n') 
 
     for (let i = 0; i < 2; i++) {
       if (scene.subScenes[i].item?.require) {
+        const requiredItemId = helper.getItemId(scene.subScenes[i].item.require)
         requireItems[i] = helper.codePrepare(`
-          if (!items.contains(${helper.getItemId(scene.subScenes[0].item.require)})) {
-            Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()`, 4)
+          if (!items.contains(${requiredItemId})) {
+            Toast.makeText(this, "You don't have the required item.", Toast.LENGTH_SHORT).show()
 
+            return@setOnClickListener
+          }\n\n`, 4)
         if (scene.subScenes[i].item.remove) {
           requireItems[i] += helper.codePrepare(`
-              items.remove(${helper.getItemId(scene.subScenes[0].item.require)})
-
-              return@setOnClickListener
-            }\n\n`, 6, 0, false)
-        } else {
-          requireItems[i] += helper.codePrepare(`\n
-              return@setOnClickListener
-            }\n\n`, 6, 0, false)
+            val itemIndex = items.indexOf(${requiredItemId})
+            if (itemIndex >= 0) {
+              items[itemIndex] = items[itemsLength - 1]
+              items[itemsLength - 1] = 0
+              itemsLength--
+            }\n\n`, 6)
         }
       }
     }
