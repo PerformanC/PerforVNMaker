@@ -1,4 +1,5 @@
-import androdMenu from '../android/menu.js'
+import androidMenu from '../android/menu.js'
+import flutterMenu from '../flutter/menu.js'
 
 import helper from './helper.js'
 
@@ -74,7 +75,8 @@ function init(options) {
     custom: []
   }
 
-  androdMenu.init()
+  androidMenu.init()
+  flutterMenu.init()
 
   return {
     type: 'menu'

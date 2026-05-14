@@ -7,7 +7,7 @@ function writeFunction(platform, sceneCode) {
 
   switch (platform) {
     case 'Android': AndroidVisualNovel.code = AndroidVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
-    case 'Flutter': FlutterVisualNovel.code = AndroidVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
+    case 'Flutter': FlutterVisualNovel.code = FlutterVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'iOS': iOSVisualNovel.code = iOSVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'Web': WebVisualNovel.code = WebVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;
     // case 'Desktop': DesktopVisualNovel.code = DesktopVisualNovel.code.replace('__PERFORVNM_SCENES__', writenCode); break;

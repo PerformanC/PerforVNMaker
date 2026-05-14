@@ -1,4 +1,5 @@
 import androidAchievements from '../android/achievements.js'
+import flutterAchievements from '../flutter/achievements.js'
 
 import helper from './helper.js'
 
@@ -45,7 +46,10 @@ function give(page, achievementId) {
   if (page.achievements.find((achievement) => achievement.id == achievementId))
     helper.logFatal(`The achievement '${achievementId}' was already given.`)
 
-  return androidAchievements.give(page, achievementId)
+  androidAchievements.give(page, achievementId)
+  flutterAchievements.give(page, achievementId)
+
+  return page
 }
 
 export default {

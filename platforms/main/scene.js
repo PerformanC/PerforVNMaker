@@ -1,4 +1,5 @@
 import androidScene from '../android/scene.js'
+import flutterScene from '../flutter/scene.js'
 
 import helper from './helper.js'
 
@@ -34,7 +35,10 @@ function init(options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.init(options)
+  const sceneModel = androidScene.init(options)
+  flutterScene.init(options)
+
+  return sceneModel
 }
 
 function addCharacter(scene, options) {
@@ -87,7 +91,7 @@ function addCharacter(scene, options) {
           type: 'string',
           values: ['center', 'left', 'right'],
           shouldCheck: (_param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'movement'
+            return additionalinfo.parent?.[additionalinfo.index]?.type == 'movement'
           }
         },
         'margins': {
@@ -101,26 +105,26 @@ function addCharacter(scene, options) {
             }
           },
           shouldCheck: (_param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'movement'
+            return additionalinfo.parent?.[additionalinfo.index]?.type == 'movement'
           },
           required: false
         },
         'degrees': {
           type: 'number',
           shouldCheck: (_param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'rotate'
+            return additionalinfo.parent?.[additionalinfo.index]?.type == 'rotate'
           }
         },
         'scale': {
           type: 'number',
           shouldCheck: (_param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type == 'scale'
+            return additionalinfo.parent?.[additionalinfo.index]?.type == 'scale'
           }
         },
         'duration': {
           type: 'number',
           shouldCheck: (_param, additionalinfo) => {
-            return additionalinfo.parent[additionalinfo.index].type != 'jump'
+            return additionalinfo.parent?.[additionalinfo.index]?.type != 'jump'
           }
         },
         'delay': {
@@ -129,8 +133,10 @@ function addCharacter(scene, options) {
         }
       },
       extraVerification: (param) => {
-        if (param.delay != 0)
+        if (param.delay != 0) {
           AndroidVisualNovel.internalInfo.hasDelayedAnimation = true
+          FlutterVisualNovel.internalInfo.hasDelayedAnimation = true
+        }
       },
       required: false
     }
@@ -138,7 +144,10 @@ function addCharacter(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addCharacter(scene, options)
+  androidScene.addCharacter(scene, options)
+  flutterScene.addCharacter(scene, options)
+
+  return scene
 }
 
 function addScenario(scene, options) {
@@ -154,7 +163,10 @@ function addScenario(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addScenario(scene, options)
+  androidScene.addScenario(scene, options)
+  flutterScene.addScenario(scene, options)
+
+  return scene
 }
 
 function addSpeech(scene, options) {
@@ -213,7 +225,10 @@ function addSpeech(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addSpeech(scene, options)
+  androidScene.addSpeech(scene, options)
+  flutterScene.addSpeech(scene, options)
+
+  return scene
 }
 
 function addSoundEffects(scene, options) {
@@ -231,8 +246,10 @@ function addSoundEffects(scene, options) {
     'delay': {
       type: 'number',
       extraVerification: (param) => {
-        if (param != 0)
+        if (param != 0) {
           AndroidVisualNovel.internalInfo.hasDelayedSoundEffect = true
+          FlutterVisualNovel.internalInfo.hasDelayedSoundEffect = true
+        }
       },
       required: false
     }
@@ -240,7 +257,10 @@ function addSoundEffects(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addSoundEffects(scene, options)
+  androidScene.addSoundEffects(scene, options)
+  flutterScene.addSoundEffects(scene, options)
+
+  return scene
 }
 
 function addMusic(scene, options) {
@@ -255,8 +275,10 @@ function addMusic(scene, options) {
     'delay': {
       type: 'number',
       extraVerification: (param) => {
-        if (param != 0)
+        if (param != 0) {
           AndroidVisualNovel.internalInfo.hasDelayedMusic = true
+          FlutterVisualNovel.internalInfo.hasDelayedMusic = true
+        }
       },
       required: false
     }
@@ -264,7 +286,10 @@ function addMusic(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addMusic(scene, options)
+  androidScene.addMusic(scene, options)
+  flutterScene.addMusic(scene, options)
+
+  return scene
 }
 
 function addTransition(scene, options) {
@@ -279,7 +304,10 @@ function addTransition(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addTransition(scene, options)
+  androidScene.addTransition(scene, options)
+  flutterScene.addTransition(scene, options)
+
+  return scene
 }
 
 function setNextScene(scene, options) {
@@ -323,7 +351,10 @@ function setNextScene(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.setNextScene(scene, options)
+  androidScene.setNextScene(scene, options)
+  flutterScene.setNextScene(scene, options)
+
+  return scene
 }
 
 function addSubScenes(scene, options) {
@@ -366,7 +397,10 @@ function addSubScenes(scene, options) {
 
   helper.verifyParams(checks, options)
 
-  return androidScene.addSubScenes(scene, options)
+  androidScene.addSubScenes(scene, options)
+  flutterScene.addSubScenes(scene, options)
+
+  return scene
 }
 
 function finalize(scene) {

@@ -1,4 +1,5 @@
 import androidSubScene from '../android/sub-scene.js'
+import flutterSubScene from '../flutter/sub-scene.js'
 
 import helper from './helper.js'
 
@@ -31,7 +32,10 @@ function init(options) {
 
   helper.verifyParams(checks, options)
 
-  return androidSubScene.init(options)
+  const androidScene = androidSubScene.init(options)
+  flutterSubScene.init(options)
+
+  return androidScene
 }
 
 export default {

@@ -1,4 +1,5 @@
 import androidItems from '../android/items.js'
+import flutterItems from '../flutter/items.js'
 
 import helper from './helper.js'
 
@@ -50,7 +51,10 @@ function give(page, itemId) {
 
   helper.verifyParams(checks, { id: itemId })
 
-  return androidItems.give(page, itemId)
+  androidItems.give(page, itemId)
+  flutterItems.give(page, itemId)
+
+  return page
 }
 
 export default {
